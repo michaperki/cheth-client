@@ -37,6 +37,28 @@ const DashboardPage = () => {
         }
     }, [walletAddress]);
 
+    const createGame = async () => {
+        const whiteUserId = userInfo.id;
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/createGame`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ whiteUserId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
     const handleSignOut = () => {
         // Perform sign out actions, e.g., disconnect wallet
         navigate('/');
@@ -52,7 +74,7 @@ const DashboardPage = () => {
                     <p>Rating: {userInfo.rating}</p>
                     <p>Wallet Address: {userInfo.wallet_address}</p>
                     <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
-                    {console.log(userInfo)}
+                    <button onClick={createGame}>Create Game</button>
                     <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
