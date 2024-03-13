@@ -1,23 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
 
 function App() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_SERVER_BASE_URL}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        return response.text();
+      })
+      .then(data => setMessage(data))
+      .catch(error => console.error('Error:', error));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Hello from React App!</h1>
+      <p>Message from backend: {message}</p>
     </div>
   );
 }
