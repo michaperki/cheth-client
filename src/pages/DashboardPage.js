@@ -7,6 +7,7 @@ const DashboardPage = () => {
   const [ username, setUsername ] = useState(''); 
   const navigate = useNavigate();
   const { walletAddress } = useWallet();
+  console.log(walletAddress);
 
   useEffect(() => {
     const checkUser = async () => {
