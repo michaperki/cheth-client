@@ -4,7 +4,6 @@ import useWallet from '../hooks/useWallet';
 
 const DashboardPage = () => {
   const [userExists, setUserExists] = useState(false);
-  const [ username, setUsername ] = useState(''); 
   const navigate = useNavigate();
   const { walletAddress } = useWallet();
   console.log(walletAddress);
@@ -12,7 +11,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/checkUser`, {
+        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUserInfo`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -26,8 +25,6 @@ const DashboardPage = () => {
 
         const data = await response.json();
         setUserExists(data.userExists);
-        console.log(data);
-        setUsername(data.username);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -46,7 +43,7 @@ const DashboardPage = () => {
       <h1>Dashboard</h1>
       {userExists ? (
         <div>
-          <p>Welcome back {username}!</p>
+          <p>Welcome back!</p>
           <button onClick={handleSignOut}>Sign Out</button>
         </div>
       ) : (
