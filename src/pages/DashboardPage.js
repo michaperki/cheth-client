@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useWallet from '../hooks/useWallet';
 
 const DashboardPage = () => {
   const [userExists, setUserExists] = useState(false);
+  const [ username, setUsername ] = useState(''); 
   const navigate = useNavigate();
+  const { walletAddress } = useWallet();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -13,7 +16,7 @@ const DashboardPage = () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ walletAddress: '/* Replace with wallet address */' }) // Replace with actual wallet address
+          body: JSON.stringify({ walletAddress: walletAddress })
         });
 
         if (!response.ok) {
@@ -22,6 +25,8 @@ const DashboardPage = () => {
 
         const data = await response.json();
         setUserExists(data.userExists);
+        console.log(data);
+        setUsername(data.username);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -40,7 +45,7 @@ const DashboardPage = () => {
       <h1>Dashboard</h1>
       {userExists ? (
         <div>
-          <p>Welcome back!</p>
+          <p>Welcome back {username}!</p>
           <button onClick={handleSignOut}>Sign Out</button>
         </div>
       ) : (
