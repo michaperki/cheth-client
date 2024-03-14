@@ -44,26 +44,25 @@ const DashboardPage = () => {
     }, [walletAddress]);
 
     useEffect(() => {
+        if (walletAddress && !socket) {
+            // Initialize WebSocket connection once walletAddress is available
+            const handleWebSocketMessage = (message) => {
+                console.log('Received message in DashboardPage:', message);
+                const messageData = JSON.parse(message);
+                if (messageData.type === 'START_GAME') {
+                    setGameStarted(true); // Set gameStarted to true when START_GAME message received
+                }
+            };
+            const newSocket = useWebSocket(handleWebSocketMessage);
+            setSocket(newSocket);
+        }
+    }, [walletAddress, socket]);
+
+    useEffect(() => {
         if (gameStarted && walletAddress) {
             navigate('/game-pending'); // Redirect to GamePendingPage
         }
     }, [gameStarted, walletAddress, navigate]);
-
-    // Define handleWebSocketMessage function
-    const handleWebSocketMessage = (message) => {
-        console.log('Received message in DashboardPage:', message);
-        const messageData = JSON.parse(message);
-        if (messageData.type === 'START_GAME' && walletAddress) {
-            console.log('Game started');
-            setGameStarted(true); // Set gameStarted to true when START_GAME message received
-        } else {
-            console.log('Invalid message type or walletAddress not found'); 
-            console.log('walletAddress:', walletAddress);
-            console.log('messageData.type:', messageData.type);
-        } 
-    };
-
-    const socket = useWebSocket(handleWebSocketMessage);
     
     const playGame = async () => {
         const userId = userInfo.user_id;
