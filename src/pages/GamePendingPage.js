@@ -10,7 +10,7 @@ const GamePendingPage = () => {
         // Fetch game information based on gameId
         const fetchGameInfo = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getGameInfo/${gameId}`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getGameInfo?gameId=${gameId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
                 }
