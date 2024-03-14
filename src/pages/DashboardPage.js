@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
+import useWebSocket from '../hooks/useWebsocket';
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
     const navigate = useNavigate();
     const { walletAddress } = useWallet();
-    console.log(walletAddress);
+    const { socket } = useWebSocket();
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -37,6 +38,14 @@ const DashboardPage = () => {
         }
     }, [walletAddress]);
 
+    useEffect(() => {
+        if (socket) {
+            socket.onmessage = (event) => {
+                console.log('Received message:', event.data);
+            };
+        }
+    }, [socket]);
+    
     const playGame = async () => {
         const userId = userInfo.user_id;
         try {
