@@ -37,15 +37,15 @@ const DashboardPage = () => {
         }
     }, [walletAddress]);
 
-    const createGame = async () => {
-        const whiteUserId = userInfo.id;
+    const playGame = async () => {
+        const userId = userInfo.user_id;
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/createGame`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/newGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ whiteUserId })
+                body: JSON.stringify({ userId })
             });
 
             if (!response.ok) {
@@ -74,7 +74,7 @@ const DashboardPage = () => {
                     <p>Rating: {userInfo.rating}</p>
                     <p>Wallet Address: {userInfo.wallet_address}</p>
                     <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
-                    <button onClick={createGame}>Create Game</button>
+                    <button onClick={playGame}>Play chETH</button>
                     <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
