@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
-import useWebSocket from '../hooks/useWebsocket';
+import useWebSocket from '../hooks/useWebSocket'; // Correct import statement
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
+    const [gameStarted, setGameStarted] = useState(false); // Track if the game has started
     const navigate = useNavigate();
-    const { walletAddress } = useWallet();
-    const { socket } = useWebSocket();
+    const { walletAddress, connectAccount } = useWallet();
+
+    useEffect(() => {
+        if (!walletAddress) {
+            connectAccount();
+        }
+    }, [walletAddress, connectAccount]);
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -25,7 +31,6 @@ const DashboardPage = () => {
                 }
 
                 const data = await response.json();
-                console.log(data);
                 setUserInfo(data);
 
             } catch (error) {
@@ -39,12 +44,24 @@ const DashboardPage = () => {
     }, [walletAddress]);
 
     useEffect(() => {
-        if (socket) {
-            socket.onmessage = (event) => {
-                console.log('Received message:', event.data);
-            };
+        if (gameStarted && walletAddress) {
+            navigate('/game-pending'); // Redirect to GamePendingPage
         }
-    }, [socket]);
+    }, [gameStarted, walletAddress, navigate]);
+
+    // Define handleWebSocketMessage function
+    const handleWebSocketMessage = (message) => {
+        console.log('Received message in DashboardPage:', message);
+        const messageData = JSON.parse(message);
+        if (messageData.type === 'START_GAME' && walletAddress) {
+            console.log('Game started');
+            setGameStarted(true); // Set gameStarted to true when START_GAME message received
+        } else {
+            console.log('Invalid message type or walletAddress not found');
+        } 
+    };
+
+    const socket = useWebSocket(handleWebSocketMessage);
     
     const playGame = async () => {
         const userId = userInfo.user_id;
@@ -66,7 +83,7 @@ const DashboardPage = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    }
+    };
 
     const handleSignOut = () => {
         // Perform sign out actions, e.g., disconnect wallet
