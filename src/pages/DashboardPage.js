@@ -8,6 +8,16 @@ const DashboardPage = () => {
     const [gameStarted, setGameStarted] = useState(false); // Track if the game has started
     const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
+    const [socket, setSocket] = useState(null);
+
+    // Define handleWebSocketMessage function
+    const handleWebSocketMessage = (message) => {
+        console.log('Received message in DashboardPage:', message);
+        const messageData = JSON.parse(message);
+        if (messageData.type === 'START_GAME') {
+            setGameStarted(true); // Set gameStarted to true when START_GAME message received
+        }
+    };
 
     useEffect(() => {
         if (!walletAddress) {
@@ -46,14 +56,18 @@ const DashboardPage = () => {
     useEffect(() => {
         if (walletAddress && !socket) {
             // Initialize WebSocket connection once walletAddress is available
-            const handleWebSocketMessage = (message) => {
-                console.log('Received message in DashboardPage:', message);
-                const messageData = JSON.parse(message);
-                if (messageData.type === 'START_GAME') {
-                    setGameStarted(true); // Set gameStarted to true when START_GAME message received
-                }
+            const WEBSOCKET_URL = process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws');
+            const newSocket = new WebSocket(WEBSOCKET_URL);
+            newSocket.onopen = () => {
+                console.log('Connected to WebSocket');
             };
-            const newSocket = useWebSocket(handleWebSocketMessage);
+            newSocket.onmessage = (event) => {
+                console.log('Received message in DashboardPage:', event.data);
+                handleWebSocketMessage(event.data);
+            };
+            newSocket.onclose = () => {
+                console.log('Disconnected from WebSocket');
+            };
             setSocket(newSocket);
         }
     }, [walletAddress, socket]);
@@ -65,7 +79,7 @@ const DashboardPage = () => {
     }, [gameStarted, walletAddress, navigate]);
     
     const playGame = async () => {
-        const userId = userInfo.user_id;
+        const userId = userInfo?.user_id;
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/newGame`, {
                 method: 'POST',
