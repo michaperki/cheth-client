@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
-import useWebSocket from '../hooks/useWebSocket'; // Correct import statement
+import useWebSocket from '../hooks/useWebsocket';
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
@@ -57,7 +57,9 @@ const DashboardPage = () => {
             console.log('Game started');
             setGameStarted(true); // Set gameStarted to true when START_GAME message received
         } else {
-            console.log('Invalid message type or walletAddress not found');
+            console.log('Invalid message type or walletAddress not found'); 
+            console.log('walletAddress:', walletAddress);
+            console.log('messageData.type:', messageData.type);
         } 
     };
 
