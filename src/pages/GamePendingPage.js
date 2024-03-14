@@ -42,10 +42,10 @@ const GamePendingPage = () => {
         <div>
             {gameInfo ? (
                 <div>
-                    {console.log(gameInfo)}
-                    <h2>Game ID: {gameInfo.gameId}</h2>
-                    <p>Player One: {gameInfo.playerOne}</p>
-                    <p>Player Two: {gameInfo.playerTwo}</p>
+                    {console.log(gameInfo[0])}
+                    <h2>Game ID: {gameInfo[0].game_id}</h2>
+                    <p>Player One: {gameInfo[0].player1_id}</p>
+                    <p>Player Two: {gameInfo[0].player2_id}</p>
                     <p>Reward Pool: {gameInfo.rewardPool}</p>
                     {!gameInfo.isStarted && (
                         <>
