@@ -42,6 +42,7 @@ const GamePendingPage = () => {
         <div>
             {gameInfo ? (
                 <div>
+                    {console.log(gameInfo)}
                     <h2>Game ID: {gameInfo.gameId}</h2>
                     <p>Player One: {gameInfo.playerOne}</p>
                     <p>Player Two: {gameInfo.playerTwo}</p>
