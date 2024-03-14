@@ -1,38 +1,63 @@
-// GamePendingPage.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const GamePendingPage = () => {
-    // Define state to store opponent information and buy-in amount
-    const [opponent, setOpponent] = useState(null);
-    const [buyInAmount, setBuyInAmount] = useState('');
+    const { gameId } = useParams();
+    const [gameInfo, setGameInfo] = useState(null);
+    const [creatingNewGame, setCreatingNewGame] = useState(false);
 
-    // Function to handle buy-in submission
-    const handleSubmitBuyIn = () => {
-        // Submit buy-in logic goes here
+    useEffect(() => {
+        // Fetch game information based on gameId
+        const fetchGameInfo = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getGameInfo/${gameId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch game information');
+                }
+                const data = await response.json();
+                setGameInfo(data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        fetchGameInfo();
+    }, [gameId]);
+
+    const handleCreateNewGame = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/createNewGame`);
+            if (!response.ok) {
+                throw new Error('Failed to create new game');
+            }
+            // Fetch updated game information
+            const updatedGameInfo = await response.json();
+            setGameInfo(updatedGameInfo);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
         <div>
-            <h1>Game Pending</h1>
-            {opponent ? (
+            {gameInfo ? (
                 <div>
-                    <p>Opponent: {opponent}</p>
-                    <p>Buy-In Amount: {buyInAmount}</p>
-                    {/* Form to submit buy-in */}
-                    <form onSubmit={handleSubmitBuyIn}>
-                        <label>
-                            Buy-In Amount:
-                            <input
-                                type="text"
-                                value={buyInAmount}
-                                onChange={(e) => setBuyInAmount(e.target.value)}
-                            />
-                        </label>
-                        <button type="submit">Submit Buy-In</button>
-                    </form>
+                    <h2>Game ID: {gameInfo.gameId}</h2>
+                    <p>Player One: {gameInfo.playerOne}</p>
+                    <p>Player Two: {gameInfo.playerTwo}</p>
+                    <p>Reward Pool: {gameInfo.rewardPool}</p>
+                    {!gameInfo.isStarted && (
+                        <>
+                            <button onClick={handleCreateNewGame} disabled={creatingNewGame}>
+                                {creatingNewGame ? 'Creating New Game...' : 'Create New Game'}
+                            </button>
+                            <p>or</p>
+                        </>
+                    )}
+                    <p>Join the game by sending the required entry fee to the contract address.</p>
                 </div>
             ) : (
-                <p>Waiting for opponent...</p>
+                <p>Loading game information...</p>
             )}
         </div>
     );

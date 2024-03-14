@@ -12,7 +12,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} /> 
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/game-pending" element={<GamePendingPage />} />
+        <Route path="/game-pending/:gameId" element={<GamePendingPage />} /> 
       </Routes>
     </Router>
   );

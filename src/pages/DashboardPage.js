@@ -1,3 +1,5 @@
+// DashboardPage.js
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
@@ -9,6 +11,7 @@ const DashboardPage = () => {
     const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
     const [socket, setSocket] = useState(null);
+    const [gameId, setGameId] = useState(null);
 
     // Define handleWebSocketMessage function
     const handleWebSocketMessage = (message) => {
@@ -16,6 +19,7 @@ const DashboardPage = () => {
         const messageData = JSON.parse(message);
         if (messageData.type === 'START_GAME') {
             setGameStarted(true); // Set gameStarted to true when START_GAME message received
+            setGameId(messageData.gameId);
         }
     };
 
@@ -74,7 +78,7 @@ const DashboardPage = () => {
 
     useEffect(() => {
         if (gameStarted && walletAddress) {
-            navigate('/game-pending'); // Redirect to GamePendingPage
+            navigate(`/game-pending/${gameId}`);
         }
     }, [gameStarted, walletAddress, navigate]);
     
