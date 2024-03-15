@@ -71,7 +71,7 @@ const GamePendingPage = () => {
         }
 
         try {
-            const entryFee = Web3.utils.toWei('0.0001', 'ether');
+            const entryFee = Web3.utils.toWei('0.001', 'ether');
             console.log("entryFee", entryFee)
 
             const nonce = await web3.eth.getTransactionCount(walletAddress);
