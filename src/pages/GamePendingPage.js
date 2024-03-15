@@ -92,7 +92,12 @@ const GamePendingPage = () => {
             return;
         }
 
-        console.log(Web3.givenProvider)
+        console.log('gameInfo', gameInfo);
+        console.log('ChessGame.abi', ChessGame.abi);
+        console.log('process.env.REACT_APP_CHAIN_ID', process.env.REACT_APP_CHAIN_ID);
+        console.log('ChessGame.networks', ChessGame.networks);
+        console.log('ChessGame.networks[process.env.REACT_APP_CHAIN_ID]', ChessGame.networks[process.env.REACT_APP_CHAIN_ID]);
+        console.log('ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address', ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address);
 
         const web3 = new Web3(Web3.givenProvider);
         const contract = new web3.eth.Contract(ChessGame.abi, ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address);
