@@ -73,7 +73,11 @@ const GamePendingPage = () => {
             const entryFee = Web3.utils.toWei('.0001', 'ether');
             console.log("entryFee", entryFee)
 
-            await contractInstance.methods.fundGame(gameId, { value: entryFee }).send({ from: walletAddress });
+            const nonce = await Web3.eth.getTransactionCount(walletAddress);
+            console.log("Current nonce:", nonce);
+            
+            // Use the retrieved nonce in the transaction
+            await contractInstance.methods.fundGame(gameId, { value: entryFee }).send({ from: walletAddress, nonce: nonce });
         } catch (error) {
             console.error('Error funding game:', error);
         }
