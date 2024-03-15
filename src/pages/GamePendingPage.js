@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import useWebSocket from '../hooks/useWebsocket';
 import ChessGame from '../abis/ChessGame.json';
+import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 
 const handleWebSocketMessage = (message) => {
@@ -19,7 +20,7 @@ const GamePendingPage = () => {
     const [gameInfo, setGameInfo] = useState(null);
     const { walletAddress, connectAccount } = useWallet();
     const socket = useWebSocket(handleWebSocketMessage);
-
+    const { sdk, connected, connecting, provider, chainId } = useSDK(); // Get MetaMask SDK values
 
     useEffect(() => {
         // Fetch game information based on gameId
@@ -60,7 +61,7 @@ const GamePendingPage = () => {
             return;
         }
 
-        const web3 = new Web3(Web3.givenProvider);
+        const web3 = new Web3(provider); // Initialize Web3 with MetaMask SDK's provider
         const contract = new web3.eth.Contract(ChessGame.abi, gameInfo.contractAddress);
         const entryFee = web3.utils.toWei('1', 'ether'); // 1 ether entry fee
         const options = { from: walletAddress, value: entryFee };
@@ -92,16 +93,9 @@ const GamePendingPage = () => {
             return;
         }
 
-        console.log('gameInfo', gameInfo);
-        console.log('ChessGame.abi', ChessGame.abi);
-        console.log('process.env.REACT_APP_CHAIN_ID', process.env.REACT_APP_CHAIN_ID);
-        console.log('ChessGame.networks', ChessGame.networks);
-        console.log('ChessGame.networks[process.env.REACT_APP_CHAIN_ID]', ChessGame.networks[process.env.REACT_APP_CHAIN_ID]);
-        console.log('ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address', ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address);
-
-        const web3 = new Web3(Web3.givenProvider);
+        const web3 = new Web3(provider); // Initialize Web3 with MetaMask SDK's provider
         const contract = new web3.eth.Contract(ChessGame.abi, ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address);
-        const entryFee = web3.utils.toWei('1', 'ether'); // 1 ether entry fee
+        const entryFee = web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
         const options = { from: walletAddress, value: entryFee };
         contract.methods.startGame(gameInfo.game_id).send(options)
             .on('transactionHash', (hash) => {
