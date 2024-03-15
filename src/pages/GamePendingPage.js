@@ -70,10 +70,10 @@ const GamePendingPage = () => {
         }
 
         try {
-            const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
+            const entryFee = Web3.utils.toWei('.0001', 'ether');
             console.log("entryFee", entryFee)
-            
-            await contractInstance.methods.fundGame(gameId).send({ from: walletAddress, value: entryFee });
+
+            await contractInstance.methods.fundGame(gameId, { value: entryFee }).send({ from: walletAddress });
         } catch (error) {
             console.error('Error funding game:', error);
         }
