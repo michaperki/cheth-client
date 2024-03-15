@@ -57,30 +57,8 @@ const GamePendingPage = () => {
         }
     }, [walletAddress, connectAccount]);
 
-    const joinGame = async () => {
-        if (!contractInstance) {
-            console.error('Contract instance not available');
-            return;
-        }
-
-        if (!walletAddress) {
-            console.error('Wallet address not available');
-            return;
-        }
-
-        try {
-            console.log("joinGame")
-            const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
-            console.log('entryFee:', entryFee);
-            console.log('gameInfo.game_id:', gameInfo.game_id);
-            console.log('walletAddress:', walletAddress);
-            await contractInstance.methods.joinGame(gameInfo.game_id).send({ from: walletAddress, value: entryFee, gas: 3000000 });
-        } catch (error) {
-            console.error('Error joining game:', error);
-        }
-    }
-
-    const startGame = async () => {
+    const fundGame = async () => {
+        console.log("fundGame")
         if (!contractInstance) {
             console.error('Contract instance not available');
             return;
@@ -93,11 +71,14 @@ const GamePendingPage = () => {
 
         try {
             const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
-            await contractInstance.methods.startGame().send({ from: walletAddress, value: entryFee });
+            console.log("entryFee", entryFee)
+            
+            await contractInstance.methods.fundGame(gameId).send({ from: walletAddress, value: entryFee });
         } catch (error) {
-            console.error('Error starting game:', error);
+            console.error('Error funding game:', error);
         }
     }
+
 
     return (
         <div>
@@ -111,9 +92,7 @@ const GamePendingPage = () => {
 
 
                     <p>Join the game by sending the required entry fee to the contract address.</p>
-                    <button onClick={joinGame}>Join Game</button>
-                    <p>Start the game by sending the required entry fee to the contract address.</p>
-                    <button onClick={startGame}>Start Game</button>
+                    <button onClick={fundGame}>Fund Game</button>
                 </div>
             ) : (
                 <p>Loading game information...</p>
