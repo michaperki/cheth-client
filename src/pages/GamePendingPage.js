@@ -78,7 +78,12 @@ const GamePendingPage = () => {
             console.log("Current nonce:", nonce);
             
             // Use the retrieved nonce in the transaction
-            await contractInstance.methods.fundGame(gameId, { value: entryFee }).send({ from: walletAddress, nonce: nonce });
+            await contractInstance.methods.fundGame(gameId).send({
+                from: walletAddress,
+                value: entryFee,
+                nonce,
+                gas: 3000000
+            });
         } catch (error) {
             console.error('Error funding game:', error);
         }
