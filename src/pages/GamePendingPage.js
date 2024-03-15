@@ -82,7 +82,7 @@ const GamePendingPage = () => {
                 from: walletAddress,
                 value: entryFee,
                 nonce,
-                gas: 3000000
+                gas: 30000000
             });
         } catch (error) {
             console.error('Error funding game:', error);
