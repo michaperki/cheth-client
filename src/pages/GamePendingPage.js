@@ -30,6 +30,7 @@ const GamePendingPage = () => {
     console.log("ChessGame.networks[chainId]?.address", ChessGame.networks[chainId]?.address)
     console.log("ChessGame.abi", ChessGame.abi)
     const { contractInstance } = useContract(ChessGame.networks[chainId]?.address, ChessGame.abi);
+    const web3 = new Web3(provider);
 
     console.log('contractInstance:', contractInstance);
 
@@ -73,7 +74,7 @@ const GamePendingPage = () => {
             const entryFee = Web3.utils.toWei('.001', 'ether');
             console.log("entryFee", entryFee)
 
-            const nonce = await Web3.eth.getTransactionCount(walletAddress);
+            const nonce = await web3.eth.getTransactionCount(walletAddress);
             console.log("Current nonce:", nonce);
             
             // Use the retrieved nonce in the transaction
