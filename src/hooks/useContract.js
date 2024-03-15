@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
-import ChessGame from '../abis/ChessGame.json';
 
 const useContract = (contractAddress, abi) => {
     console.log('contractAddress in useContract Hook:', contractAddress);

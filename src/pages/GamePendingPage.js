@@ -22,7 +22,16 @@ const GamePendingPage = () => {
     const { walletAddress, connectAccount } = useWallet();
     const socket = useWebSocket(handleWebSocketMessage);
     const { sdk, connected, connecting, provider, chainId } = useSDK(); // Get MetaMask SDK values
+    console.log("address", walletAddress)
+    console.log("connected", connected)
+    console.log("connecting", connecting)
+    console.log("provider", provider)
+    console.log("chainId", chainId)
+    console.log("ChessGame.networks[chainId]?.address", ChessGame.networks[chainId]?.address)
+    console.log("ChessGame.abi", ChessGame.abi)
     const { contractInstance } = useContract(ChessGame.networks[chainId]?.address, ChessGame.abi);
+
+    console.log('contractInstance:', contractInstance);
 
     useEffect(() => {
         // Fetch game information based on gameId
@@ -97,10 +106,6 @@ const GamePendingPage = () => {
                     <p>state: {gameInfo.state}</p>
 
 
-                    {!gameInfo.isStarted && (
-                        <>
-                        </>
-                    )}
                     <p>Join the game by sending the required entry fee to the contract address.</p>
                     <button onClick={joinGame}>Join Game</button>
                     <p>Start the game by sending the required entry fee to the contract address.</p>
