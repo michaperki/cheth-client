@@ -71,9 +71,9 @@ const GamePendingPage = () => {
         try {
             console.log("joinGame")
             const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
-           console.log('entryFee:', entryFee);
+            console.log('entryFee:', entryFee);
             console.log('gameInfo.game_id:', gameInfo.game_id);
-            await contractInstance.methods.joinGame(gameInfo.game_id).send({ from: walletAddress, value: entryFee });
+            await contractInstance.methods.joinGame(gameInfo.game_id, { value: entryFee });
         } catch (error) {
             console.error('Error joining game:', error);
         }
