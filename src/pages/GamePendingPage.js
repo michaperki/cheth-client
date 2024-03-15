@@ -89,7 +89,7 @@ const GamePendingPage = () => {
 
         try {
             const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
-            await contractInstance.methods.startGame(gameInfo.game_id).send({ from: walletAddress, value: entryFee });
+            await contractInstance.methods.startGame().send({ from: walletAddress, value: entryFee });
         } catch (error) {
             console.error('Error starting game:', error);
         }
