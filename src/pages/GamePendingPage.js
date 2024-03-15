@@ -5,6 +5,7 @@ import useWebSocket from '../hooks/useWebsocket';
 import ChessGame from '../abis/ChessGame.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
+import useContract from '../hooks/useContract';
 
 const handleWebSocketMessage = (message) => {
     console.log('Received message in GamePendingPage:', message);
@@ -21,6 +22,7 @@ const GamePendingPage = () => {
     const { walletAddress, connectAccount } = useWallet();
     const socket = useWebSocket(handleWebSocketMessage);
     const { sdk, connected, connecting, provider, chainId } = useSDK(); // Get MetaMask SDK values
+    const { contractInstance } = useContract(ChessGame.networks[chainId]?.address, ChessGame.abi);
 
     useEffect(() => {
         // Fetch game information based on gameId
@@ -47,66 +49,41 @@ const GamePendingPage = () => {
     }, [walletAddress, connectAccount]);
 
     const joinGame = async () => {
-        // Join the game by sending the required entry fee to the contract address
-        console.log('Joining the game...');
+        if (!contractInstance) {
+            console.error('Contract instance not available');
+            return;
+        }
 
-        // Use the walletAddress, contract ABI, and gameId to join the game
         if (!walletAddress) {
             console.error('Wallet address not available');
             return;
         }
 
-        if (!gameInfo) {
-            console.error('Game information not available');
-            return;
+        try {
+            const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
+            await contractInstance.methods.startGame(gameInfo.game_id).send({ from: walletAddress, value: entryFee });
+        } catch (error) {
+            console.error('Error joining game:', error);
         }
-
-        const web3 = new Web3(provider); // Initialize Web3 with MetaMask SDK's provider
-        const contract = new web3.eth.Contract(ChessGame.abi, gameInfo.contractAddress);
-        const entryFee = web3.utils.toWei('1', 'ether'); // 1 ether entry fee
-        const options = { from: walletAddress, value: entryFee };
-        contract.methods.joinGame(gameInfo.gameId).send(options)
-            .on('transactionHash', (hash) => {
-                console.log('Transaction hash:', hash);
-            })
-            .on('receipt', (receipt) => {
-                console.log('Transaction receipt:', receipt);
-            })
-            .on('error', (error) => {
-                console.error('Error joining game:', error);
-            });
-
     }
 
     const startGame = async () => {
-        // Start the game by sending the required entry fee to the contract address
-        console.log('Starting the game...');
+        if (!contractInstance) {
+            console.error('Contract instance not available');
+            return;
+        }
 
-        // Use the walletAddress, contract ABI, and gameId to start the game
         if (!walletAddress) {
             console.error('Wallet address not available');
             return;
         }
 
-        if (!gameInfo) {
-            console.error('Game information not available');
-            return;
+        try {
+            const entryFee = Web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
+            await contractInstance.methods.startGame(gameInfo.game_id).send({ from: walletAddress, value: entryFee });
+        } catch (error) {
+            console.error('Error starting game:', error);
         }
-
-        const web3 = new Web3(provider); // Initialize Web3 with MetaMask SDK's provider
-        const contract = new web3.eth.Contract(ChessGame.abi, ChessGame.networks[process.env.REACT_APP_CHAIN_ID].address);
-        const entryFee = web3.utils.toWei('.0001', 'ether'); // 1 ether entry fee
-        const options = { from: walletAddress, value: entryFee };
-        contract.methods.startGame(gameInfo.game_id).send(options)
-            .on('transactionHash', (hash) => {
-                console.log('Transaction hash:', hash);
-            })
-            .on('receipt', (receipt) => {
-                console.log('Transaction receipt:', receipt);
-            })
-            .on('error', (error) => {
-                console.error('Error starting game:', error);
-            });
     }
 
     return (
