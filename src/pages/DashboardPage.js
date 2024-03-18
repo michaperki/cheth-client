@@ -98,22 +98,23 @@ const DashboardPage = () => {
             if (!connected) {
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
-
+    
             const contract = new web3.eth.Contract(Chess.abi, Chess.networks[chainId]?.address);
             const gas = await contract.methods.joinGame().estimateGas({ from: walletAddress });
-
+    
+            const entryFeeInWei = '100'; // Entry fee in wei units
             const transactionParameters = {
                 from: walletAddress,
                 to: Chess.networks[chainId]?.address,
-                value: web3.utils.toWei('0.01', 'ether'), // Adjust the value as needed
+                value: entryFeeInWei, // Entry fee in wei units
                 gas: gas,
                 gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei')), // Use appropriate gas price
                 chainId: chainId
             };
-
+    
             const response = await web3.eth.sendTransaction(transactionParameters);
             console.log('Transaction response:', response);
-
+    
             // Fetch game data or handle response from the server
         } catch (error) {
             console.error('Error:', error);
