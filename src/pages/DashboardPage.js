@@ -85,43 +85,27 @@ const DashboardPage = () => {
     }, [gameStarted, walletAddress, navigate]);
 
     const joinGame = async () => {
-        console.log('Joining game');
-        console.log('walletAddress', walletAddress);
-        console.log('connected', connected);
-        console.log('connecting', connecting);
-        console.log('provider', provider);
-        console.log('chainId', chainId);
-        console.log('Chess.networks[chainId]?.address', Chess.networks[chainId]?.address);
-        console.log('Chess.abi', Chess.abi);
-        
         try {
             if (!connected) {
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
     
-            const contract = new web3.eth.Contract(Chess.abi, Chess.networks[chainId]?.address);
-            const gas = await contract.methods.joinGame().estimateGas({ from: walletAddress });
+            //const gas = await contractInstance.methods.joinGame().estimateGas({ from: walletAddress });
     
             const entryFeeInEther = 0.01; // Entry fee in ether units
             const entryFeeInWei = web3.utils.toWei(entryFeeInEther.toString(), 'ether');
-            const transactionParameters = {
+   
+            await contractInstance.methods.joinGame().send({
                 from: walletAddress,
-                to: Chess.networks[chainId]?.address,
-                value: entryFeeInWei, // Entry fee in wei units
-                gas: gas,
-                gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei')), // Use appropriate gas price
-                chainId: chainId
-            };
-    
-            const response = await web3.eth.sendTransaction(transactionParameters);
-            console.log('Transaction response:', response);
+                value: entryFeeInWei,
+                gas: 3000000
+            });
     
             // Fetch game data or handle response from the server
         } catch (error) {
             console.error('Error:', error);
         }
     };
-
     const handleSignOut = () => {
         navigate('/');
     };
