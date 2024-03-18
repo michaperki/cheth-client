@@ -90,11 +90,10 @@ const DashboardPage = () => {
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
     
-            //const gas = await contractInstance.methods.joinGame().estimateGas({ from: walletAddress });
-    
-            const entryFeeInEther = 0.01; // Entry fee in ether units
+            const entryFeeInEther = await contractInstance.methods.getEntryFee().call(); // Fetch entry fee from the contract
+            console.log('entryFeeInEther:', entryFeeInEther);
             const entryFeeInWei = web3.utils.toWei(entryFeeInEther.toString(), 'ether');
-   
+    
             await contractInstance.methods.joinGame().send({
                 from: walletAddress,
                 value: entryFeeInWei,
@@ -106,6 +105,8 @@ const DashboardPage = () => {
             console.error('Error:', error);
         }
     };
+    
+
     const handleSignOut = () => {
         navigate('/');
     };
