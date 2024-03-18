@@ -102,7 +102,8 @@ const DashboardPage = () => {
             const contract = new web3.eth.Contract(Chess.abi, Chess.networks[chainId]?.address);
             const gas = await contract.methods.joinGame().estimateGas({ from: walletAddress });
     
-            const entryFeeInWei = '100'; // Entry fee in wei units
+            const entryFeeInEther = 0.01; // Entry fee in ether units
+            const entryFeeInWei = web3.utils.toWei(entryFeeInEther.toString(), 'ether');
             const transactionParameters = {
                 from: walletAddress,
                 to: Chess.networks[chainId]?.address,
