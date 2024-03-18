@@ -17,6 +17,9 @@ const DashboardPage = () => {
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const { contractInstance } = useContract(Chess.networks[chainId]?.address, Chess.abi);
     const web3 = new Web3(provider);
+    // Add state variables for started and finished
+    const [started, setStarted] = useState(false);
+    const [finished, setFinished] = useState(false);
 
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
@@ -78,26 +81,42 @@ const DashboardPage = () => {
         }
     }, [walletAddress, socket]);
 
+
     useEffect(() => {
-        if (gameStarted && walletAddress) {
-            navigate(`/game-pending/${gameId}`);
+        const getGameStatus = async () => {
+            try {
+                // Call the appropriate function from the contract to fetch the values of started and finished
+                const gameStarted = await contractInstance.methods.started().call();
+                const gameFinished = await contractInstance.methods.finished().call();
+
+                // Update the state variables with the fetched values
+                setStarted(gameStarted);
+                setFinished(gameFinished);
+            } catch (error) {
+                console.error('Error fetching game status:', error);
+            }
+        };
+
+        if (contractInstance) {
+            getGameStatus();
         }
-    }, [gameStarted, walletAddress, navigate]);
+    }, [contractInstance]); // Fetch game status whenever the contract instance changes
+
 
     const joinGame = async () => {
         try {
             if (!connected) {
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
-    
+
             const entryFeeInWei = await contractInstance.methods.getEntryFee().call(); // Fetch entry fee from the contract
-    
+
             await contractInstance.methods.joinGame().send({
                 from: walletAddress,
                 value: entryFeeInWei,
                 gas: 3000000
             });
-    
+
             // Fetch game data or handle response from the server
         } catch (error) {
             console.error('Error:', error);
@@ -113,7 +132,7 @@ const DashboardPage = () => {
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             // Check if the response type is 'opaque'
             if (response.type === 'opaque') {
                 console.log('Request made without CORS headers');
@@ -124,7 +143,7 @@ const DashboardPage = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    }   
+    }
 
     const handleSignOut = () => {
         navigate('/');
@@ -140,6 +159,8 @@ const DashboardPage = () => {
                     <p>Rating: {userInfo.rating}</p>
                     <p>Wallet Address: {userInfo.wallet_address}</p>
                     <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
+                    <p>Game Started: {started ? 'Yes' : 'No'}</p>
+                    <p>Game Finished: {finished ? 'Yes' : 'No'}</p>
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
                     <button onClick={handleSignOut}>Sign Out</button>
