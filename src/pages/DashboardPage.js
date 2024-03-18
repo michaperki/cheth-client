@@ -82,23 +82,22 @@ const DashboardPage = () => {
         }
     }, [gameStarted, walletAddress, navigate]);
     
-    const playGame = async () => {
-        const userId = userInfo?.user_id;
+    const joinGame = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/newGame`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/joinGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId })
+                body: JSON.stringify({ walletAddress })
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch data');
+                throw new Error('Failed to join game');
             }
 
             const data = await response.json();
-            console.log(data);
+            console.log('Game joined:', data);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -119,7 +118,7 @@ const DashboardPage = () => {
                     <p>Rating: {userInfo.rating}</p>
                     <p>Wallet Address: {userInfo.wallet_address}</p>
                     <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
-                    <button onClick={playGame}>Play chETH</button>
+                    <button onClick={joinGame}>Join Game</button>
                     <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
