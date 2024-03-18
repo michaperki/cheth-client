@@ -106,17 +106,25 @@ const DashboardPage = () => {
 
     const cancelGame = async () => {
         try {
-            await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
                 method: 'POST',
+                mode: 'no-cors', // Set request mode to 'no-cors'
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
+    
+            // Check if the response type is 'opaque'
+            if (response.type === 'opaque') {
+                console.log('Request made without CORS headers');
+                // Handle success or failure based on your requirements
+            } else {
+                // Handle other response types if needed
+            }
         } catch (error) {
             console.error('Error:', error);
         }
-    }  
-    
+    }   
 
     const handleSignOut = () => {
         navigate('/');
