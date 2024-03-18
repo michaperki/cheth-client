@@ -8,8 +8,10 @@ import Web3 from 'web3';
 import useContract from '../hooks/useContract';
 
 const DashboardPage = () => {
+    const gameId = '123'; // Replace with actual game ID
     const [userInfo, setUserInfo] = useState(null);
     const [gameStarted, setGameStarted] = useState(false);
+    const [socket, setSocket] = useState(null);
     const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
     const { sdk, connected, connecting, provider, chainId } = useSDK();
