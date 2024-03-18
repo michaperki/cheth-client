@@ -1,25 +1,26 @@
-// DashboardPage.js
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import useWebSocket from '../hooks/useWebsocket';
+import Chess from '../abis/Chess.json';
+import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
+import Web3 from 'web3';
+import useContract from '../hooks/useContract';
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
-    const [gameStarted, setGameStarted] = useState(false); // Track if the game has started
+    const [gameStarted, setGameStarted] = useState(false);
     const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
-    const [socket, setSocket] = useState(null);
-    const [gameId, setGameId] = useState(null);
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { contractInstance } = useContract(Chess.networks[chainId]?.address, Chess.abi);
+    const web3 = new Web3(provider);
 
-    // Define handleWebSocketMessage function
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
         const messageData = JSON.parse(message);
         if (messageData.type === 'START_GAME') {
-            setGameStarted(true); // Set gameStarted to true when START_GAME message received
-            setGameId(messageData.gameId);
+            setGameStarted(true);
         }
     };
 
@@ -59,7 +60,6 @@ const DashboardPage = () => {
 
     useEffect(() => {
         if (walletAddress && !socket) {
-            // Initialize WebSocket connection once walletAddress is available
             const WEBSOCKET_URL = process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws');
             const newSocket = new WebSocket(WEBSOCKET_URL);
             newSocket.onopen = () => {
@@ -81,30 +81,35 @@ const DashboardPage = () => {
             navigate(`/game-pending/${gameId}`);
         }
     }, [gameStarted, walletAddress, navigate]);
-    
+
     const joinGame = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/joinGame`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ walletAddress })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to join game');
+            if (!connected) {
+                await sdk.requestPermissions({ eth_accounts: {} });
             }
 
-            const data = await response.json();
-            console.log('Game joined:', data);
+            const contract = new web3.eth.Contract(Chess.abi, Chess.networks[chainId]?.address);
+            const gas = await contract.methods.joinGame().estimateGas({ from: walletAddress });
+
+            const transactionParameters = {
+                from: walletAddress,
+                to: Chess.networks[chainId]?.address,
+                value: web3.utils.toWei('0.01', 'ether'), // Adjust the value as needed
+                gas: gas,
+                gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei')), // Use appropriate gas price
+                chainId: chainId
+            };
+
+            const response = await web3.eth.sendTransaction(transactionParameters);
+            console.log('Transaction response:', response);
+
+            // Fetch game data or handle response from the server
         } catch (error) {
             console.error('Error:', error);
         }
     };
 
     const handleSignOut = () => {
-        // Perform sign out actions, e.g., disconnect wallet
         navigate('/');
     };
 
