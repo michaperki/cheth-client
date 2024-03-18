@@ -83,6 +83,15 @@ const DashboardPage = () => {
     }, [gameStarted, walletAddress, navigate]);
 
     const joinGame = async () => {
+        console.log('Joining game');
+        console.log('walletAddress', walletAddress);
+        console.log('connected', connected);
+        console.log('connecting', connecting);
+        console.log('provider', provider);
+        console.log('chainId', chainId);
+        console.log('Chess.networks[chainId]?.address', Chess.networks[chainId]?.address);
+        console.log('Chess.abi', Chess.abi);
+        
         try {
             if (!connected) {
                 await sdk.requestPermissions({ eth_accounts: {} });
