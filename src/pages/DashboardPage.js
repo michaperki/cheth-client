@@ -90,9 +90,7 @@ const DashboardPage = () => {
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
     
-            const entryFeeInEther = await contractInstance.methods.getEntryFee().call(); // Fetch entry fee from the contract
-            console.log('entryFeeInEther:', entryFeeInEther);
-            const entryFeeInWei = web3.utils.toWei(entryFeeInEther.toString(), 'ether');
+            const entryFeeInWei = await contractInstance.methods.getEntryFee().call(); // Fetch entry fee from the contract
     
             await contractInstance.methods.joinGame().send({
                 from: walletAddress,
@@ -105,6 +103,7 @@ const DashboardPage = () => {
             console.error('Error:', error);
         }
     };
+    
     
 
     const handleSignOut = () => {
