@@ -103,7 +103,19 @@ const DashboardPage = () => {
             console.error('Error:', error);
         }
     };
-    
+
+    const cancelGame = async () => {
+        try {
+            await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }  
     
 
     const handleSignOut = () => {
@@ -121,6 +133,7 @@ const DashboardPage = () => {
                     <p>Wallet Address: {userInfo.wallet_address}</p>
                     <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
                     <button onClick={joinGame}>Join Game</button>
+                    <button onClick={cancelGame}>Cancel Game</button>
                     <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
