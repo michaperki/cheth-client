@@ -106,7 +106,7 @@ const GamePendingPage = () => {
     useEffect(() => {
         const fetchOwner = async () => {
             try {
-                if (contractInstance && contractInstance.methods.getOwner) {
+                if (contractInstance && contractAddress && contractInstance.methods.getOwner) {
                     const owner = await contractInstance.methods.getOwner().call();
                     console.log('Owner:', owner);
                     setOwnerAddress(owner);
@@ -117,7 +117,7 @@ const GamePendingPage = () => {
         };
     
         fetchOwner();
-    }, [contractInstance, contractAddress]);
+    }, [contractInstance, contractAddress]);    
 
     const joinGame = async () => {
         try {
