@@ -8,24 +8,26 @@ import Web3 from 'web3';
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
-    const [socket, setSocket] = useState(null);
     const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const web3 = new Web3(provider);
 
-    // handleWebSocketMessage function in DashboardPage.js
+    // Function to handle WebSocket messages
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
 
-        if (messageData.type === "START_GAME") { // Adjusted to match the message type sent from the backend
+        if (messageData.type === "START_GAME") {
             console.log("Game started. Navigating to game pending page...");
-            const gameId = messageData.gameId; // Extract gameId from the message
-            navigate(`/game-pending/${gameId}`); // Navigate to the game pending page with gameId
+            const gameId = messageData.gameId;
+            navigate(`/game-pending/${gameId}`);
         }
     };
+
+    // Use the useWebSocket hook to establish WebSocket connection
+    const socket = useWebSocket(handleWebSocketMessage);
 
     useEffect(() => {
         if (!walletAddress) {
@@ -60,24 +62,6 @@ const DashboardPage = () => {
             getUserInfo();
         }
     }, [walletAddress]);
-
-    useEffect(() => {
-        if (walletAddress && !socket) {
-            const WEBSOCKET_URL = process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws');
-            const newSocket = new WebSocket(WEBSOCKET_URL);
-            newSocket.onopen = () => {
-                console.log('Connected to WebSocket');
-            };
-            newSocket.onmessage = (event) => {
-                console.log('Received message in DashboardPage:', event.data);
-                handleWebSocketMessage(event.data);
-            };
-            newSocket.onclose = () => {
-                console.log('Disconnected from WebSocket');
-            };
-            setSocket(newSocket);
-        }
-    }, [walletAddress, socket]);
 
     const playGame = async () => {
         try {
