@@ -12,7 +12,6 @@ const GamePendingPage = () => {
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
-    const [socket, setSocket] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [contractInstance, setContractInstance] = useState(null);
@@ -21,6 +20,9 @@ const GamePendingPage = () => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const navigate = useNavigate();
     const web3 = new Web3(provider);
+
+    // Use the useWebSocket hook    
+    const socket = useWebSocket(handleWebSocketMessage);
 
     const handleWebSocketMessage = (message) => {
         console.log('Received message in GamePendingPage:', message);
@@ -154,23 +156,6 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     }
-
-    useEffect(() => {
-        if (walletAddress && !socket) {
-            const newSocket = new WebSocket(`${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}`);
-            newSocket.onopen = () => {
-                console.log('Connected to WebSocket');
-            };
-            newSocket.onmessage = (event) => {
-                console.log('Received message in GamePendingPage:', event.data);
-                handleWebSocketMessage(event.data);
-            };
-            newSocket.onclose = () => {
-                console.log('Disconnected from WebSocket');
-            };
-            setSocket(newSocket);
-        }
-    }, [walletAddress, socket]);
 
     useEffect(() => {
         if (gameId) {
