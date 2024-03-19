@@ -50,6 +50,7 @@ const GamePendingPage = () => {
                 console.log('Game is ready. Navigating to game page...');
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
+                setLoading(false);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
