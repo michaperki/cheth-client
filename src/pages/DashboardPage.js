@@ -79,6 +79,8 @@ const DashboardPage = () => {
                 console.error('User information not available.');
                 return;
             }
+
+            console.log('Playing game for user:', userInfo.user_id);
     
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/playGame`, {
                 method: 'POST',
@@ -103,6 +105,7 @@ const DashboardPage = () => {
         <div>
             <h1>Dashboard</h1>
             <p>Welcome, {userInfo?.username}</p>
+            {console.log('userInfo', userInfo)}
             <button onClick={playGame}>Play Game</button>
 
         </div>
