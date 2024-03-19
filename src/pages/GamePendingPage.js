@@ -6,6 +6,7 @@ import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
+import { use } from 'chai';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -13,11 +14,18 @@ const GamePendingPage = () => {
     const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
     const [socket, setSocket] = useState(null);
+    const [contractInstance, setContractInstance] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
-    const contractInstance = useContract(Chess, gameInfo?.contract_address);
+    useEffect(() => {
+        if (gameInfo) {
+            const contractInstance = useContract(web3, Chess, gameInfo.contract_address);
+            setContractInstance(contractInstance);
+        }
+    }, [gameInfo]);
+
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -62,6 +70,7 @@ const GamePendingPage = () => {
                     throw new Error('Failed to fetch game information');
                 }
                 const gameData = await response.json();
+                console.log('Game data:', gameData);
                 setGameInfo(gameData);
     
                 if (gameData && gameData.game_state === 2) {
