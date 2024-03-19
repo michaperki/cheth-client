@@ -123,7 +123,6 @@ const GamePendingPage = () => {
         try {
             await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
