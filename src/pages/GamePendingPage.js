@@ -18,7 +18,7 @@ const GamePendingPage = () => {
     const [contractInstance, setContractInstance] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
-    const [contractBalance, setContractBalance] = useState(0);
+    const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
@@ -120,22 +120,6 @@ const GamePendingPage = () => {
         }
     }, [contractInstance]);
 
-    useEffect(() => {
-        const fetchContractBalance = async () => {
-            try {
-                const balance = await web3.eth.getBalance(contractAddress);
-                console.log('Contract balance:', balance);
-                setContractBalance(balance);
-            } catch (error) {
-                console.error('Error fetching contract balance:', error);
-            }
-        };
-
-        if (contractAddress) {
-            fetchContractBalance();
-        }
-    }, [contractAddress]);            
-
     const joinGame = async () => {
         try {
             if (!connected) {
@@ -194,24 +178,37 @@ const GamePendingPage = () => {
         }
     }, [gameId]);
 
+    useEffect(() => {
+        const fetchContractBalance = async () => {
+            try {
+                if (contractInstance) {
+                    const balance = await web3.eth.getBalance(contractAddress);
+                    console.log('Contract balance:', balance);
+                    setContractBalance(balance);
+                }
+            } catch (error) {
+                console.error('Error fetching contract balance:', error);
+            }
+        };
+
+        if (contractAddress) {
+            fetchContractBalance();
+        }
+    }, [contractAddress, contractInstance]); // Update contract balance when contract address or instance changes
+
     return (
         <div>
             <h1>Game Pending</h1>
-            {/* Loading indicator */}
             {loading && <p>Loading...</p>}
-            {/* Display game info when available */}
             {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <p>Owner: {ownerAddress}</p>
-                    <p>Contract balance: {contractBalance}</p>
-                    {/* Button to join the game */}
+                    <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p> {/* Display contract balance */}
                     <button onClick={joinGame}>Join Game</button>
-                    {/* Button to cancel the game */}
                     <button onClick={cancelGame}>Cancel Game</button>
                 </div>
             )}
-            {/* Display transaction hash when game is in progress */}
             {gameInfo && gameInfo.state === 3 && (
                 <div>
                     <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
