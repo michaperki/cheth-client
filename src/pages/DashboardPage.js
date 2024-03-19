@@ -14,11 +14,17 @@ const DashboardPage = () => {
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const web3 = new Web3(provider);
 
+    // handleWebSocketMessage function in DashboardPage.js
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
 
+        if (messageData.type === "START_GAME") { // Adjusted to match the message type sent from the backend
+            console.log("Game started. Navigating to game pending page...");
+            const gameId = messageData.gameId; // Extract gameId from the message
+            navigate(`/game-pending/${gameId}`); // Navigate to the game pending page with gameId
+        }
     };
 
     useEffect(() => {
