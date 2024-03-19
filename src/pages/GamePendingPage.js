@@ -19,14 +19,6 @@ const GamePendingPage = () => {
 
     const contractInstance = useContract(Chess, gameInfo?.contract_address);
 
-    const handleWebSocketMessage = (message) => {
-        console.log('Received message in DashboardPage:', message);
-        const messageData = JSON.parse(message);
-        if (messageData.type === 'GAME_READY') {
-            console.log('Game is ready. Navigating to game page...');
-        }
-    };
-
     useEffect(() => {
         const getUserInfo = async () => {
             try {
@@ -114,9 +106,17 @@ const GamePendingPage = () => {
         }
     };
 
-    const handleSignOut = () => {
-        navigate('/');
-    };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (gameInfo && gameInfo.game_state === 2) {
+                clearInterval(interval); // Stop fetching game info when game state is 2
+                // Execute logic when game state is 2, e.g., create contract, join game, etc.
+                console.log('Game is ready. Navigating to game page...');
+                console.log('Game contract address:', gameInfo.contract_address);
+            }
+        }, 5000); // Fetch game info every 5 seconds
+        return () => clearInterval(interval); // Cleanup on component unmount
+    }, [gameInfo]);
 
     return (
         <div>
@@ -138,7 +138,6 @@ const GamePendingPage = () => {
                     )}
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
-                    <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
                 <p>User not found. Please sign in from the landing page.</p>
