@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
 import DashboardPage from './pages/DashboardPage';
-import GamePendingPage from './pages/GamePendingPage'; // Correct import statement1
+import GamePendingPage from './pages/GamePendingPage'; // Correct import statement
+import './App.css';
 
 function App() {
   return (
