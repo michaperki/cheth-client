@@ -108,6 +108,8 @@ const GamePendingPage = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
+            console.log('Fetching game info...');
+            console.log("gameInfo", gameInfo)
             if (gameInfo && gameInfo.game_state === 2) {
                 clearInterval(interval); // Stop fetching game info when game state is 2
                 // Execute logic when game state is 2, e.g., create contract, join game, etc.
