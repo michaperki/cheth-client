@@ -17,6 +17,7 @@ const GamePendingPage = () => {
     const [loading, setLoading] = useState(true);
     const [contractInstance, setContractInstance] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
+    const [ownerAddress, setOwnerAddress] = useState(null);
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
