@@ -20,7 +20,7 @@ const GamePendingPage = () => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const navigate = useNavigate();
     const web3 = new Web3(provider);
-    
+
     // Dynamically construct WebSocket URL based on environment
     const webSocketUrl = `${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}/websocket`;
     
@@ -41,7 +41,7 @@ const GamePendingPage = () => {
     }
 
     // Use the useWebSocket hook to connect to the WebSocket server
-    const socket = useWebSocket(handleWebSocketMessage);
+    const socket = useWebSocket(webSocketUrl, handleWebSocketMessage);
 
 
     const getGameInfo = async () => {
