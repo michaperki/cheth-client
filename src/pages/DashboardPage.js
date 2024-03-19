@@ -17,9 +17,8 @@ const DashboardPage = () => {
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
         const messageData = JSON.parse(message);
-        if (messageData.type === 'START_GAME') {
-            setGameStarted(true);
-        }
+        console.log('messageData', messageData);
+
     };
 
     useEffect(() => {
@@ -92,7 +91,7 @@ const DashboardPage = () => {
     return (
         <div>
             <h1>Dashboard</h1>
-            {console.log('userInfo', userInfo)}
+            {console.log('userInfo', userInfo)}z
             <p>Welcome, {userInfo?.lichessHandle}</p>
             <button onClick={playGame}>Play Game</button>
 
