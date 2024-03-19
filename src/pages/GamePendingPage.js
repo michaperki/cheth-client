@@ -1,56 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import useWebSocket from '../hooks/useWebsocket';
-import ChessGame from '../abis/ChessGame.json';
+import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
 
-const handleWebSocketMessage = (message) => {
-    console.log('Received message in GamePendingPage:', message);
-    const messageData = JSON.parse(message);
-    if (messageData.type === 'START_GAME') {
-        // Navigate to the game page when the game has started
-        console.log('Game has started - navigate to game page');
-    }
-};
-
 const GamePendingPage = () => {
-    const { gameId } = useParams();
-    const [gameInfo, setGameInfo] = useState(null);
+    const gameId = '123'; // Replace with actual game ID
+    const [userInfo, setUserInfo] = useState(null);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [socket, setSocket] = useState(null);
+    const navigate = useNavigate();
     const { walletAddress, connectAccount } = useWallet();
-    const socket = useWebSocket(handleWebSocketMessage);
-    const { sdk, connected, connecting, provider, chainId } = useSDK(); // Get MetaMask SDK values
-    console.log("address", walletAddress)
-    console.log("connected", connected)
-    console.log("connecting", connecting)
-    console.log("provider", provider)
-    console.log("chainId", chainId)
-    console.log("ChessGame.networks[chainId]?.address", ChessGame.networks[chainId]?.address)
-    console.log("ChessGame.abi", ChessGame.abi)
-    const { contractInstance } = useContract(ChessGame.networks[chainId]?.address, ChessGame.abi);
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { contractInstance } = useContract(Chess.networks[chainId]?.address, Chess.abi);
     const web3 = new Web3(provider);
+    // Add state variables for started and finished
+    const [started, setStarted] = useState(false);
+    const [finished, setFinished] = useState(false);
 
-    console.log('contractInstance:', contractInstance);
-
-    useEffect(() => {
-        // Fetch game information based on gameId
-        const fetchGameInfo = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getGameInfo?gameId=${gameId}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch game information');
-                }
-                const data = await response.json();
-                setGameInfo(data);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-
-        fetchGameInfo();
-    }, [gameId]);
+    const handleWebSocketMessage = (message) => {
+        console.log('Received message in DashboardPage:', message);
+        const messageData = JSON.parse(message);
+        if (messageData.type === 'START_GAME') {
+            setGameStarted(true);
+        }
+    };
 
     useEffect(() => {
         if (!walletAddress) {
@@ -58,54 +35,138 @@ const GamePendingPage = () => {
         }
     }, [walletAddress, connectAccount]);
 
-    const fundGame = async () => {
-        console.log("fundGame")
-        if (!contractInstance) {
-            console.error('Contract instance not available');
-            return;
-        }
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUserInfo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ walletAddress: walletAddress })
+                });
 
-        if (!walletAddress) {
-            console.error('Wallet address not available');
-            return;
-        }
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
 
+                const data = await response.json();
+                setUserInfo(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        if (walletAddress) {
+            getUserInfo();
+        }
+    }, [walletAddress]);
+
+    useEffect(() => {
+        if (walletAddress && !socket) {
+            const WEBSOCKET_URL = process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws');
+            const newSocket = new WebSocket(WEBSOCKET_URL);
+            newSocket.onopen = () => {
+                console.log('Connected to WebSocket');
+            };
+            newSocket.onmessage = (event) => {
+                console.log('Received message in DashboardPage:', event.data);
+                handleWebSocketMessage(event.data);
+            };
+            newSocket.onclose = () => {
+                console.log('Disconnected from WebSocket');
+            };
+            setSocket(newSocket);
+        }
+    }, [walletAddress, socket]);
+
+
+    useEffect(() => {
+        const getGameStatus = async () => {
+            try {
+                // Call the appropriate function from the contract to fetch the values of started and finished
+                const gameStarted = await contractInstance.methods.started().call();
+                const gameFinished = await contractInstance.methods.finished().call();
+
+                // Update the state variables with the fetched values
+                setStarted(gameStarted);
+                setFinished(gameFinished);
+            } catch (error) {
+                console.error('Error fetching game status:', error);
+            }
+        };
+
+        if (contractInstance) {
+            getGameStatus();
+        }
+    }, [contractInstance]); // Fetch game status whenever the contract instance changes
+
+
+    const joinGame = async () => {
         try {
-            const entryFee = Web3.utils.toWei('0.001', 'ether');
-            console.log("entryFee", entryFee)
+            if (!connected) {
+                await sdk.requestPermissions({ eth_accounts: {} });
+            }
 
-            const nonce = await web3.eth.getTransactionCount(walletAddress);
-            console.log("Current nonce:", nonce);
-            
-            // Use the retrieved nonce in the transaction
-            await contractInstance.methods.fundGame(gameId).send({
+            const entryFeeInWei = await contractInstance.methods.getEntryFee().call(); // Fetch entry fee from the contract
+
+            await contractInstance.methods.joinGame().send({
                 from: walletAddress,
-                value: entryFee,
-                nonce,
-                gas: 30000000
+                value: entryFeeInWei,
+                gas: 3000000
             });
+
+            // Fetch game data or handle response from the server
         } catch (error) {
-            console.error('Error funding game:', error);
+            console.error('Error:', error);
+        }
+    };
+
+    const cancelGame = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
+                method: 'POST',
+                mode: 'no-cors', // Set request mode to 'no-cors'
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check if the response type is 'opaque'
+            if (response.type === 'opaque') {
+                console.log('Request made without CORS headers');
+                // Handle success or failure based on your requirements
+            } else {
+                // Handle other response types if needed
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
     }
 
+    const handleSignOut = () => {
+        navigate('/');
+    };
 
     return (
         <div>
-            {gameInfo ? (
+            <h1>Game Pending</h1>
+            {userInfo ? (
                 <div>
-                    <h1>Game Pending</h1>
-                    <p>Game ID: {gameInfo.game_id}</p>
-                    <p>player1_id: {gameInfo.player1_id}</p>
-                    <p>player2_id: {gameInfo.player2_id}</p>
-                    <p>state: {gameInfo.state}</p>
-
-
-                    <p>Join the game by sending the required entry fee to the contract address.</p>
-                    <button onClick={fundGame}>Fund Game</button>
+                    <p>Welcome back!</p>
+                    <p>Username: {userInfo.username}</p>
+                    <p>Rating: {userInfo.rating}</p>
+                    <p>Wallet Address: {userInfo.wallet_address}</p>
+                    <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
+                    <p>Game Started: {started ? 'Yes' : 'No'}</p>
+                    <p>Game Finished: {finished ? 'Yes' : 'No'}</p>
+                    <button onClick={joinGame}>Join Game</button>
+                    <button onClick={cancelGame}>Cancel Game</button>
+                    <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             ) : (
-                <p>Loading game information...</p>
+                <p>User not found. Please sign in from the landing page.</p>
             )}
         </div>
     );
