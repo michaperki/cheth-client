@@ -1,16 +1,10 @@
-// hooks/useWebSocket.js
 import { useEffect, useState } from 'react';
-import useWallet from './useWallet';
 
-const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
-const WEBSOCKET_URL = SERVER_BASE_URL.replace(/^http/, 'ws');
-
-const useWebSocket = (handleWebSocketMessage) => {
+const useWebSocket = (webSocketUrl, handleMessage) => {
   const [socket, setSocket] = useState(null);
-  const { walletAddress } = useWallet();
 
   useEffect(() => {
-    const ws = new WebSocket(WEBSOCKET_URL);
+    const ws = new WebSocket(webSocketUrl);
     setSocket(ws);
 
     ws.onopen = () => {
@@ -18,8 +12,8 @@ const useWebSocket = (handleWebSocketMessage) => {
     };
 
     ws.onmessage = (event) => {
-      console.log('Received message in useWebsocket hook:', event.data);
-      handleWebSocketMessage(event.data);
+      console.log('Received message in useWebSocket hook:', event.data);
+      handleMessage(event.data);
     };
 
     ws.onclose = () => {
@@ -29,7 +23,7 @@ const useWebSocket = (handleWebSocketMessage) => {
     return () => {
       ws.close();
     };
-  }, [WEBSOCKET_URL]);
+  }, [webSocketUrl, handleMessage]);
 
   return socket;
 };

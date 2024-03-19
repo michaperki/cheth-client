@@ -19,12 +19,12 @@ const GamePendingPage = () => {
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const navigate = useNavigate();
+    const web3 = new Web3(provider);
+    
     // Dynamically construct WebSocket URL based on environment
     const webSocketUrl = `${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}/websocket`;
-    // Initialize WebSocket connection
-    const socket = useWebSocket(webSocketUrl, handleWebSocketMessage);
-    const web3 = new Web3(provider);
-
+    
+    // Declare handleWebSocketMessage before usage
     const handleWebSocketMessage = (message) => {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
@@ -39,6 +39,10 @@ const GamePendingPage = () => {
             setContractInstance(contract);
         }
     }
+
+    // Use the useWebSocket hook to connect to the WebSocket server
+    const socket = useWebSocket(handleWebSocketMessage);
+
 
     const getGameInfo = async () => {
         try {
