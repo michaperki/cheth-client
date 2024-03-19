@@ -103,6 +103,9 @@ const GamePendingPage = () => {
         const fetchOwner = async () => {
             try {
                 const owner = await contractInstance.methods.getOwner().call();
+                // why am I getting a provider error here?
+                // answer: because the contractInstance is not available yet
+
                 console.log('Owner:', owner);
                 // Update state to store the owner's address
                 setOwnerAddress(owner);
@@ -111,7 +114,7 @@ const GamePendingPage = () => {
             }
         };
 
-        if (contractInstance) {
+        if (contractInstance && contractInstance.methods.getOwner) {
             fetchOwner();
         }
     }, [contractInstance]);
