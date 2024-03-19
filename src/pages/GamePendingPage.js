@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
+import useWebSocket from '../hooks/useWebsocket';
 import Chess from '../abis/Chess.json';
-import { useSDK } from "@metamask/sdk-react";
+import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
     const { walletAddress, connectAccount } = useWallet();
-    const { sdk, connected } = useSDK();
-    const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
+    const [socket, setSocket] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
+    const navigate = useNavigate();
+    const web3 = new Web3(provider);
+
     const contractInstance = useContract(Chess, gameInfo?.contract_address);
-    const web3 = new Web3(window.ethereum);
+
+    const handleWebSocketMessage = (message) => {
+        console.log('Received message in DashboardPage:', message);
+        const messageData = JSON.parse(message);
+        if (messageData.type === 'GAME_READY') {
+            console.log('Game is ready. Navigating to game page...');
+        }
+    };
 
     useEffect(() => {
         if (!walletAddress) {
@@ -55,7 +66,7 @@ const GamePendingPage = () => {
                 value: entryFeeInWei,
                 gas: 3000000
             });
-            setGameInfo(prev => ({ ...prev, transaction_hash: tx.transaction_hash }));
+            setGameInfo(prev => ({ ...prev, transactionHash: tx.transactionHash }));
         } catch (error) {
             console.error('Error:', error);
         }
