@@ -148,7 +148,7 @@ const GamePendingPage = () => {
         const fetchOwnerAddress = async () => {
             try {
                 if (contractInstance) {
-                    const owner = await contractInstance.methods.owner().call();
+                    const owner = await contractInstance.methods.getOwner().call();
                     console.log('Owner:', owner);
                     setOwnerAddress(owner);
                 }
