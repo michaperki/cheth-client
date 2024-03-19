@@ -92,6 +92,7 @@ const DashboardPage = () => {
     return (
         <div>
             <h1>Dashboard</h1>
+            {console.log('userInfo', userInfo)}
             <p>Welcome, {userInfo?.lichessHandle}</p>
             <button onClick={playGame}>Play Game</button>
 
