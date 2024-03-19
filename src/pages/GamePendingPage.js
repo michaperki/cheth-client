@@ -153,7 +153,7 @@ const GamePendingPage = () => {
         <div>
             <h1>Game Pending</h1>
             {loading && <p>Loading...</p>}
-            {gameInfo && gameInfo.state === 2 && (
+            {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <button onClick={joinGame}>Join Game</button>
