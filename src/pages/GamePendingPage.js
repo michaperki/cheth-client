@@ -77,7 +77,7 @@ const GamePendingPage = () => {
                 console.log('Game data:', gameData);
                 setGameInfo(gameData);
     
-                if (gameData && gameData.game_state === 2) {
+                if (gameData && parseInt(gameData.game_state) === 2) {
                     clearInterval(interval); // Stop fetching game info when game state is 2
                     console.log('Game is ready. Navigating to game page...');
                     console.log('Game contract address:', gameData.contract_address);
