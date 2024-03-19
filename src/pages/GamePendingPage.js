@@ -40,9 +40,8 @@ const GamePendingPage = () => {
         }
     }
 
-    // Use the useWebSocket hook to connect to the WebSocket server
-    const socket = useWebSocket(webSocketUrl, handleWebSocketMessage);
-
+    // Initialize WebSocket connection
+    const { socket } = useWebSocket(webSocketUrl, handleWebSocketMessage);
 
     const getGameInfo = async () => {
         try {
