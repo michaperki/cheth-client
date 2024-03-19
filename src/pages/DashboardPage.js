@@ -75,14 +75,25 @@ const DashboardPage = () => {
 
     const playGame = async () => {
         try {
+            if (!userInfo) {
+                console.error('User information not available.');
+                return;
+            }
+    
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/playGame`, {
                 method: 'POST',
-                mode: 'no-cors', // Set request mode to 'no-cors'
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userInfo.user_id })
+                body: JSON.stringify({ userId: userInfo.user_id }) // Assuming userId is correctly extracted from userInfo
             });
+    
+            if (!response.ok) {
+                throw new Error('Failed to play the game.');
+            }
+    
+            // Handle success response
         } catch (error) {
             console.error('Error:', error);
         }
