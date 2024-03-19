@@ -35,6 +35,11 @@ const GamePendingPage = () => {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
+
+        if (messageData.type === "GAME_PRIMED") {
+            console.log("Game is primed. Navigating to game page...");
+            navigate(`/game/${gameId}`);
+        }
     }
 
     // Use the useWebSocket hook    
