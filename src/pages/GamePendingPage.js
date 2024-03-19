@@ -18,7 +18,6 @@ const GamePendingPage = () => {
     const [contractInstance, setContractInstance] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
-    const [contractBalance, setContractBalance] = useState(null);
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
@@ -117,23 +116,6 @@ const GamePendingPage = () => {
         }
     }, [contractInstance]);
 
-    useEffect(() => {
-        const fetchContractBalance = async () => {
-            try {
-                const balance = await web3.eth.getBalance(contractAddress);
-                console.log('Contract balance:', balance);
-                // Update state to store the contract's balance
-                setContractBalance(balance);
-            } catch (error) {
-                console.error('Error fetching contract balance:', error);
-            }
-        };
-        
-        if (contractAddress) {
-            fetchContractBalance();
-        }
-    }, [contractAddress]);
-
     const joinGame = async () => {
         try {
             if (!connected) {
@@ -200,8 +182,6 @@ const GamePendingPage = () => {
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <p>Owner: {ownerAddress}</p>
-                    {contractBalance && <p>Contract balance unadjusted: {contractBalance} wei</p>}
-                    {contractBalance && <p>Contract balance in Eth: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>}
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
                 </div>
