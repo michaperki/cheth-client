@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
 import DashboardPage from './pages/DashboardPage';
-import GamePendingPage from './pages/GamePendingPage'; // Correct import statement
+import GamePendingPage from './pages/GamePendingPage';
+import GamePage from './pages/GamePage';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} /> 
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/game-pending/:gameId" element={<GamePendingPage />} /> 
+        <Route path="/game/:gameId" element={<GamePage />} />
       </Routes>
     </Router>
   );
