@@ -187,10 +187,16 @@ const GamePendingPage = () => {
             {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
-                    <p>Owner: {ownerAddress}</p>
-                    <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p> {/* Display contract balance */}
-                    <button onClick={joinGame}>Join Game</button>
-                    <button onClick={cancelGame}>Cancel Game</button>
+                    {ownerAddress !== null ? (
+                        <div>
+                            <p>Owner: {ownerAddress}</p>
+                            <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
+                            <button onClick={joinGame}>Join Game</button>
+                            <button onClick={cancelGame}>Cancel Game</button>
+                        </div>
+                    ) : (
+                        <p>Loading owner address...</p>
+                    )}
                 </div>
             )}
             {gameInfo && gameInfo.state === 3 && (
