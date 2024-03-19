@@ -66,7 +66,7 @@ const GamePendingPage = () => {
                 console.log('Game info response:', response);
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
-                setGameInfo(gameData);
+                //setGameInfo(gameData);
     
                 if (gameData && gameData.game_state === 2) {
                     clearInterval(interval); // Stop fetching game info when game state is 2
