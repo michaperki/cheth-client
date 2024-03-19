@@ -6,19 +6,29 @@ import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
-import { use } from 'chai';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
-    const { sdk, connected, connectAccount } = useSDK();
-    const { walletAddress } = useWallet();
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
+    const [socket, setSocket] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
     const navigate = useNavigate();
-    const web3 = new Web3(window.ethereum); // Assuming MetaMask is installed and enabled
+    const web3 = new Web3(provider);
+    const contractInstance = useContract(Chess, gameInfo?.contractAddress);
 
-    // Initialize contract instance
-    const contractInstance = useContract(Chess.abi, gameInfo?.contractAddress);
+    const handleWebSocketMessage = (message) => {
+        console.log('Received message in GamePendingPage:', message);
+        const messageData = JSON.parse(message);
+        console.log('messageData', messageData);
+
+        if (messageData.type === "START_GAME") {
+            console.log("Game started. Navigating to game page...");
+            navigate(`/game/${gameId}`);
+        }
+    }
+    
 
 
     useEffect(() => {
@@ -63,7 +73,6 @@ const GamePendingPage = () => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
                 }
-                console.log('Game info response:', response);
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
                 setGameInfo(gameData);
