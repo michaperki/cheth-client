@@ -31,10 +31,10 @@ const GamePendingPage = () => {
             getGameInfo();
             // initialize the contract
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
-            setContractInstance(contract);      
+            setContractInstance(contract);
         }
     }
-    
+
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
@@ -98,6 +98,23 @@ const GamePendingPage = () => {
         }
     }, [contractAddress]);
 
+    useEffect(() => {
+        const fetchOwner = async () => {
+            try {
+                const owner = await contractInstance.methods.getOwner().call();
+                console.log('Owner:', owner);
+                // Update state to store the owner's address
+                setOwnerAddress(owner);
+            } catch (error) {
+                console.error('Error fetching owner:', error);
+            }
+        };
+
+        if (contractInstance) {
+            fetchOwner();
+        }
+    }, [contractInstance]);
+
     const joinGame = async () => {
         try {
             if (!connected) {
@@ -107,7 +124,7 @@ const GamePendingPage = () => {
                 throw new Error('Contract instance not available');
             }
 
-            const entryFeeInWei = await contractInstance.methods.getEntryFee().call(); 
+            const entryFeeInWei = await contractInstance.methods.getEntryFee().call();
             const tx = await contractInstance.methods.joinGame().send({
                 from: walletAddress,
                 value: entryFeeInWei,
@@ -163,6 +180,7 @@ const GamePendingPage = () => {
             {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
+                    <p>Owner: {ownerAddress}</p>
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
                 </div>
