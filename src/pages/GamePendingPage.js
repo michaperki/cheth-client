@@ -117,7 +117,7 @@ const GamePendingPage = () => {
         };
     
         fetchOwner();
-    }, [contractInstance]);
+    }, [contractInstance, contractAddress]);
 
     const joinGame = async () => {
         try {

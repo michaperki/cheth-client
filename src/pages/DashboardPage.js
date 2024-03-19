@@ -94,7 +94,6 @@ const DashboardPage = () => {
         <div>
             <h1>Dashboard</h1>
             <p>Welcome, {userInfo?.username}</p>
-            {console.log('userInfo', userInfo)}
             <button onClick={playGame}>Play Game</button>
 
         </div>
