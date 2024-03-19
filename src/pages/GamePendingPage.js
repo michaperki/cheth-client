@@ -90,6 +90,13 @@ const GamePendingPage = () => {
             connectAccount();
         }
     }, [walletAddress, connectAccount]);
+    
+    useEffect(() => {
+        if (contractAddress) {
+            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
+            setContractInstance(contract);
+        }
+    }, [contractAddress]);
 
     const joinGame = async () => {
         try {
