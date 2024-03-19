@@ -27,11 +27,11 @@ const GamePendingPage = () => {
 
         if (messageData.type === "CONTRACT_READY") {
             console.log("Contract is ready..");
+            setLoading(false);
             getGameInfo();
             // initialize the contract
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);      
-            setLoading(false);
         }
     }
     
@@ -77,7 +77,7 @@ const GamePendingPage = () => {
             } catch (error) {
                 console.error('Error:', error);
             }
-        };
+        }
 
         if (walletAddress) {
             getUserInfo();
@@ -89,7 +89,6 @@ const GamePendingPage = () => {
             connectAccount();
         }
     }, [walletAddress, connectAccount]);
-
 
     const joinGame = async () => {
         try {
@@ -110,7 +109,7 @@ const GamePendingPage = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    };
+    }
 
     const cancelGame = async () => {
         try {
@@ -124,7 +123,7 @@ const GamePendingPage = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    };
+    }
 
     useEffect(() => {
         if (walletAddress && !socket) {
@@ -147,8 +146,7 @@ const GamePendingPage = () => {
         if (gameId) {
             getGameInfo();
         }
-    }
-    , [gameId]);
+    }, [gameId]);
 
     return (
         <div>
@@ -168,7 +166,6 @@ const GamePendingPage = () => {
             )}
         </div>
     );
-
 }
 
 export default GamePendingPage;
