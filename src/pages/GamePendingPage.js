@@ -126,41 +126,49 @@ const GamePendingPage = () => {
         }
     };
 
+    useEffect(() => {
+        if (walletAddress && !socket) {
+            const newSocket = new WebSocket(`${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}`);
+            newSocket.onopen = () => {
+                console.log('Connected to WebSocket');
+            };
+            newSocket.onmessage = (event) => {
+                console.log('Received message in GamePendingPage:', event.data);
+                handleWebSocketMessage(event.data);
+            };
+            newSocket.onclose = () => {
+                console.log('Disconnected from WebSocket');
+            };
+            setSocket(newSocket);
+        }
+    }, [walletAddress, socket]);
+
+    useEffect(() => {
+        if (gameId) {
+            getGameInfo();
+        }
+    }
+    , [gameId]);
+
     return (
         <div>
             <h1>Game Pending</h1>
-            {userInfo ? (
+            {loading && <p>Loading...</p>}
+            {gameInfo && gameInfo.state === 2 && (
                 <div>
-                    <p>Welcome back!</p>
-                    <p>Username: {userInfo.username}</p>
-                    <p>Rating: {userInfo.rating}</p>
-                    <p>Wallet Address: {userInfo.wallet_address}</p>
-                    <p>Dark Mode: {userInfo.dark_mode ? 'Enabled' : 'Disabled'}</p>
-                    {gameInfo && (
-                        <>
-                            <p>Game Started: {gameInfo.started ? 'Yes' : 'No'}</p>
-                            <p>Game Finished: {gameInfo.finished ? 'Yes' : 'No'}</p>
-
-                            {loading ? (
-                                <p>Loading...</p>
-                            ) : (
-                                <p>Game Contract Address: {gameInfo.contract_address}</p>
-                            )}
-
-                            {gameInfo.transactionHash && (
-                                <p>Transaction Hash: {gameInfo.transactionHash}</p>
-                            )}
-
-                        </>
-                    )}
+                    <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
                 </div>
-            ) : (
-                <p>User not found. Please sign in from the landing page.</p>
+            )}
+            {gameInfo && gameInfo.state === 3 && (
+                <div>
+                    <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
+                </div>
             )}
         </div>
     );
-};
+
+}
 
 export default GamePendingPage;
