@@ -2,19 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import useWebSocket from '../hooks/useWebsocket';
+import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
+import Web3 from 'web3';
 
 
 const DashboardPage = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [socket, setSocket] = useState(null);
     const navigate = useNavigate();
-    const { walletAddress } = useWallet();
+    const { walletAddress, connectAccount } = useWallet();
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const web3 = new Web3(provider);
 
     const handleWebSocketMessage = (message) => {
         console.log('Received message in DashboardPage:', message);
         const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
+        if (messageData.type === 'START_GAME') {
+            setGameStarted(true);
+        }
     };
+
+    useEffect(() => {
+        if (!walletAddress) {
+            connectAccount();
+        }
+    }, [walletAddress, connectAccount]);
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -82,7 +94,7 @@ const DashboardPage = () => {
             <h1>Dashboard</h1>
             <p>Welcome, {userInfo?.lichessHandle}</p>
             <button onClick={playGame}>Play Game</button>
-            
+
         </div>
     );
 };
