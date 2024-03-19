@@ -61,8 +61,6 @@ const GamePendingPage = () => {
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
-                } else {
-                    console.log('Game info response:', response);
                 }
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
