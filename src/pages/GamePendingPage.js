@@ -200,7 +200,8 @@ const GamePendingPage = () => {
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <p>Owner: {ownerAddress}</p>
-                    <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
+                    {contractBalance && <p>Contract balance unadjusted: {contractBalance} wei</p>}
+                    {contractBalance && <p>Contract balance in Eth: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>}
                     <button onClick={joinGame}>Join Game</button>
                     <button onClick={cancelGame}>Cancel Game</button>
                 </div>
