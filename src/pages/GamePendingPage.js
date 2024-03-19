@@ -54,23 +54,28 @@ const GamePendingPage = () => {
     }, [walletAddress, connectAccount]);
 
     useEffect(() => {
-        const fetchGameInfo = async () => {
+        const interval = setInterval(async () => {
             try {
+                console.log('Fetching game info...');
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
                 }
                 const gameData = await response.json();
                 setGameInfo(gameData);
+    
+                if (gameData && gameData.game_state === 2) {
+                    clearInterval(interval); // Stop fetching game info when game state is 2
+                    console.log('Game is ready. Navigating to game page...');
+                    console.log('Game contract address:', gameData.contract_address);
+                }
             } catch (error) {
                 console.error('Error fetching game status:', error);
             }
-        };
+        }, 5000); // Fetch game info every 5 seconds
     
-        if (gameId) {
-            fetchGameInfo();
-        }
-    }, [gameId]); 
+        return () => clearInterval(interval); // Cleanup on component unmount
+    }, [gameId]);
 
     const joinGame = async () => {
         try {
@@ -105,20 +110,6 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     };
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            console.log('Fetching game info...');
-            console.log("gameInfo", gameInfo)
-            if (gameInfo && gameInfo.game_state === 2) {
-                clearInterval(interval); // Stop fetching game info when game state is 2
-                // Execute logic when game state is 2, e.g., create contract, join game, etc.
-                console.log('Game is ready. Navigating to game page...');
-                console.log('Game contract address:', gameInfo.contract_address);
-            }
-        }, 5000); // Fetch game info every 5 seconds
-        return () => clearInterval(interval); // Cleanup on component unmount
-    }, [gameInfo]);
 
     return (
         <div>
