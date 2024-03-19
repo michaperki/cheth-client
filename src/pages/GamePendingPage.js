@@ -90,7 +90,7 @@ const GamePendingPage = () => {
             connectAccount();
         }
     }, [walletAddress, connectAccount]);
-    
+
     useEffect(() => {
         if (contractAddress) {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
@@ -126,7 +126,8 @@ const GamePendingPage = () => {
                 mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ gameId })
             });
         } catch (error) {
             console.error('Error:', error);
