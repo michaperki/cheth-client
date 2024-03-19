@@ -106,7 +106,7 @@ const GamePendingPage = () => {
     useEffect(() => {
         const fetchOwner = async () => {
             try {
-                if (contractInstance && contractAddress && contractInstance.methods.getOwner) {
+                if (contractInstance && contractAddress && contractInstance.methods.getOwner && provider) {
                     const owner = await contractInstance.methods.getOwner().call();
                     console.log('Owner:', owner);
                     setOwnerAddress(owner);
@@ -116,8 +116,10 @@ const GamePendingPage = () => {
             }
         };
     
-        fetchOwner();
-    }, [contractInstance, contractAddress]);    
+        if (contractInstance && contractAddress && provider) {
+            fetchOwner();
+        }
+    }, [contractInstance, contractAddress, provider]);
 
     const joinGame = async () => {
         try {
@@ -163,7 +165,7 @@ const GamePendingPage = () => {
     useEffect(() => {
         const fetchContractBalance = async () => {
             try {
-                if (contractInstance) {
+                if (contractInstance && contractAddress && provider) {
                     const balance = await web3.eth.getBalance(contractAddress);
                     console.log('Contract balance:', balance);
                     setContractBalance(balance);
@@ -172,12 +174,12 @@ const GamePendingPage = () => {
                 console.error('Error fetching contract balance:', error);
             }
         };
-
-        if (contractAddress) {
+    
+        if (contractAddress && provider) {
             fetchContractBalance();
         }
-    }, [contractAddress, contractInstance]); // Update contract balance when contract address or instance changes
-
+    }, [contractAddress, contractInstance, provider]);
+    
     return (
         <div>
             <h1>Game Pending</h1>
