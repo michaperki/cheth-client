@@ -81,7 +81,7 @@ const DashboardPage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userInfo.userId })
+                body: JSON.stringify({ userId: userInfo.user_id })
             });
         } catch (error) {
             console.error('Error:', error);
@@ -91,8 +91,7 @@ const DashboardPage = () => {
     return (
         <div>
             <h1>Dashboard</h1>
-            {console.log('userInfo', userInfo)}z
-            <p>Welcome, {userInfo?.lichessHandle}</p>
+            <p>Welcome, {userInfo?.username}</p>
             <button onClick={playGame}>Play Game</button>
 
         </div>
