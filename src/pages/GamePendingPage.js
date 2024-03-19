@@ -28,6 +28,34 @@ const GamePendingPage = () => {
     };
 
     useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUserInfo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ walletAddress: walletAddress })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                const data = await response.json();
+                setUserInfo(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        if (walletAddress) {
+            getUserInfo();
+        }
+    }, [walletAddress]);
+
+    useEffect(() => {
         if (!walletAddress) {
             connectAccount();
         }
