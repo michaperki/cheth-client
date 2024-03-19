@@ -6,6 +6,7 @@ import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
+import { use } from 'chai';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -62,6 +63,7 @@ const GamePendingPage = () => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
                 }
+                console.log('Game info response:', response);
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
                 setGameInfo(gameData);
