@@ -12,6 +12,7 @@ const GamePendingPage = () => {
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
+    const [socket, setSocket] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [contractInstance, setContractInstance] = useState(null);
@@ -21,10 +22,6 @@ const GamePendingPage = () => {
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
-    // Dynamically construct WebSocket URL based on environment
-    const webSocketUrl = `${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}/websocket`;
-    
-    // Declare handleWebSocketMessage before usage
     const handleWebSocketMessage = (message) => {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
@@ -39,9 +36,6 @@ const GamePendingPage = () => {
             setContractInstance(contract);
         }
     }
-
-    // Initialize WebSocket connection
-    const { socket } = useWebSocket(webSocketUrl, handleWebSocketMessage);
 
     const getGameInfo = async () => {
         try {
@@ -160,6 +154,23 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     }
+
+    useEffect(() => {
+        if (walletAddress && !socket) {
+            const newSocket = new WebSocket(`${process.env.REACT_APP_SERVER_BASE_URL.replace(/^http/, 'ws')}`);
+            newSocket.onopen = () => {
+                console.log('Connected to WebSocket');
+            };
+            newSocket.onmessage = (event) => {
+                console.log('Received message in GamePendingPage:', event.data);
+                handleWebSocketMessage(event.data);
+            };
+            newSocket.onclose = () => {
+                console.log('Disconnected from WebSocket');
+            };
+            setSocket(newSocket);
+        }
+    }, [walletAddress, socket]);
 
     useEffect(() => {
         if (gameId) {
