@@ -6,6 +6,7 @@ import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import useContract from '../hooks/useContract';
+import e from 'cors';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -61,11 +62,12 @@ const GamePendingPage = () => {
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch game information');
+                } else {
+                    console.log('Game info response:', response);
                 }
-                console.log('Game info response:', response);
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
-                //setGameInfo(gameData);
+                setGameInfo(gameData);
     
                 if (gameData && gameData.game_state === 2) {
                     clearInterval(interval); // Stop fetching game info when game state is 2
