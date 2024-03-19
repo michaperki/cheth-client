@@ -21,10 +21,8 @@ const GamePendingPage = () => {
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
-    // Use the useWebSocket hook    
-    const socket = useWebSocket(handleWebSocketMessage);
-
-    const handleWebSocketMessage = (message) => {
+    // Function declaration moved above the useWebSocket hook
+    function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
@@ -38,6 +36,9 @@ const GamePendingPage = () => {
             setContractInstance(contract);
         }
     }
+
+    // Use the useWebSocket hook    
+    const socket = useWebSocket(handleWebSocketMessage);
 
     const getGameInfo = async () => {
         try {
