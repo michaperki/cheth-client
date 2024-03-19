@@ -106,21 +106,17 @@ const GamePendingPage = () => {
     useEffect(() => {
         const fetchOwner = async () => {
             try {
-                const owner = await contractInstance.methods.getOwner().call();
-                // why am I getting a provider error here?
-                // answer: because the contractInstance is not available yet
-
-                console.log('Owner:', owner);
-                // Update state to store the owner's address
-                setOwnerAddress(owner);
+                if (contractInstance && contractInstance.methods.getOwner) {
+                    const owner = await contractInstance.methods.getOwner().call();
+                    console.log('Owner:', owner);
+                    setOwnerAddress(owner);
+                }
             } catch (error) {
                 console.error('Error fetching owner:', error);
             }
         };
-
-        if (contractInstance && contractInstance.methods.getOwner) {
-            fetchOwner();
-        }
+    
+        fetchOwner();
     }, [contractInstance]);
 
     const joinGame = async () => {
