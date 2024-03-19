@@ -14,22 +14,47 @@ const GamePendingPage = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [socket, setSocket] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [contractInstance, setContractInstance] = useState(null);
+    const [contractAddress, setContractAddress] = useState(null);
     const navigate = useNavigate();
     const web3 = new Web3(provider);
-    const contractInstance = useContract(Chess, gameInfo?.contractAddress);
 
     const handleWebSocketMessage = (message) => {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
 
-        if (messageData.type === "START_GAME") {
-            console.log("Game started. Navigating to game page...");
-            navigate(`/game/${gameId}`);
+        if (messageData.type === "CONTRACT_READY") {
+            console.log("Contract is ready..");
+            getGameInfo();
+            // initialize the contract
+            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
+            setContractInstance(contract);      
+            setLoading(false);
         }
     }
     
+    const getGameInfo = async () => {
+        try {
+            console.log('Fetching game info...');
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch game information');
+            }
+            const gameData = await response.json();
+            console.log('Game data:', gameData);
+            setGameInfo(gameData);
 
+            if (gameData && parseInt(gameData.state) === 2) {
+                console.log('Game is ready. Navigating to game page...');
+                console.log('Game contract address:', gameData.contract_address);
+                setContractAddress(gameData.contract_address);
+            }
+        } catch (error) {
+            console.error('Error fetching game status:', error);
+        }
+    };
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -65,30 +90,6 @@ const GamePendingPage = () => {
         }
     }, [walletAddress, connectAccount]);
 
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            try {
-                console.log('Fetching game info...');
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch game information');
-                }
-                const gameData = await response.json();
-                console.log('Game data:', gameData);
-                setGameInfo(gameData);
-    
-                if (gameData && parseInt(gameData.state) === 2) {
-                    clearInterval(interval); // Stop fetching game info when game state is 2
-                    console.log('Game is ready. Navigating to game page...');
-                    console.log('Game contract address:', gameData.contract_address);
-                }
-            } catch (error) {
-                console.error('Error fetching game status:', error);
-            }
-        }, 5000); // Fetch game info every 5 seconds
-    
-        return () => clearInterval(interval); // Cleanup on component unmount
-    }, [gameId]);
 
     const joinGame = async () => {
         try {
@@ -98,6 +99,7 @@ const GamePendingPage = () => {
             if (!contractInstance) {
                 throw new Error('Contract instance not available');
             }
+
             const entryFeeInWei = await contractInstance.methods.getEntryFee().call(); 
             const tx = await contractInstance.methods.joinGame().send({
                 from: walletAddress,
@@ -138,8 +140,17 @@ const GamePendingPage = () => {
                         <>
                             <p>Game Started: {gameInfo.started ? 'Yes' : 'No'}</p>
                             <p>Game Finished: {gameInfo.finished ? 'Yes' : 'No'}</p>
-                            <p>Contract Address: {gameInfo.contractAddress}</p>
-                            {gameInfo.transactionHash && <p>Transaction Hash: {gameInfo.transactionHash}</p>}
+
+                            {loading ? (
+                                <p>Loading...</p>
+                            ) : (
+                                <p>Game Contract Address: {gameInfo.contract_address}</p>
+                            )}
+
+                            {gameInfo.transactionHash && (
+                                <p>Transaction Hash: {gameInfo.transactionHash}</p>
+                            )}
+
                         </>
                     )}
                     <button onClick={joinGame}>Join Game</button>
