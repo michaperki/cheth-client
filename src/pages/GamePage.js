@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 const GamePage = () => {
     const { gameId } = useParams();
     const [gameUrl, setGameUrl] = useState('');
+    const [player1Username, setPlayer1Username] = useState('');
+    const [player2Username, setPlayer2Username] = useState('');
 
     useEffect(() => {
         const getGameInfo = async () => {
@@ -17,11 +19,43 @@ const GamePage = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch data');
+                    throw new Error('Failed to fetch game data');
                 }
 
-                const data = await response.json();
-                setGameUrl(data.url);
+                const gameData = await response.json();
+                setGameUrl(gameData.url);
+
+                // Fetch player 1's username
+                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: gameData.player1_id })
+                });
+
+                if (!player1Response.ok) {
+                    throw new Error('Failed to fetch player 1 data');
+                }
+
+                const player1Data = await player1Response.json();
+                setPlayer1Username(player1Data.username);
+
+                // Fetch player 2's username
+                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: gameData.player2_id })
+                });
+
+                if (!player2Response.ok) {
+                    throw new Error('Failed to fetch player 2 data');
+                }
+
+                const player2Data = await player2Response.json();
+                setPlayer2Username(player2Data.username);
 
             } catch (error) {
                 console.error('Error:', error);
@@ -57,6 +91,8 @@ const GamePage = () => {
         <div>
             <h1>Game Page</h1>
             <p>Game ID: {gameId}</p>
+            <p>Player 1: {player1Username}</p>
+            <p>Player 2: {player2Username}</p>
             <p>Game URL: {gameUrl}</p>
             <input type="text" value={gameUrl} onChange={(e) => setGameUrl(e.target.value)} />
             <button onClick={handleSubmitGameURL}>Submit Game URL</button>
