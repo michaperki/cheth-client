@@ -11,7 +11,7 @@ const GamePage = () => {
         const getGameInfo = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`, {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     },
