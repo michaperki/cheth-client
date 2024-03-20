@@ -11,10 +11,10 @@ const GamePage = () => {
     const [gameUrl, setGameUrl] = useState('');
     const [player1Username, setPlayer1Username] = useState('');
     const [player2Username, setPlayer2Username] = useState('');
+    const [currentUser, setCurrentUser] = useState('');
     
     console.log("walletAddress", walletAddress);
-
-
+    
     useEffect(() => {
         const getGameInfo = async () => {
             try {
@@ -72,6 +72,33 @@ const GamePage = () => {
         getGameInfo();
     }, [gameId]);
 
+    useEffect(() => {
+        const getCurrentUser = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ walletAddress: walletAddress })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch current user data');
+                }
+
+                const userData = await response.json();
+                setCurrentUser(userData.username);
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+            }
+        };
+
+        if (walletAddress) {
+            getCurrentUser();
+        }
+    }, [walletAddress]);
+
     const handleSubmitGameURL = async () => {
         try {
             // Assuming you have a backend endpoint to update the game URL
@@ -97,6 +124,7 @@ const GamePage = () => {
     return (
         <div>
             <h1>Game Page</h1>
+            {currentUser && <p>Hello, {currentUser}!</p>}
             <p>Game ID: {gameId}</p>
             <p>Player 1: {player1Username}</p>
             <p>Player 2: {player2Username}</p>
