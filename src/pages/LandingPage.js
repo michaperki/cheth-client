@@ -5,6 +5,7 @@ import useWallet from '../hooks/useWallet';
 function LandingPage() {
   const [username, setUsername] = useState('');
   const [isEligible, setIsEligible] = useState(null);
+  const [reason, setReason] = useState('');
   const { walletAddress } = useWallet();
   const navigate = useNavigate();
 
@@ -58,6 +59,7 @@ function LandingPage() {
 
       const data = await response.json();
       setIsEligible(data.isEligible);
+      setReason(data.reason);
       if (data.isEligible) {
         // Pass the username as a parameter when navigating to the onboarding page
         navigate(`/onboarding/${username}`);
@@ -78,7 +80,9 @@ function LandingPage() {
         <button type="submit">Check Eligibility</button>
       </form>
       {isEligible !== null && (
-        <p>{isEligible ? 'You are eligible to join' : 'You are not eligible to join'}</p>
+        <p>{isEligible ? 'You are eligible to join' : 
+        `You are not eligible to join because: ${reason}`
+        }</p>
       )}
     </div>
   );
