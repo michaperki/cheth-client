@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 
-const Header = () => {
+const Header = ({ username }) => {
     const { walletAddress, connectAccount } = useWallet();
 
-    // abbreviate wallet address
+    // Abbreviate wallet address
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
 
     return (
@@ -22,10 +22,11 @@ const Header = () => {
                             Connect Wallet
                         </button>
                     )}
-                    {walletAddress && (
-                        <p>
-                            Connected Wallet Address: <strong>{abbreviatedWalletAddress}</strong>
-                        </p>
+                    {username && walletAddress && (
+                        <div className="flex items-center">
+                            <strong className="mr-2">{username}</strong>
+                            {`(${abbreviatedWalletAddress})`}
+                        </div>
                     )}
                 </div>
             </nav>
