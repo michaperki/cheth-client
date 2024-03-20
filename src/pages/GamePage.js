@@ -34,7 +34,10 @@ const GamePage = () => {
 
             const challengeData = await response.json();
             console.log('Challenge created:', challengeData);
-            // Handle success, for example, display the challenge URL
+
+            // set game URL
+            setGameUrl(challengeData.url);
+
         } catch (error) {
             console.error('Error creating challenge:', error);
         }
@@ -157,7 +160,9 @@ const GamePage = () => {
             <p>Game ID: {gameId}</p>
             <p>Player 1: {player1Username}</p>
             <p>Player 2: {player2Username}</p>
-            <p>Game URL: {gameUrl}</p>
+            <button onClick={() => window.open(gameUrl, '_blank')}>
+                Join Game
+            </button>
             <input type="text" value={gameUrl} onChange={(e) => setGameUrl(e.target.value)} />
             <button onClick={handleSubmitGameURL}>Submit Game URL</button>
             {gameUrl && (
