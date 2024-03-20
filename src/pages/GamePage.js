@@ -13,7 +13,6 @@ const GamePage = () => {
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
 
-    console.log("walletAddress", walletAddress);
 
     // Function to create a challenge
     const createChallenge = async () => {
@@ -26,7 +25,7 @@ const GamePage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ player1Username, player2Username })
+                body: JSON.stringify({ player1Username, player2Username, gameId })
             });
 
             if (!response.ok) {
@@ -40,6 +39,10 @@ const GamePage = () => {
             console.error('Error creating challenge:', error);
         }
     };
+
+    useEffect(() => {
+        createChallenge(); // Call createChallenge when component mounts
+    }, []); // Empty dependency array to ensure it's called only once
 
     useEffect(() => {
         const getGameInfo = async () => {
@@ -155,7 +158,11 @@ const GamePage = () => {
             <p>Game URL: {gameUrl}</p>
             <input type="text" value={gameUrl} onChange={(e) => setGameUrl(e.target.value)} />
             <button onClick={handleSubmitGameURL}>Submit Game URL</button>
-            <button onClick={createChallenge}>Create Challenge</button> {/* Add this button */}
+            {gameUrl && (
+                <a href={gameUrl} target="_blank" rel="noopener noreferrer">
+                    Join Game
+                </a>
+            )}
         </div>
     );
 };
