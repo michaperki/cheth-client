@@ -39,7 +39,13 @@ const GamePage = () => {
             console.error('Error creating challenge:', error);
         }
     };
-    
+
+    useEffect(() => {
+        if (player1Username && player2Username) {
+            createChallenge();
+        }
+    }, [player1Username, player2Username, gameId]);
+
     useEffect(() => {
         const getGameInfo = async () => {
             try {
@@ -88,9 +94,6 @@ const GamePage = () => {
     
                 const player2Data = await player2Response.json();
                 setPlayer2Username(player2Data.username);
-    
-                // Call createChallenge after fetching usernames
-                createChallenge();
     
             } catch (error) {
                 console.error('Error:', error);
