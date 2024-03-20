@@ -5,7 +5,6 @@ import useWebSocket from '../hooks/useWebsocket';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
-import useContract from '../hooks/useContract';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
