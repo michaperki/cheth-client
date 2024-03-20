@@ -36,9 +36,9 @@ const DashboardPage = () => {
     }, [walletAddress, connectAccount]);
 
     useEffect(() => {
-        const getUserInfo = async () => {
+        const getUser = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUserInfo`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -59,7 +59,7 @@ const DashboardPage = () => {
         };
 
         if (walletAddress) {
-            getUserInfo();
+            getUser();
         }
     }, [walletAddress]);
 
