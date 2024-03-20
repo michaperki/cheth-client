@@ -17,6 +17,8 @@ function LandingPage() {
 
   const checkUserExistence = async (walletAddress) => {
     try {
+      console.log('Checking user existence for', walletAddress);
+      console.log("process.env.REACT_APP_SERVER_BASE_URL", process.env.REACT_APP_SERVER_BASE_URL)
       const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/checkUser`, {
         method: 'POST',
         headers: {

@@ -25,3 +25,6 @@ yarn-error.log*
 
 # local files
 /.env
+
+# txt
+*.txt
