@@ -134,31 +134,32 @@ const GamePage = () => {
         }
     }, [walletAddress]);
 
-    const handleSubmitGameURL = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/submitGameURL`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ gameId, gameUrl })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to submit game URL');
-            }
-
-            console.log('Game URL submitted successfully!');
-        } catch (error) {
-            console.error('Error submitting game URL:', error);
-        }
-    };
-
     const handleJoinGame = () => {
         window
             .open(gameUrl, '_blank')
             .focus();
     }
+
+    const handleReportGameOver = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/reportGameOver`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ gameId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to report game over');
+            }
+
+            const gameData = await response.json();
+            console.log('Game over:', gameData);
+        } catch (error) {
+            console.error('Error reporting game over:', error);
+        }
+    };
 
     return (
         <div>
@@ -169,13 +170,7 @@ const GamePage = () => {
             <p>Player 2: {player2Username}</p>
             <p>Game URL: {gameUrl}</p>
             <button onClick={handleJoinGame}>Join Game</button>
-            <input type="text" value={gameUrl} onChange={(e) => setGameUrl(e.target.value)} />
-            <button onClick={handleSubmitGameURL}>Submit Game URL</button>
-            {gameUrl && (
-                <a href={gameUrl} target="_blank" rel="noopener noreferrer">
-                    Join Game
-                </a>
-            )}
+            <button onClick={handleReportGameOver}>Report Game Over</button>
         </div>
     );
 };
