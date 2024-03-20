@@ -39,11 +39,7 @@ const GamePage = () => {
             console.error('Error creating challenge:', error);
         }
     };
-
-    useEffect(() => {
-        createChallenge(); // Call createChallenge when component mounts
-    }, []); // Empty dependency array to ensure it's called only once
-
+    
     useEffect(() => {
         const getGameInfo = async () => {
             try {
@@ -53,14 +49,14 @@ const GamePage = () => {
                         'Content-Type': 'application/json'
                     },
                 });
-
+    
                 if (!response.ok) {
                     throw new Error('Failed to fetch game data');
                 }
-
+    
                 const gameData = await response.json();
                 setGameUrl(gameData.url);
-
+    
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
                     method: 'POST',
@@ -69,14 +65,14 @@ const GamePage = () => {
                     },
                     body: JSON.stringify({ userId: gameData.player1_id })
                 });
-
+    
                 if (!player1Response.ok) {
                     throw new Error('Failed to fetch player 1 data');
                 }
-
+    
                 const player1Data = await player1Response.json();
                 setPlayer1Username(player1Data.username);
-
+    
                 // Fetch player 2's username
                 const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
                     method: 'POST',
@@ -85,19 +81,22 @@ const GamePage = () => {
                     },
                     body: JSON.stringify({ userId: gameData.player2_id })
                 });
-
+    
                 if (!player2Response.ok) {
                     throw new Error('Failed to fetch player 2 data');
                 }
-
+    
                 const player2Data = await player2Response.json();
                 setPlayer2Username(player2Data.username);
-
+    
+                // Call createChallenge after fetching usernames
+                createChallenge();
+    
             } catch (error) {
                 console.error('Error:', error);
             }
         };
-
+    
         getGameInfo();
     }, [gameId]);
 
