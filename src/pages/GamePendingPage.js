@@ -18,6 +18,8 @@ const GamePendingPage = () => {
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
+    const [contractInstanceLoading, setContractInstanceLoading] = useState(true); // Add loading state for contract instance
+
     const navigate = useNavigate();
     const web3 = new Web3(provider);
 
@@ -159,6 +161,8 @@ const GamePendingPage = () => {
                 }
             } catch (error) {
                 console.error('Error fetching owner address:', error);
+            } finally {
+                setContractInstanceLoading(false); // Set contract instance loading state to false when fetching is done
             }
         };
 
@@ -166,6 +170,7 @@ const GamePendingPage = () => {
             fetchOwnerAddress();
         }
     }, [contractInstance]);
+
 
     useEffect(() => {
         const fetchContractBalance = async () => {
@@ -192,12 +197,19 @@ const GamePendingPage = () => {
             {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
-                        <div>
+                    <div>
+                        {/* Render owner address if available, otherwise render loading indicator */}
+                        {contractInstanceLoading ? (
+                            <p>Loading owner address...</p>
+                        ) : ownerAddress ? (
                             <p>Owner: {ownerAddress}</p>
-                            <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
-                            <button onClick={joinGame}>Join Game</button>
-                            <button onClick={cancelGame}>Cancel Game</button>
-                        </div>
+                        ) : (
+                            <p>Owner address not available</p>
+                        )}
+                        <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
+                        <button onClick={joinGame}>Join Game</button>
+                        <button onClick={cancelGame}>Cancel Game</button>
+                    </div>
                 </div>
             )}
             {gameInfo && gameInfo.state === 3 && (
