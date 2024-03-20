@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import useWallet from '../hooks/useWallet';
+import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
+import Web3 from 'web3';
 
 const GamePage = () => {
     const { gameId } = useParams();
+    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { walletAddress, connectAccount } = useWallet();
     const [gameUrl, setGameUrl] = useState('');
     const [player1Username, setPlayer1Username] = useState('');
     const [player2Username, setPlayer2Username] = useState('');
+    
+    console.log("walletAddress", walletAddress);
+
 
     useEffect(() => {
         const getGameInfo = async () => {
