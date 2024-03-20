@@ -153,6 +153,12 @@ const GamePage = () => {
         }
     };
 
+    const handleJoinGame = () => {
+        window
+            .open(gameUrl, '_blank')
+            .focus();
+    }
+
     return (
         <div>
             <h1>Game Page</h1>
@@ -160,9 +166,8 @@ const GamePage = () => {
             <p>Game ID: {gameId}</p>
             <p>Player 1: {player1Username}</p>
             <p>Player 2: {player2Username}</p>
-            <button onClick={() => window.open(gameUrl, '_blank')}>
-                Join Game
-            </button>
+            <p>Game URL: {gameUrl}</p>
+            <button onClick={handleJoinGame}>Join Game</button>
             <input type="text" value={gameUrl} onChange={(e) => setGameUrl(e.target.value)} />
             <button onClick={handleSubmitGameURL}>Submit Game URL</button>
             {gameUrl && (
