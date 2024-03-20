@@ -4,7 +4,10 @@ import useWallet from '../hooks/useWallet';
 
 const Header = () => {
     const { walletAddress, connectAccount } = useWallet();
-    
+
+    // abbreviate wallet address
+    const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
+
     return (
         <header className="bg-gray-800 text-white py-4">
             <nav className="container mx-auto flex justify-between items-center">
@@ -21,7 +24,7 @@ const Header = () => {
                     )}
                     {walletAddress && (
                         <p>
-                            Connected Wallet Address: <strong>{walletAddress}</strong>
+                            Connected Wallet Address: <strong>{abbreviatedWalletAddress}</strong>
                         </p>
                     )}
                 </div>
