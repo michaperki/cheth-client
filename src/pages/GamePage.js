@@ -141,6 +141,8 @@ const GamePage = () => {
     }
 
     const handleReportGameOver = async () => {
+        console.log('Reporting game over...');
+        console.log('gameId', gameId);
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/reportGameOver`, {
                 method: 'POST',
