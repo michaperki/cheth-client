@@ -17,6 +17,9 @@ const GamePage = () => {
 
     // Function to create a challenge
     const createChallenge = async () => {
+        console.log('Creating challenge...');
+        console.log('player1Username', player1Username);
+        console.log('player2Username', player2Username);
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/createChallenge`, {
                 method: 'POST',
