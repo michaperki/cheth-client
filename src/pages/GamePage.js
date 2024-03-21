@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
-import { useSDK } from "@metamask/sdk-react";
 import Web3 from 'web3';
 
 const GamePage = () => {
     const { gameId } = useParams();
     const { walletAddress } = useWallet();
-    const { connected, connecting, provider, chainId } = useSDK();
     const [gameUrl, setGameUrl] = useState('');
     const [player1Username, setPlayer1Username] = useState('');
     const [player2Username, setPlayer2Username] = useState('');
@@ -24,7 +22,8 @@ const GamePage = () => {
                     throw new Error('Failed to fetch ETH to USD conversion rate');
                 }
                 const data = await response.json();
-                setEthToUsdRate(data.ethToUsdRate);
+                console.log('ETH to USD conversion rate:', data);
+                setEthToUsdRate(data)
             } catch (error) {
                 console.error('Error fetching ETH to USD conversion rate:', error);
             }
@@ -52,10 +51,9 @@ const GamePage = () => {
 
             const challengeData = await response.json();
             console.log('Challenge created:', challengeData);
-            console.log('Challenge URL:', challengeData.challenge.url);
 
             // set game URL
-            setGameUrl(challengeData.challenge.url);
+            setGameUrl(challengeData.url);
 
         } catch (error) {
             console.error('Error creating challenge:', error);
@@ -184,7 +182,7 @@ const GamePage = () => {
 
     const rewardPoolMinusCommission = rewardPool - (rewardPool * 0.05);
     const rewardPoolMinusCommissionInEth = Web3.utils.fromWei(rewardPoolMinusCommission.toString(), 'ether');
-    const rewardPoolMinusCommissionInUsd = rewardPoolMinusCommissionInEth * ethToUsdRate;
+    const rewardPoolMinusCommissionInUsd = (rewardPoolMinusCommissionInEth * ethToUsdRate).toFixed(2);
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
