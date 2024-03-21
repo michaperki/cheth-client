@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-const Header = ({ userId, username, darkMode, setDarkMode }) => { // Receive dark mode state and setter as props
+const Header = ({ userId, username, darkMode, setDarkMode }) => {
     const { walletAddress, connectAccount } = useWallet();
-
-    // Abbreviate wallet address
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
 
-    // Function to toggle dark mode
     const toggleDarkMode = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/toggleDarkMode`, {
@@ -20,8 +19,7 @@ const Header = ({ userId, username, darkMode, setDarkMode }) => { // Receive dar
             });
             const data = await response.json();
             console.log(data);
-            // Update the state to reflect the change in UI
-            setDarkMode(!darkMode); // Toggle dark mode state
+            setDarkMode(!darkMode);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -45,9 +43,8 @@ const Header = ({ userId, username, darkMode, setDarkMode }) => { // Receive dar
                         <div className="flex items-center">
                             <strong className="mr-2">{username}</strong>
                             {`(${abbreviatedWalletAddress})`}
-                            {/* Dark mode toggle button */}
                             <button onClick={toggleDarkMode} className="ml-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                {darkMode ? 'Light Mode' : 'Dark Mode'}
+                                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
                             </button>
                         </div>
                     )}
