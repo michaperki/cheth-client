@@ -56,17 +56,38 @@ const GamePendingPage = () => {
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
-
+    
             if (gameData && parseInt(gameData.state) === 2) {
                 console.log('Game is ready. Navigating to game page...');
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
+                setOwnerAddress(gameData.game_creator_address);
                 setLoading(false);
+    
+                // Fetch contract balance
+                const balance = await web3.eth.getBalance(gameData.contract_address);
+                console.log('Contract balance:', balance);
+                setContractBalance(balance);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
         }
     };
+
+    useEffect(() => {
+        // Fetch game info when gameId changes
+        if (gameId) {
+            getGameInfo();
+        }
+    }, [gameId]);
+
+    useEffect(() => {
+        // Set up contract instance when contract address is available
+        if (contractAddress && provider) {
+            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
+            setContractInstance(contract);
+        }
+    }, [contractAddress, provider]);
 
     useEffect(() => {
         const getUser = async () => {
@@ -102,13 +123,6 @@ const GamePendingPage = () => {
         }
     }, [walletAddress, connectAccount]);
 
-    useEffect(() => {
-        if (contractAddress) {
-            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
-            setContractInstance(contract);
-        }
-    }, [contractAddress]);
-
     const joinGame = async () => {
         try {
             if (!connected) {
@@ -143,51 +157,6 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     }
-
-    useEffect(() => {
-        if (gameId) {
-            getGameInfo();
-        }
-    }, [gameId]);
-
-    useEffect(() => {
-        const fetchOwnerAddress = async () => {
-            try {
-                if (contractInstance) {
-                    const owner = await contractInstance.methods.getOwner().call();
-                    console.log('Owner:', owner);
-                    setOwnerAddress(owner);
-                }
-            } catch (error) {
-                console.error('Error fetching owner address:', error);
-            } finally {
-                setContractInstanceLoading(false); // Set contract instance loading state to false when fetching is done
-            }
-        };
-
-        if (contractInstance) {
-            fetchOwnerAddress();
-        }
-    }, [contractInstance]);
-
-
-    useEffect(() => {
-        const fetchContractBalance = async () => {
-            try {
-                if (contractInstance && contractAddress && provider) {
-                    const balance = await web3.eth.getBalance(contractAddress);
-                    console.log('Contract balance:', balance);
-                    setContractBalance(balance);
-                }
-            } catch (error) {
-                console.error('Error fetching contract balance:', error);
-            }
-        };
-    
-        if (contractAddress && provider) {
-            fetchContractBalance();
-        }
-    }, [contractAddress, contractInstance, provider]);
     
     return (
         <div>
@@ -197,14 +166,7 @@ const GamePendingPage = () => {
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <div>
-                        {/* Render owner address if available, otherwise render loading indicator */}
-                        {contractInstanceLoading ? (
-                            <p>Loading owner address...</p>
-                        ) : ownerAddress ? (
-                            <p>Owner: {ownerAddress}</p>
-                        ) : (
-                            <p>Owner address not available</p>
-                        )}
+                        <p>Game creator: {ownerAddress}</p>
                         <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
                         <button onClick={joinGame}>Join Game</button>
                         <button onClick={cancelGame}>Cancel Game</button>
