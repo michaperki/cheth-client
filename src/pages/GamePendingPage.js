@@ -68,8 +68,6 @@ const GamePendingPage = () => {
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
-                // Update contract balance with the reward pool from the database
-                setContractBalance(gameData.reward_pool);
                 setLoading(false);
             }
         } catch (error) {
