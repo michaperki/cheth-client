@@ -62,12 +62,8 @@ const GamePendingPage = () => {
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
+                setContractBalance(gameData.reward_pool);
                 setLoading(false);
-    
-                // Fetch contract balance
-                const balance = await web3.eth.getBalance(gameData.contract_address);
-                console.log('Contract balance:', balance);
-                setContractBalance(balance);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
