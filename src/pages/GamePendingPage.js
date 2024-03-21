@@ -41,7 +41,6 @@ const GamePendingPage = () => {
             console.log("Game Joined. Updating contract balance...");
             // Update contract balance with the reward pool from the database
             getGameInfo();
-            setContractBalance(gameInfo.reward_pool);
         }
     
         if (messageData.type === "GAME_PRIMED") {
@@ -49,7 +48,7 @@ const GamePendingPage = () => {
             navigate(`/game/${gameId}`);
         }
     }
-
+    
     // Use the useWebSocket hook    
     const socket = useWebSocket(handleWebSocketMessage);
 
@@ -69,14 +68,16 @@ const GamePendingPage = () => {
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
-                //setContractBalance(gameData.reward_pool);
+                // Update contract balance with the reward pool from the database
+                setContractBalance(gameData.reward_pool);
                 setLoading(false);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
         }
+    
+        setContractInstanceLoading(false);
     };
-
     useEffect(() => {
         // Fetch game info when gameId changes
         if (gameId) {
