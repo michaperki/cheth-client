@@ -13,7 +13,24 @@ const GamePage = () => {
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
     const [rewardPool, setRewardPool] = useState(0);
+    const [ethToUsdRate, setEthToUsdRate] = useState(0);
 
+    // Fetch ETH to USD conversion rate
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                setEthToUsdRate(data.ethToUsdRate);
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
+            }
+        };
+        fetchEthToUsdRate();
+    }, []);
 
     // Function to create a challenge
     const createChallenge = async () => {
@@ -167,6 +184,7 @@ const GamePage = () => {
 
     const rewardPoolMinusCommission = rewardPool - (rewardPool * 0.05);
     const rewardPoolMinusCommissionInEth = Web3.utils.fromWei(rewardPoolMinusCommission.toString(), 'ether');
+    const rewardPoolMinusCommissionInUsd = rewardPoolMinusCommissionInEth * ethToUsdRate;
 
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
@@ -176,6 +194,7 @@ const GamePage = () => {
                 <p className="mb-2">Game ID: {gameId}</p>
                 <p className="mb-2">Reward Pool: {rewardPoolMinusCommission} wei</p>
                 <p className="mb-2">Reward Pool: {rewardPoolMinusCommissionInEth} eth</p>
+                <p className="mb-2">Reward Pool: ${rewardPoolMinusCommissionInUsd}</p>
                 <p className="mb-2">Player 1: {player1Username}</p>
                 <p className="mb-2">Player 2: {player2Username}</p>
                 <p className="mb-2">Game URL: {gameUrl}</p>
