@@ -5,6 +5,7 @@ import useWebSocket from '../hooks/useWebsocket';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
+import { get } from '../../../server/routes';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -40,6 +41,7 @@ const GamePendingPage = () => {
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined. Updating contract balance...");
             // Update contract balance with the reward pool from the database
+            getGameInfo();
             setContractBalance(gameInfo.reward_pool);
         }
     
@@ -68,7 +70,7 @@ const GamePendingPage = () => {
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
-                setContractBalance(gameData.reward_pool);
+                //setContractBalance(gameData.reward_pool);
                 setLoading(false);
             }
         } catch (error) {
