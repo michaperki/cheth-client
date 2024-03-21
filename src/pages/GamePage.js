@@ -12,6 +12,7 @@ const GamePage = () => {
     const [player1Username, setPlayer1Username] = useState('');
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
+    const [rewardPool, setRewardPool] = useState(0);
 
 
     // Function to create a challenge
@@ -66,6 +67,7 @@ const GamePage = () => {
 
                 const gameData = await response.json();
                 setGameUrl(gameData.url);
+                setRewardPool(gameData.reward_pool);
 
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
@@ -163,12 +165,17 @@ const GamePage = () => {
         }
     };
 
+    const rewardPoolMinusCommission = rewardPool - (rewardPool * 0.05);
+    const rewardPoolMinusCommissionInEth = Web3.utils.fromWei(rewardPoolMinusCommission.toString(), 'ether');
+
     return (
         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
             <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
                 <h1 className="text-3xl font-semibold mb-4">Game Page</h1>
                 {currentUser && <p className="mb-4">Hello, {currentUser}!</p>}
                 <p className="mb-2">Game ID: {gameId}</p>
+                <p className="mb-2">Reward Pool: {rewardPoolMinusCommission} wei</p>
+                <p className="mb-2">Reward Pool: {rewardPoolMinusCommissionInEth} eth</p>
                 <p className="mb-2">Player 1: {player1Username}</p>
                 <p className="mb-2">Player 2: {player2Username}</p>
                 <p className="mb-2">Game URL: {gameUrl}</p>
