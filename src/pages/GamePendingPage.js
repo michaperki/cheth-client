@@ -168,7 +168,7 @@ const GamePendingPage = () => {
             <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
                 <h1 className="text-3xl font-semibold mb-4">Game Pending</h1>
                 {loading && <p>Loading...</p>}
-                {gameInfo && parseInt(gameInfo.state) in [2, 3] && (
+                {gameInfo && (gameInfo.state === 2 || gameInfo.state === 3) && (
                     <div>
                         <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                         <div>
