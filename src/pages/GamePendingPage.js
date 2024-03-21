@@ -42,7 +42,10 @@ const GamePendingPage = () => {
             }
 
             if (gameData && parseInt(gameData.state) === 3) {
+                setContractAddress(gameData.contract_address);
+                setOwnerAddress(gameData.game_creator_address);
                 setContractBalance(gameData.reward_pool); // Update contract balance
+                setLoading(false);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
