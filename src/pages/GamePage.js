@@ -59,14 +59,14 @@ const GamePage = () => {
                         'Content-Type': 'application/json'
                     },
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch game data');
                 }
-    
+
                 const gameData = await response.json();
                 setGameUrl(gameData.url);
-    
+
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
                     method: 'POST',
@@ -75,14 +75,14 @@ const GamePage = () => {
                     },
                     body: JSON.stringify({ userId: gameData.player1_id })
                 });
-    
+
                 if (!player1Response.ok) {
                     throw new Error('Failed to fetch player 1 data');
                 }
-    
+
                 const player1Data = await player1Response.json();
                 setPlayer1Username(player1Data.username);
-    
+
                 // Fetch player 2's username
                 const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
                     method: 'POST',
@@ -91,19 +91,19 @@ const GamePage = () => {
                     },
                     body: JSON.stringify({ userId: gameData.player2_id })
                 });
-    
+
                 if (!player2Response.ok) {
                     throw new Error('Failed to fetch player 2 data');
                 }
-    
+
                 const player2Data = await player2Response.json();
                 setPlayer2Username(player2Data.username);
-    
+
             } catch (error) {
                 console.error('Error:', error);
             }
         };
-    
+
         getGameInfo();
     }, [gameId]);
 
@@ -164,15 +164,27 @@ const GamePage = () => {
     };
 
     return (
-        <div>
-            <h1>Game Page</h1>
-            {currentUser && <p>Hello, {currentUser}!</p>}
-            <p>Game ID: {gameId}</p>
-            <p>Player 1: {player1Username}</p>
-            <p>Player 2: {player2Username}</p>
-            <p>Game URL: {gameUrl}</p>
-            <button onClick={handleJoinGame}>Join Game</button>
-            <button onClick={handleReportGameOver}>Report Game Over</button>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+                <h1 className="text-3xl font-semibold mb-4">Game Page</h1>
+                {currentUser && <p className="mb-4">Hello, {currentUser}!</p>}
+                <p className="mb-2">Game ID: {gameId}</p>
+                <p className="mb-2">Player 1: {player1Username}</p>
+                <p className="mb-2">Player 2: {player2Username}</p>
+                <p className="mb-2">Game URL: {gameUrl}</p>
+                <button
+                    onClick={handleJoinGame}
+                    className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600 mr-2"
+                >
+                    Join Game
+                </button>
+                <button
+                    onClick={handleReportGameOver}
+                    className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600"
+                >
+                    Report Game Over
+                </button>
+            </div>
         </div>
     );
 };

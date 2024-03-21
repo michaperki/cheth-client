@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from '../hooks/useWebsocket';
 
-
 const DashboardPage = ({ userInfo }) => {
     const navigate = useNavigate();
 
@@ -50,10 +49,17 @@ const DashboardPage = ({ userInfo }) => {
     }
 
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <p>Welcome, {userInfo?.username}</p>
-            <button onClick={playGame}>Play Game</button>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+                <h1 className="text-3xl font-semibold mb-4">Dashboard</h1>
+                <p className="mb-4">Welcome, {userInfo?.username}</p>
+                <button
+                    onClick={playGame}
+                    className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
+                >
+                    Play Game
+                </button>
+            </div>
         </div>
     );
 };

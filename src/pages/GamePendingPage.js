@@ -159,27 +159,39 @@ const GamePendingPage = () => {
     }
     
     return (
-        <div>
-            <h1>Game Pending</h1>
-            {loading && <p>Loading...</p>}
-            {gameInfo && parseInt(gameInfo.state) === 2 && (
-                <div>
-                    <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+                <h1 className="text-3xl font-semibold mb-4">Game Pending</h1>
+                {loading && <p>Loading...</p>}
+                {gameInfo && parseInt(gameInfo.state) === 2 && (
                     <div>
-                        <p>Game creator: {ownerAddress}</p>
-                        <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
-                        <button onClick={joinGame}>Join Game</button>
-                        <button onClick={cancelGame}>Cancel Game</button>
+                        <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
+                        <div>
+                            <p>Game creator: {ownerAddress}</p>
+                            <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
+                            <button
+                                onClick={joinGame}
+                                className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600 mr-2"
+                            >
+                                Join Game
+                            </button>
+                            <button
+                                onClick={cancelGame}
+                                className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600"
+                            >
+                                Cancel Game
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
-            {gameInfo && gameInfo.state === 3 && (
-                <div>
-                    <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
-                </div>
-            )}
+                )}
+                {gameInfo && gameInfo.state === 3 && (
+                    <div>
+                        <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
+                    </div>
+                )}
+            </div>
         </div>
-    );
+        );
 }
 
 export default GamePendingPage;
