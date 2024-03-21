@@ -21,7 +21,7 @@ const GamePendingPage = () => {
 
     const navigate = useNavigate();
     const web3 = new Web3(provider);
-    
+
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
@@ -51,13 +51,13 @@ const GamePendingPage = () => {
             console.error('Error fetching game status:', error);
         }
     };
-    
+
     // Function declaration moved above the useWebSocket hook
     function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
-    
+
         if (messageData.type === "CONTRACT_READY") {
             console.log("Contract is ready..");
             setLoading(false);
@@ -66,19 +66,19 @@ const GamePendingPage = () => {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
-    
+
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined. Updating contract balance...");
             // Update contract balance with the reward pool from the database
             getGameInfo();
         }
-    
+
         if (messageData.type === "GAME_PRIMED") {
             console.log("Game is primed. Navigating to game page...");
             navigate(`/game/${gameId}`);
         }
     }
-    
+
     // Use the useWebSocket hook    
     const socket = useWebSocket(handleWebSocketMessage);
 
@@ -165,10 +165,10 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     }
-    
+
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
-            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
+            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
                 <h1 className="text-3xl font-semibold mb-4">Game Pending</h1>
                 {loading && <p>Loading...</p>}
                 {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
@@ -199,7 +199,7 @@ const GamePendingPage = () => {
                 )}
             </div>
         </div>
-        );
+    );
 }
 
 export default GamePendingPage;

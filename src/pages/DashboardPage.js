@@ -49,8 +49,8 @@ const DashboardPage = ({ userInfo }) => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
-            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
+            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
                 <h1 className="text-3xl font-semibold mb-4">Dashboard</h1>
                 <p className="mb-4">Welcome, {userInfo?.username}</p>
                 <button

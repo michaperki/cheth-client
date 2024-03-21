@@ -12,6 +12,35 @@ const GamePage = () => {
     const [currentUser, setCurrentUser] = useState('');
     const [rewardPool, setRewardPool] = useState(0);
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
+    const [userInfo, setUserInfo] = useState(null);
+
+    useEffect(() => {
+        const getUser = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ walletAddress: walletAddress })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                const data = await response.json();
+                setUserInfo(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        if (walletAddress) {
+            getUser();
+        }
+    }, [walletAddress]);
 
     // Fetch ETH to USD conversion rate
     useEffect(() => {
@@ -186,8 +215,8 @@ const GamePage = () => {
     const rewardPoolMinusCommissionInUsd = (rewardPoolMinusCommissionInEth * ethToUsdRate).toFixed(2);
 
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
-            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
+        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
+            <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded shadow-lg">
                 <h1 className="text-3xl font-semibold mb-4">Game Page</h1>
                 {currentUser && <p className="mb-4">Hello, {currentUser}!</p>}
                 <p className="mb-2">Game ID: {gameId}</p>

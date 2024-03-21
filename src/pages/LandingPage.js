@@ -45,7 +45,7 @@ function LandingPage({ userInfo }) {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <div className={`min-h-screen flex justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : ''}`}>
       <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
         <h1 className="text-3xl font-semibold mb-4">welcome to cheth</h1>
         <form onSubmit={handleSubmit} className="space-y-4">

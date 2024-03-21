@@ -53,16 +53,19 @@ function App() {
 
   return (
     <Router>
-      <Header username={userInfo?.username} />
-      <Routes>
-        <Route path="/" element={<LandingPage userInfo={userInfo} />} />
-        <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-        <Route path="/dashboard" element={<DashboardPage userInfo={userInfo}/>} />
-        <Route path="/game-pending/:gameId" element={<GamePendingPage />} />
-        <Route path="/game/:gameId" element={<GamePage />} />
-      </Routes>
+      <div className={userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}> {/* Apply dark mode class */}
+
+        <Header username={userInfo?.username} />
+        <Routes>
+          <Route path="/" element={<LandingPage userInfo={userInfo} />} />
+          <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
+          <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
+          <Route path="/game-pending/:gameId" element={<GamePendingPage />} />
+          <Route path="/game/:gameId" element={<GamePage />} />
+        </Routes>
+      </div>
     </Router>
   );
-}
+} 
 
 export default App;

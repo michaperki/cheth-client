@@ -1,3 +1,10 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.dark-mode {
+    /* Add styles for dark mode */
+    /* Example: */
+    background-color: #1a1a1a;
+    color: #fff;
+  }
