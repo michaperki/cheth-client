@@ -27,7 +27,7 @@ const GamePendingPage = () => {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
-
+    
         if (messageData.type === "CONTRACT_READY") {
             console.log("Contract is ready..");
             setLoading(false);
@@ -36,7 +36,13 @@ const GamePendingPage = () => {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
-
+    
+        if (messageData.type === "GAME_JOINED") {
+            console.log("Game Joined. Updating contract balance...");
+            // Update contract balance with the reward pool from the database
+            setContractBalance(gameInfo.reward_pool);
+        }
+    
         if (messageData.type === "GAME_PRIMED") {
             console.log("Game is primed. Navigating to game page...");
             navigate(`/game/${gameId}`);
