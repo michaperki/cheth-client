@@ -14,7 +14,7 @@ function App() {
   const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
 
   const [userInfo, setUserInfo] = useState(null);
-
+  const [darkMode, setDarkMode] = useState(false); // State for dark mode
 
   useEffect(() => {
     if (!walletAddress) {
@@ -40,6 +40,7 @@ function App() {
         const data = await response.json();
         console.log('User data:', data);
         setUserInfo(data);
+        setDarkMode(data.dark_mode); // Set dark mode state based on user preference
 
       } catch (error) {
         console.error('Error:', error);
@@ -53,9 +54,9 @@ function App() {
 
   return (
     <Router>
-      <div className={userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}> {/* Apply dark mode class */}
+      <div className={darkMode ? 'dark-mode' : 'light-mode'}> {/* Apply dark mode class */}
 
-        <Header username={userInfo?.username} />
+      <Header userId={userInfo?.user_id} username={userInfo?.username} darkMode={darkMode} setDarkMode={setDarkMode} /> {/* Pass dark mode state and setter */}
         <Routes>
           <Route path="/" element={<LandingPage userInfo={userInfo} />} />
           <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
