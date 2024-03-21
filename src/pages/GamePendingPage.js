@@ -32,7 +32,7 @@ const GamePendingPage = () => {
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
-    
+
             if (gameData && parseInt(gameData.state) === 2) {
                 console.log('Game is ready. Navigating to game page...');
                 console.log('Game contract address:', gameData.contract_address);
@@ -40,13 +40,15 @@ const GamePendingPage = () => {
                 setOwnerAddress(gameData.game_creator_address);
                 setLoading(false);
             }
+
+            if (gameData && parseInt(gameData.state) === 3) {
+                setContractBalance(gameData.reward_pool); // Update contract balance
+            }
         } catch (error) {
             console.error('Error fetching game status:', error);
         }
-    
-        setContractInstanceLoading(false);
     };
-
+    
     // Function declaration moved above the useWebSocket hook
     function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);
