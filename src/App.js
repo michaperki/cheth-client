@@ -6,6 +6,7 @@ import OnboardingPage from './pages/OnboardingPage';
 import DashboardPage from './pages/DashboardPage';
 import GamePendingPage from './pages/GamePendingPage';
 import GamePage from './pages/GamePage';
+import AdminPage from './pages/AdminPage';
 import useWallet from './hooks/useWallet'; // Import useWallet hook
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -75,6 +76,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
           <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
           <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </ThemeProvider>
     </Router>
