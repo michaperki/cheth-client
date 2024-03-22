@@ -83,10 +83,10 @@ const GamePage = () => {
 
             const challengeData = await response.json();
             console.log('Challenge created:', challengeData);
-            console.log('Challenge URL:', challengeData.challenge.url);
+            console.log('Challenge URL:', challengeData.url);
 
             // set game URL
-            setGameUrl(challengeData.challenge.url);
+            setGameUrl(challengeData.url);
 
         } catch (error) {
             console.error('Error creating challenge:', error);
