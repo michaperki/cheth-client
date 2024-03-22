@@ -22,7 +22,7 @@ const DashboardPage = ({ userInfo }) => {
             setOpponentFound(true); // Set state to indicate opponent found
         }
 
-        if (messageData.type === "COTNRACT_READY") {
+        if (messageData.type === "CONTRACT_READY") {
             console.log('Game contract ready:', messageData);
             // Implement logic to navigate to game page
             navigate(`/game/${messageData.gameId}`);
@@ -87,7 +87,7 @@ const DashboardPage = ({ userInfo }) => {
                         <div className="flex items-center justify-center">
                             <CircularProgress />
                             {opponentFound ? (
-                                <Typography sx={{ ml: 2 }}>Opponent found! SettingUpContract</Typography>
+                                <Typography sx={{ ml: 2 }}>Opponent found! Setting Up Contract</Typography>
                             ) : (
                                 <Typography sx={{ ml: 2 }}>Searching for opponent...</Typography>
                             )}
