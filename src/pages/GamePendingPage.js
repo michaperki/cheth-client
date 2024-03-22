@@ -14,16 +14,19 @@ const GamePendingPage = () => {
     const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
     const [gameInfo, setGameInfo] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [contractInstance, setContractInstance] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
-    const [contractInstanceLoading, setContractInstanceLoading] = useState(true); // Add loading state for contract instance
     const theme = useTheme(); // Get the current theme
+    const web3 = new Web3(provider);
 
     const navigate = useNavigate();
-    const web3 = new Web3(provider);
+
+    // CONCERNED THAT THESE ARE NOT IN THE RIGHT PLACE (MOVED FROM CONTRACT_READY WEB SOCKET MESSAGE HANDLER)
+    // const contract = new web3.eth.Contract(Chess.abi, contractAddress);
+    // setContractInstance(contract);
+    // END OF CONCERN
 
     const getGameInfo = async () => {
         try {
@@ -41,14 +44,13 @@ const GamePendingPage = () => {
                 console.log('Game contract address:', gameData.contract_address);
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
-                setLoading(false);
+                setContractBalance(gameData.reward_pool); // Update contract balance
             }
 
             if (gameData && parseInt(gameData.state) === 3) {
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
                 setContractBalance(gameData.reward_pool); // Update contract balance
-                setLoading(false);
             }
         } catch (error) {
             console.error('Error fetching game status:', error);
@@ -60,15 +62,6 @@ const GamePendingPage = () => {
         console.log('Received message in GamePendingPage:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
-
-        if (messageData.type === "CONTRACT_READY") {
-            console.log("Contract is ready..");
-            setLoading(false);
-            getGameInfo();
-            // initialize the contract
-            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
-            setContractInstance(contract);
-        }
 
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined. Updating contract balance...");
@@ -172,7 +165,6 @@ const GamePendingPage = () => {
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
-            {loading && <p>Loading...</p>}
             {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
