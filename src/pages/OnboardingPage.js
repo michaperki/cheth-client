@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet'; // Changed import statement
+import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material'; // Import MUI components
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 const Onboarding = () => {
     const { lichessUsername } = useParams(); // Get the username from URL parameters
-    const [darkMode, setDarkMode] = useState(false);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const theme = useTheme(); // Get the current theme
 
     const { walletAddress, connectAccount } = useWallet();
-
-    // Remove the setUsername function
 
     const submitUserInfo = async () => {
         try {
@@ -22,7 +22,6 @@ const Onboarding = () => {
                 body: JSON.stringify({
                     lichessHandle: lichessUsername, // Use the lichessUsername from URL parameters
                     walletAddress,
-                    darkMode,
                 }),
             });
             const data = await response.json();
@@ -39,38 +38,27 @@ const Onboarding = () => {
     };
 
     return (
-        <div>
-            <h1>Welcome {lichessUsername}</h1>
-            {!walletAddress && (
-                <button onClick={connectAccount} disabled={submitted}>
-                    Connect Wallet
-                </button>
-            )}
-            {walletAddress && (
-                <p>
-                    Connected Wallet Address: <strong>{walletAddress}</strong>
-                </p>
-            )}
-            {walletAddress && (
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Dark Mode Preference:</label>
-                        <input type="checkbox" checked={darkMode} onChange={(e) => setDarkMode(e.target.checked)} />
-                    </div>
-                    <div>
-                        <input
-                            type="checkbox"
-                            checked={acceptedTerms}
-                            onChange={(e) => setAcceptedTerms(e.target.checked)}
-                            id="terms"
+        <div className={`min-h-screen flex justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : ''}`}>
+            <div>
+                <Typography variant="h3" gutterBottom>Welcome {lichessUsername}</Typography>
+                {!walletAddress && (
+                    <Button variant="contained" onClick={connectAccount} disabled={submitted}>Connect Wallet</Button>
+                )}
+                {walletAddress && (
+                    <Typography variant="body1" gutterBottom>
+                        Connected Wallet Address: <strong>{walletAddress}</strong>
+                    </Typography>
+                )}
+                {walletAddress && (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <FormControlLabel
+                            control={<Checkbox checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />}
+                            label="I accept the terms and conditions"
                         />
-                        <label htmlFor="terms">I accept the terms and conditions</label>
-                    </div>
-                    <button type="submit" disabled={!acceptedTerms || submitted}>
-                        Submit
-                    </button>
-                </form>
-            )}
+                        <Button type="submit" variant="contained" disabled={!acceptedTerms || submitted}>Submit</Button>
+                    </form>
+                )}
+            </div>
         </div>
     );
 };

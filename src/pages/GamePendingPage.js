@@ -5,6 +5,8 @@ import useWebSocket from '../hooks/useWebsocket';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
+import { Button, Typography } from '@mui/material'; // Import MUI components
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -18,6 +20,7 @@ const GamePendingPage = () => {
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [contractInstanceLoading, setContractInstanceLoading] = useState(true); // Add loading state for contract instance
+    const theme = useTheme(); // Get the current theme
 
     const navigate = useNavigate();
     const web3 = new Web3(provider);
@@ -167,37 +170,39 @@ const GamePendingPage = () => {
     }
 
     return (
-        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
-            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
-                <h1 className="text-3xl font-semibold mb-4">Game Pending</h1>
-                {loading && <p>Loading...</p>}
-                {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
+        <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
+            <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
+            {loading && <p>Loading...</p>}
+            {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
+                <div>
+                    <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <div>
-                        <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
-                        <div>
-                            <p>Game creator: {ownerAddress}</p>
-                            <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
-                            <button
-                                onClick={joinGame}
-                                className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600 mr-2"
-                            >
-                                Join Game
-                            </button>
-                            <button
-                                onClick={cancelGame}
-                                className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600"
-                            >
-                                Cancel Game
-                            </button>
-                        </div>
+                        <p>Game creator: {ownerAddress}</p>
+                        <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
+                        <Button
+                            onClick={joinGame}
+                            variant="contained"
+                            color="primary"
+                            sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
+                        >
+                            Join Game
+                        </Button>
+                        <Button
+                            onClick={cancelGame}
+                            variant="contained"
+                            color="error"
+                            sx={{ '&:hover': { bgcolor: 'error.dark' } }}
+                        >
+                            Cancel Game
+                        </Button>
                     </div>
-                )}
-                {gameInfo && gameInfo.state === 3 && (
-                    <div>
-                        <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
-                    </div>
-                )}
-            </div>
+                </div>
+            )}
+            {gameInfo && gameInfo.state === 3 && (
+                <div>
+                    <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
+                </div>
+            )}
         </div>
     );
 }

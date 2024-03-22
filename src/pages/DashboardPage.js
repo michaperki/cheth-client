@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from '../hooks/useWebsocket';
+import { Button, Container, Typography } from '@mui/material'; // Import MUI components
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 const DashboardPage = ({ userInfo }) => {
     const navigate = useNavigate();
+    const theme = useTheme(); // Get the current theme
 
     // Function to handle WebSocket messages
     const handleWebSocketMessage = (message) => {
@@ -49,18 +52,22 @@ const DashboardPage = ({ userInfo }) => {
     }
 
     return (
-        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
-            <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
-                <h1 className="text-3xl font-semibold mb-4">Dashboard</h1>
-                <p className="mb-4">Welcome, {userInfo?.username}</p>
-                <button
-                    onClick={playGame}
-                    className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-                >
-                    Play Game
-                </button>
+        <Container maxWidth="md" sx={{ py: 8 }}>
+            <div className={`min-h-screen flex flex-col justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : 'light-mode'}`}>
+                <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
+                    <Typography variant="h3" sx={{ mb: 4 }}>Dashboard</Typography>
+                    <Typography sx={{ mb: 4 }}>Welcome, {userInfo?.username}</Typography>
+                    <Button
+                        onClick={playGame}
+                        variant="contained"
+                        color="primary"
+                        sx={{ width: '100%', '&:hover': { bgcolor: 'primary.dark' } }}
+                    >
+                        Play Game
+                    </Button>
+                </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

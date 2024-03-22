@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import Web3 from 'web3';
+import { Button, Typography } from '@mui/material'; // Import MUI components
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 const GamePage = () => {
     const { gameId } = useParams();
@@ -13,6 +15,7 @@ const GamePage = () => {
     const [rewardPool, setRewardPool] = useState(0);
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
     const [userInfo, setUserInfo] = useState(null);
+    const theme = useTheme(); // Get the current theme
 
     useEffect(() => {
         const getUser = async () => {
@@ -215,32 +218,34 @@ const GamePage = () => {
     const rewardPoolMinusCommissionInUsd = (rewardPoolMinusCommissionInEth * ethToUsdRate).toFixed(2);
 
     return (
-        <div className={`min-h-screen flex flex-col justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : 'light-mode'}`}>
-            <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded shadow-lg">
-                <h1 className="text-3xl font-semibold mb-4">Game Page</h1>
-                {currentUser && <p className="mb-4">Hello, {currentUser}!</p>}
-                <p className="mb-2">Game ID: {gameId}</p>
-                <p className="mb-2">Reward Pool: {rewardPoolMinusCommission} wei</p>
-                <p className="mb-2">Reward Pool: {rewardPoolMinusCommissionInEth} eth</p>
-                <p className="mb-2">Reward Pool: ${rewardPoolMinusCommissionInUsd}</p>
-                <p className="mb-2">Player 1: {player1Username}</p>
-                <p className="mb-2">Player 2: {player2Username}</p>
-                <p className="mb-2">Game URL: {gameUrl}</p>
-                <button
-                    onClick={handleJoinGame}
-                    className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600 mr-2"
-                >
-                    Join Game
-                </button>
-                <button
-                    onClick={handleReportGameOver}
-                    className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600"
-                >
-                    Report Game Over
-                </button>
-            </div>
+        <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
+            <Typography variant="h3" sx={{ mb: 4 }}>Game Page</Typography>
+            {currentUser && <Typography variant="body1" sx={{ mb: 2 }}>Hello, {currentUser}!</Typography>}
+            <Typography variant="body1" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPoolMinusCommission} wei</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPoolMinusCommissionInEth} eth</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: ${rewardPoolMinusCommissionInUsd}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Player 1: {player1Username}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Player 2: {player2Username}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Game URL: {gameUrl}</Typography>
+            <Button
+                onClick={handleJoinGame}
+                variant="contained"
+                color="primary"
+                sx={{ '&:hover': { bgcolor: 'primary.dark' }, mb: 2, mr: 2 }}
+            >
+                Join Game
+            </Button>
+            <Button
+                onClick={handleReportGameOver}
+                variant="contained"
+                color="error"
+                sx={{ '&:hover': { bgcolor: 'error.dark' }, mb: 2 }}
+            >
+                Report Game Over
+            </Button>
         </div>
     );
-};
+}
 
 export default GamePage;

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, TextField, Button, Typography } from '@mui/material'; // Import MUI components
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 function LandingPage({ userInfo }) {
   const [username, setUsername] = useState('');
   const [isEligible, setIsEligible] = useState(null);
   const [reason, setReason] = useState('');
   const navigate = useNavigate();
+  const theme = useTheme(); // Get the current theme
 
   useEffect(() => {
     if (userInfo && userInfo.wallet_address && userInfo.username) {
       navigate('/dashboard');
     }
   }, [userInfo]);
-
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -45,35 +47,39 @@ function LandingPage({ userInfo }) {
   };
 
   return (
-    <div className={`min-h-screen flex justify-center items-center ${userInfo?.dark_mode ? 'dark-mode' : ''}`}>
-      <div className="max-w-md w-full p-8 bg-white rounded shadow-lg">
-        <h1 className="text-3xl font-semibold mb-4">welcome to cheth</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block">
-            <span className="text-gray-700">enter your lichess username:</span>
-            <input
-              type="text"
+    <Container maxWidth="md" sx={{ py: 8 }}>
+      <div className={`min-h-screen flex justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : ''}`}>
+        <div className={`max-w-md w-full p-8 rounded shadow-lg ${theme.palette.mode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+          <Typography variant="h3" sx={{ mb: 4 }}>Welcome to Cheth</Typography>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <TextField
+              label="Enter your lichess username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              variant="outlined"
+              fullWidth
+              sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'transparent', '& input': { color: theme.palette.mode === 'dark' ? 'white' : 'inherit' } }}
             />
-          </label>
-          <button
-            type="submit"
-            className="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-          >
-            Check Eligibility
-          </button>
-        </form>
-        {isEligible !== null && (
-          <p className="text-sm mt-4">
-            {isEligible ? 'You are eligible to join' :
-              `You are not eligible to join because: ${reason}`
-            }
-          </p>
-        )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
+            >
+              Check Eligibility
+            </Button>
+          </form>
+          {isEligible !== null && (
+            <Typography variant="body2" className="mt-4">
+              {isEligible ? 'You are eligible to join' :
+                `You are not eligible to join because: ${reason}`
+              }
+            </Typography>
+          )}
+        </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
