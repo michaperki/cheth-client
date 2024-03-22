@@ -7,6 +7,7 @@ import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 const DashboardPage = ({ userInfo }) => {
     const navigate = useNavigate();
     const theme = useTheme(); // Get the current theme
+    const [onlineUsersCount, setOnlineUsersCount] = useState(0); // State to store the online users count
 
     // Function to handle WebSocket messages
     const handleWebSocketMessage = (message) => {
@@ -18,6 +19,11 @@ const DashboardPage = ({ userInfo }) => {
             console.log("Game started. Navigating to game pending page...");
             const gameId = messageData.gameId;
             navigate(`/game-pending/${gameId}`);
+        }
+
+        // Update online users count if received
+        if (messageData.type === "ONLINE_USERS_COUNT") {
+            setOnlineUsersCount(messageData.count);
         }
     };
 
@@ -56,7 +62,8 @@ const DashboardPage = ({ userInfo }) => {
             <div className={`min-h-screen flex flex-col justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : 'light-mode'}`}>
                 <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
                     <Typography variant="h3" sx={{ mb: 4 }}>Dashboard</Typography>
-                    <Typography sx={{ mb: 4 }}>Welcome, {userInfo?.username}</Typography>
+                    <Typography sx={{ mb: 2 }}>Welcome, {userInfo?.username}</Typography>
+                    <Typography sx={{ mb: 4 }}>Online Users: {onlineUsersCount}</Typography>
                     <Button
                         onClick={playGame}
                         variant="contained"
