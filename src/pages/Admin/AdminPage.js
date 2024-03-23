@@ -82,6 +82,26 @@ const AdminPage = () => {
         }
       };
 
+      const finishGame = async (gameId) => {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/forceDraw`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gameId }),
+          });
+          if (!response.ok) {
+            throw new Error('Failed to finish game');
+          }
+          // Update the games state after finishing the game
+          const updatedGames = games.filter((game) => game.id !== gameId);
+          setGames(updatedGames);
+        } catch (error) {
+          console.error('Error finishing game:', error);
+        }
+      };
+
     return (
 
         <div className={`max-w w-full p-8 rounded shadow-lg ${theme.palette.mode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
@@ -91,7 +111,7 @@ const AdminPage = () => {
                 <StateBox title={games.length} subtitle="Total Games" />
                 <StateBox title={users.length} subtitle="Total Users" />
             </div>
-            <GameTable gameData={games} cancelGame={cancelGame} />
+            <GameTable gameData={games} cancelGame={cancelGame} finishGame={finishGame} />
             <Button variant="contained" className="mt-4" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
 
         </div>

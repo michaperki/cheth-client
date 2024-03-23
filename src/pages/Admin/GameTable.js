@@ -1,8 +1,10 @@
 import React from "react";
 import { Box, Button, Tooltip, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import ClearIcon from '@mui/icons-material/Clear';
+import DoneIcon from '@mui/icons-material/Done';
 
-const GameTable = ({ gameData, cancelGame }) => {
+const GameTable = ({ gameData, cancelGame, finishGame }) => {
     const theme = useTheme();
     
     // Define the mock data for games with truncated fields
@@ -17,24 +19,45 @@ const GameTable = ({ gameData, cancelGame }) => {
         cancelGame(gameId);
     };
 
+    const handleFinishGame = (gameId) => {
+        // Handle finish game button click event
+        console.log("Finish Game clicked for row with ID:", gameId);
+        finishGame(gameId);
+    };
+    
     const abbreviateAddress = (address) => {
         return address ? `${address.substring(0, 2)}...${address.substring(address.length - 3)}` : null;
     };
     
+    // Render cancel button with Clear icon
     const renderCancelButton = (params) => {
         return (
-            <strong>
+            <Tooltip title="Cancel Game">
                 <Button
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={() => {
-                        handleCancelGame(params.row.game_id);
-                    }}
+                    onClick={() => handleCancelGame(params.row.game_id)}
                 >
-                    X
+                    <ClearIcon />
                 </Button>
-            </strong>
+            </Tooltip>
+        );
+    };
+
+    // Render finish game button with Done icon
+    const renderFinishButton = (params) => {
+        return (
+            <Tooltip title="Finish Game">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => handleFinishGame(params.row.game_id)}
+                >
+                    <DoneIcon />
+                </Button>
+            </Tooltip>
         );
     };
 
@@ -42,20 +65,6 @@ const GameTable = ({ gameData, cancelGame }) => {
     const columns = [
         { field: "game_id", headerName: "ID", flex: 0.5 },
         { field: "contract_address", headerName: "Address", flex: 0.5,
-            renderCell: (params) => (
-                <Tooltip title={params.value}>
-                    <span>{abbreviateAddress(params.value)}</span>
-                </Tooltip>
-            )
-        },
-        { field: "transaction_hash", headerName: "Hash", flex: 0.5,
-            renderCell: (params) => (
-                <Tooltip title={params.value}>
-                    <span>{abbreviateAddress(params.value)}</span>
-                </Tooltip>
-            )
-        },
-        { field: "game_creator_address", headerName: "Creator", flex: 0.5,
             renderCell: (params) => (
                 <Tooltip title={params.value}>
                     <span>{abbreviateAddress(params.value)}</span>
@@ -74,7 +83,12 @@ const GameTable = ({ gameData, cancelGame }) => {
             field: "id", // Use an existing field
             headerName: "Actions",
             flex: 0.5,
-            renderCell: renderCancelButton, // Render the button
+            renderCell: (params) => (
+                <React.Fragment>
+                    {renderCancelButton(params)}
+                    {renderFinishButton(params)}
+                </React.Fragment>
+            ),
             disableClickEventBubbling: true,
         },
     ];
@@ -111,3 +125,5 @@ const GameTable = ({ gameData, cancelGame }) => {
 }
 
 export default GameTable;
+
+
