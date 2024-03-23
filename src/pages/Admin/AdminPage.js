@@ -122,8 +122,32 @@ const AdminPage = () => {
         }
       };
 
-    return (
+      const refreshContractBalances = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/refreshContractBalances`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to refresh contract balances');
+            }
+            // Update the games state after refreshing contract balances
+            const updatedGames = games.map((game) => {
+                return {
+                    ...game,
+                    player1Balance: 0,
+                    player2Balance: 0,
+                };
+            });
+            setGames(updatedGames);
+        } catch (error) {
+            console.error('Error refreshing contract balances:', error);
+        }
+    }
 
+    return (
         <div className={`max-w w-full p-8 rounded shadow-lg ${theme.palette.mode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Admin Page</Typography>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -132,8 +156,8 @@ const AdminPage = () => {
                 <StateBox title={users.length} subtitle="Total Users" />
             </div>
             <GameTable gameData={games} cancelGame={cancelGame} finishGame={finishGame} deleteGame={deleteGame} />
+            <Button variant="contained" className="mt-4" onClick={refreshContractBalances}>Refresh Contract Balances</Button>
             <Button variant="contained" className="mt-4" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
-
         </div>
     );
 }
