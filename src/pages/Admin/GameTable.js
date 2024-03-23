@@ -3,8 +3,9 @@ import { Box, Button, Tooltip, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const GameTable = ({ gameData, cancelGame, finishGame }) => {
+const GameTable = ({ gameData, cancelGame, finishGame, deleteGame }) => {
     const theme = useTheme();
     
     // Define the mock data for games with truncated fields
@@ -23,6 +24,12 @@ const GameTable = ({ gameData, cancelGame, finishGame }) => {
         // Handle finish game button click event
         console.log("Finish Game clicked for row with ID:", gameId);
         finishGame(gameId);
+    };
+
+    const handleDeleteGame = (gameId) => {
+        // Handle delete game button click event
+        console.log("Delete Game clicked for row with ID:", gameId);
+        deleteGame(gameId);
     };
     
     const abbreviateAddress = (address) => {
@@ -61,6 +68,21 @@ const GameTable = ({ gameData, cancelGame, finishGame }) => {
         );
     };
 
+    const renderDeleteButton = (params) => {
+        return (
+            <Tooltip title="Delete Game">
+                <Button
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    onClick={() => handleDeleteGame(params.row.game_id)}
+                >
+                    <DeleteIcon />
+                </Button>
+            </Tooltip>
+        );
+    };
+
     // Define columns for the data grid
     const columns = [
         { field: "game_id", headerName: "ID", flex: 0.5 },
@@ -77,16 +99,17 @@ const GameTable = ({ gameData, cancelGame, finishGame }) => {
         { field: "winner", headerName: "Winner", flex: 0.25 },
         { field: "reward_pool", headerName: "Prize", flex: 0.25 },
         { field: "lichess_id", headerName: "Lichess ID", flex: 0.5 },
-        { field: "created_at", headerName: "Created At", flex: 0.5 },
-        { field: "updated_at", headerName: "Updated At", flex: 0.5 },
+        { field: "created_at", headerName: "Created At", flex: 0.25 },
+        { field: "updated_at", headerName: "Updated At", flex: 0.25 },
         {
             field: "id", // Use an existing field
             headerName: "Actions",
-            flex: 0.5,
+            flex: .75,
             renderCell: (params) => (
                 <React.Fragment>
                     {renderCancelButton(params)}
                     {renderFinishButton(params)}
+                    {renderDeleteButton(params)}
                 </React.Fragment>
             ),
             disableClickEventBubbling: true,
