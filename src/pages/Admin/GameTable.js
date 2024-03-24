@@ -1,14 +1,16 @@
-import React from "react";
-import { Box, Button, Tooltip, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Tooltip, useTheme, Snackbar } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
 const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContractBalance }) => {
     const theme = useTheme();
-    
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
+
     // Define the mock data for games with truncated fields
     const mockDataGames = gameData.map((game, index) => ({
         id: index + 1,
@@ -38,7 +40,13 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         console.log("Refresh Contract Balance clicked for row with ID:", gameId);
         refreshContractBalance(gameId);
     };
-        
+    
+    const handleCopyAddress = (address) => {
+        // Copy address to clipboard and show snackbar
+        navigator.clipboard.writeText(address);
+        setSnackbarOpen(true);
+    };
+
     const abbreviateAddress = (address) => {
         return address ? `${address.substring(0, 2)}...${address.substring(address.length - 3)}` : null;
     };
@@ -105,16 +113,34 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         );
     }
 
+    // Snackbar close handler
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
 
 
     // Define columns for the data grid
     const columns = [
         { field: "game_id", headerName: "ID", flex: 0.5 },
-        { field: "contract_address", headerName: "Address", flex: 0.5,
+        { 
+            field: "contract_address", 
+            headerName: "Address", 
+            flex: 0.5,
             renderCell: (params) => (
-                <Tooltip title={params.value}>
-                    <span>{abbreviateAddress(params.value)}</span>
-                </Tooltip>
+                <Box display="flex" alignItems="center">
+                    <Tooltip title={params.value}>
+                        <span>{abbreviateAddress(params.value)}</span>
+                    </Tooltip>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => handleCopyAddress(params.value)}
+                        sx={{ marginLeft: 'auto', minWidth: 'unset' }}
+                    >
+                        <ContentCopyOutlinedIcon fontSize="small" />
+                    </Button>
+                </Box>
             )
         },
         { field: "player1_id", headerName: "P1", flex: 0.25 },
@@ -168,10 +194,15 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
                     components={{ Toolbar: GridToolbar }}
                 />
             </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={2000} // 2 seconds
+                onClose={handleCloseSnackbar}
+                message="Address copied"
+            />
         </Box>
     );
 }
-
 export default GameTable;
 
 
