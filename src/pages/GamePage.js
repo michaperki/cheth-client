@@ -4,7 +4,6 @@ import useWallet from '../hooks/useWallet';
 import Web3 from 'web3';
 import { Button, Typography } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import { useEthToUsd } from '../contexts/EthToUsdContext';
 
 const GamePage = () => {
     const { gameId } = useParams();
@@ -14,9 +13,9 @@ const GamePage = () => {
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
     const [rewardPool, setRewardPool] = useState(0);
+    const [ethToUsdRate, setEthToUsdRate] = useState(0);
     const [userInfo, setUserInfo] = useState(null);
     const theme = useTheme(); // Get the current theme
-    const { ethToUsdRate } = useEthToUsd(); // Use the useEthToUsd hook to access the ethToUsdRate
 
     useEffect(() => {
         const getUser = async () => {
@@ -45,6 +44,24 @@ const GamePage = () => {
             getUser();
         }
     }, [walletAddress]);
+
+    // Fetch ETH to USD conversion rate
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                console.log('ETH to USD conversion rate:', data);
+                setEthToUsdRate(data)
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
+            }
+        };
+        fetchEthToUsdRate();
+    }, []);
 
     // Function to create a challenge
     const createChallenge = async () => {
