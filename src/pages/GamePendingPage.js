@@ -53,10 +53,6 @@ const GamePendingPage = () => {
         fetchEthToUsdRate();
     }, [fundsTransferMessage]);
 
-    useEffect(() => {
-        fetchEthToUsdRate();
-    }, []);
-
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
