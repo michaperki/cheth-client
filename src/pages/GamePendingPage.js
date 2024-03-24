@@ -94,7 +94,7 @@ const GamePendingPage = () => {
         }
 
         // Inside the handleWebSocketMessage function
-        if (messageData.type === "FUNDS_TRANSFERRED") {
+        if (messageData.type === "FUNDS_TRANSFERRED" && ethToUsdRate > 0) {
             // Convert transferred funds from wei to ether
             const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
             // Convert transferred funds from ether to USD using the conversion rate
