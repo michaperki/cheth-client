@@ -6,7 +6,7 @@ import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import { Button, Typography } from '@mui/material'; // Import MUI components
+import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -18,6 +18,9 @@ const GamePendingPage = () => {
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
+    const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
+
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
 
@@ -73,10 +76,25 @@ const GamePendingPage = () => {
             console.log("Game is primed. Navigating to game page...");
             navigate(`/game/${gameId}`);
         }
+
+        // Handle FUNDS_TRANSFERRED message
+        if (messageData.type === "FUNDS_TRANSFERRED") {
+            // Show Snackbar notification
+            setSnackbarMessage(`You received ${messageData.amount} ETH.`);
+            setSnackbarOpen(true);
+        }
     }
 
     // Use the useWebSocket hook    
     const socket = useWebSocket(handleWebSocketMessage);
+
+    // Snackbar close handler
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
     useEffect(() => {
         // Fetch game info when gameId changes
@@ -195,6 +213,13 @@ const GamePendingPage = () => {
                     <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
                 </div>
             )}
+            <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                message={snackbarMessage}
+            />
         </div>
     );
 }

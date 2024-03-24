@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from '../hooks/useWebsocket';
-import { Button, Container, Typography, CircularProgress } from '@mui/material'; // Import MUI components
+import { Button, Container, Typography, CircularProgress, Snackbar } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 const DashboardPage = ({ userInfo }) => {
@@ -10,6 +10,8 @@ const DashboardPage = ({ userInfo }) => {
     const [onlineUsersCount, setOnlineUsersCount] = useState(0); // State to store the online users count
     const [searchingForOpponent, setSearchingForOpponent] = useState(false); // State to indicate if searching for opponent
     const [opponentFound, setOpponentFound] = useState(false); // State to indicate if opponent found
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
+    const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
 
     // Function to handle WebSocket messages
     const handleWebSocketMessage = (message) => {
@@ -32,10 +34,26 @@ const DashboardPage = ({ userInfo }) => {
         if (messageData.type === "ONLINE_USERS_COUNT") {
             setOnlineUsersCount(messageData.count);
         }
+
+        // Handle FUNDS_TRANSFERRED message
+        if (messageData.type === "FUNDS_TRANSFERRED") {
+            // Show Snackbar notification
+            setSnackbarMessage(`You received ${messageData.amount} ETH.`);
+            setSnackbarOpen(true);
+        }
     };
 
     // Use the useWebSocket hook to establish WebSocket connection
     const socket = useWebSocket(handleWebSocketMessage);
+
+    // Snackbar close handler
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
 
     const playGame = async () => {
         try {
@@ -115,6 +133,13 @@ const DashboardPage = ({ userInfo }) => {
                     )}
                 </div>
             </div>
+            <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                message={snackbarMessage}
+            />
         </Container>
     );
 };
