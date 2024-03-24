@@ -21,7 +21,6 @@ const GamePendingPage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
-    const [fundsTransferMessage, setFundsTransferMessage] = useState(null);
 
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
@@ -38,20 +37,19 @@ const GamePendingPage = () => {
                 }
                 const data = await response.json();
                 console.log('ETH to USD conversion rate:', data);
-                setEthToUsdRate(data);
-
-                // Check if funds transfer message is available
-                if (fundsTransferMessage) {
-                    // Process the transferred funds
-                    handleWebSocketMessage(fundsTransferMessage);
+                // if the data is not zero, then set the eth to usd rate
+                if (data !== 0) {
+                    setEthToUsdRate(data);
                 }
+
+                // Check if funds transfer message is av
             } catch (error) {
                 console.error('Error fetching ETH to USD conversion rate:', error);
             }
         };
 
         fetchEthToUsdRate();
-    }, [fundsTransferMessage]);
+    }, []);
 
     const getGameInfo = async () => {
         try {
@@ -102,7 +100,6 @@ const GamePendingPage = () => {
         // Inside the handleWebSocketMessage function
         if (messageData.type === "FUNDS_TRANSFERRED") {
             console.log('messageData', messageData);
-            setFundsTransferMessage(messageData);
 
             console.log('ETH to USD conversion rate:', ethToUsdRate);
             // Check if ethToUsdRate is available
