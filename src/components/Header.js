@@ -16,6 +16,9 @@ const Header = ({ userInfo, toggleDarkMode, darkMode }) => {
                     <li className="mr-6">
                         <Link to="/" className="hover:text-gray-300">Home</Link>
                     </li>
+                    <li className="mr-6">
+                        <Link to="/admin" className="hover:text-gray-300">Admin</Link>
+                    </li>
                 </ul>
                 <div>
                     {!walletAddress && (

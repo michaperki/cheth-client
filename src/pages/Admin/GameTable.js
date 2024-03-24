@@ -128,7 +128,7 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         {
             field: "id", // Use an existing field
             headerName: "Actions",
-            flex: .75,
+            flex: 1,
             renderCell: (params) => (
                 <React.Fragment>
                     {renderCancelButton(params)}
