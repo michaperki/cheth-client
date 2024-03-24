@@ -7,6 +7,7 @@ import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
+import useEthToUsd from './contexts/EthToUsdContext'; // Import EthToUsdContext
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -20,7 +21,9 @@ const GamePendingPage = () => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
-    const [ethToUsdRate, setEthToUsdRate] = useState(0);
+    const { ethToUsdRate } = useEthToUsd(); // Get ETH to USD conversion rate from context
+    console.log('ETH to USD conversion rate in GamePending Page:', ethToUsdRate);
+
 
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
@@ -56,30 +59,6 @@ const GamePendingPage = () => {
         }
     };
 
-    // Function to fetch the ETH to USD conversion rate
-    useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                // if the data is not zero, then set the eth to usd rate
-                if (data !== 0) {
-                    setEthToUsdRate(data);
-                }
-
-                // Check if funds transfer message is av
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-
-        fetchEthToUsdRate();
-    }, []);
-    
     // Function declaration moved above the useWebSocket hook
     function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);
