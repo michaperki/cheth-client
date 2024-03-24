@@ -7,7 +7,7 @@ import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
-import useEthToUsd from './contexts/EthToUsdContext'; // Import EthToUsdContext
+import { useEthToUsd } from '../contexts/EthToUsdContext'; // Import EthToUsdContext
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
