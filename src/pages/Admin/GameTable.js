@@ -4,8 +4,9 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
-const GameTable = ({ gameData, cancelGame, finishGame, deleteGame }) => {
+const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContractBalance }) => {
     const theme = useTheme();
     
     // Define the mock data for games with truncated fields
@@ -31,7 +32,13 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame }) => {
         console.log("Delete Game clicked for row with ID:", gameId);
         deleteGame(gameId);
     };
-    
+
+    const handleRefreshContractBalance = (gameId) => {
+        // Handle refresh contract balance button click event
+        console.log("Refresh Contract Balance clicked for row with ID:", gameId);
+        refreshContractBalance(gameId);
+    };
+        
     const abbreviateAddress = (address) => {
         return address ? `${address.substring(0, 2)}...${address.substring(address.length - 3)}` : null;
     };
@@ -83,6 +90,23 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame }) => {
         );
     };
 
+    const renderRefreshButton = (params) => {
+        return (
+            <Tooltip title="Refresh Contract Balance">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => handleRefreshContractBalance(params.row.game_id)}
+                >
+                    <RefreshIcon />
+                </Button>
+            </Tooltip>
+        );
+    }
+
+
+
     // Define columns for the data grid
     const columns = [
         { field: "game_id", headerName: "ID", flex: 0.5 },
@@ -110,6 +134,7 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame }) => {
                     {renderCancelButton(params)}
                     {renderFinishButton(params)}
                     {renderDeleteButton(params)}
+                    {renderRefreshButton(params)}
                 </React.Fragment>
             ),
             disableClickEventBubbling: true,

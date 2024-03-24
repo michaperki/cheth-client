@@ -122,31 +122,35 @@ const AdminPage = () => {
         }
       };
 
-      const refreshContractBalances = async () => {
+      const refreshContractBalance = async (gameId) => {
+        // send the game id to the refresh contract balance endpoint
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/refreshContractBalances`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            if (!response.ok) {
-                throw new Error('Failed to refresh contract balances');
-            }
-            // Update the games state after refreshing contract balances
-            const updatedGames = games.map((game) => {
-                return {
-                    ...game,
-                    player1Balance: 0,
-                    player2Balance: 0,
-                };
-            });
-            setGames(updatedGames);
-        } catch (error) {
-            console.error('Error refreshing contract balances:', error);
-        }
-    }
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/refreshContractBalance`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gameId }),
+          });
 
+          if (!response.ok) {
+            throw new Error('Failed to refresh contract balances');
+          }
+
+          // fetch the games again to get the updated balances
+          const responseGames = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/games`);
+          if (!responseGames.ok) {
+            throw new Error('Failed to fetch games');
+          }
+          const data = await responseGames.json();
+          console.log('Games:', data);
+          setGames(data);
+
+        } catch (error) {
+          console.error('Error refreshing contract balances:', error);
+        }
+      }
+        
     return (
         <div className={`max-w w-full p-8 rounded shadow-lg ${theme.palette.mode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Admin Page</Typography>
@@ -155,8 +159,7 @@ const AdminPage = () => {
                 <StateBox title={games.length} subtitle="Total Games" />
                 <StateBox title={users.length} subtitle="Total Users" />
             </div>
-            <GameTable gameData={games} cancelGame={cancelGame} finishGame={finishGame} deleteGame={deleteGame} />
-            <Button variant="contained" className="mt-4" onClick={refreshContractBalances}>Refresh Contract Balances</Button>
+            <GameTable gameData={games} cancelGame={cancelGame} finishGame={finishGame} deleteGame={deleteGame} refreshContractBalance={refreshContractBalance} />
             <Button variant="contained" className="mt-4" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
         </div>
     );
