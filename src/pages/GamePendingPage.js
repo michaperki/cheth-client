@@ -27,30 +27,6 @@ const GamePendingPage = () => {
 
     const navigate = useNavigate();
 
-    // Function to fetch the ETH to USD conversion rate
-    useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                // if the data is not zero, then set the eth to usd rate
-                if (data !== 0) {
-                    setEthToUsdRate(data);
-                }
-
-                // Check if funds transfer message is av
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-
-        fetchEthToUsdRate();
-    }, []);
-
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
@@ -80,6 +56,30 @@ const GamePendingPage = () => {
         }
     };
 
+    // Function to fetch the ETH to USD conversion rate
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                console.log('ETH to USD conversion rate:', data);
+                // if the data is not zero, then set the eth to usd rate
+                if (data !== 0) {
+                    setEthToUsdRate(data);
+                }
+
+                // Check if funds transfer message is av
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
+            }
+        };
+
+        fetchEthToUsdRate();
+    }, []);
+    
     // Function declaration moved above the useWebSocket hook
     function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);

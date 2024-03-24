@@ -11,7 +11,6 @@ import useWallet from './hooks/useWallet'; // Import useWallet hook
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-
 import './App.css';
 
 function App() {
