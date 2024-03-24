@@ -21,6 +21,7 @@ const GamePendingPage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
+    const [fundsTransferMessage, setFundsTransferMessage] = useState(null);
 
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
@@ -28,19 +29,29 @@ const GamePendingPage = () => {
     const navigate = useNavigate();
 
     // Function to fetch the ETH to USD conversion rate
-    const fetchEthToUsdRate = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch ETH to USD conversion rate');
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                console.log('ETH to USD conversion rate:', data);
+                setEthToUsdRate(data);
+
+                // Check if funds transfer message is available
+                if (fundsTransferMessage) {
+                    // Process the transferred funds
+                    handleWebSocketMessage(fundsTransferMessage);
+                }
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
             }
-            const data = await response.json();
-            console.log('ETH to USD conversion rate:', data);
-            setEthToUsdRate(data);
-        } catch (error) {
-            console.error('Error fetching ETH to USD conversion rate:', error);
-        }
-    };
+        };
+
+        fetchEthToUsdRate();
+    }, [fundsTransferMessage]);
 
     useEffect(() => {
         fetchEthToUsdRate();
@@ -94,6 +105,10 @@ const GamePendingPage = () => {
 
         // Inside the handleWebSocketMessage function
         if (messageData.type === "FUNDS_TRANSFERRED") {
+            console.log('messageData', messageData);
+            setFundsTransferMessage(messageData);
+
+            console.log('ETH to USD conversion rate:', ethToUsdRate);
             // Check if ethToUsdRate is available
 
             if (ethToUsdRate > 0) {
@@ -253,12 +268,83 @@ const GamePendingPage = () => {
 export default GamePendingPage;
 
 
-/// why is the ethToUsdRate zero when the FUNDS_TRANSFERRED message is received?
-// answer: The ethToUsdRate is zero when the FUNDS_TRANSFERRED message is received because the ethToUsdRate state variable is set asynchronously in the fetchEthToUsdRate function. The fetchEthToUsdRate function fetches the ETH to USD conversion rate from the server and updates the ethToUsdRate state variable. However, the FUNDS_TRANSFERRED message is received before the ethToUsdRate state variable is updated, resulting in the ethToUsdRate being zero when the message is processed.
-// to fix this issue, we can check if the ethToUsdRate is greater than zero before processing the FUNDS_TRANSFERRED message. If the ethToUsdRate is zero, we can log a message to indicate that the conversion rate is not available and handle the message accordingly. Additionally, we can add a loading indicator or disable the functionality that depends on the ethToUsdRate until the conversion rate is fetched and updated in the state. This way, we ensure that the conversion rate is available before processing messages that depend on it.
-// I'm already doing that... but I think the issue is that the ethToUsdRate is fetched only once when the component mounts. If the conversion rate changes while the user is on the page, the component won't be aware of the change. How can I handle this scenario?
-// answer: To handle the scenario where the ETH to USD conversion rate changes while the user is on the page, you can implement a periodic refresh mechanism to fetch the latest conversion rate at regular intervals. This way, the component can stay up to date with the latest conversion rate and ensure that the FUNDS_TRANSFERRED message is processed correctly with the updated rate.
-// You can achieve this by using the setInterval function to periodically fetch the conversion rate at a specified interval. Here's an example of how you can implement this in your component:
+/// why is the etherium to usd rate not available?
 
-// Add a new state variable to store the interval ID
-// Implement a function to fetch the conversion rate and update the state
+// ETH to USD conversion rate: 3438.41
+// useWebsocket.js:17 Connected to WebSocket
+// useWebsocket.js:21 Received message in useWebsocket hook: {"type":"ONLINE_USERS_COUNT","count":1}
+// GamePendingPage.js:81 Received message in GamePendingPage: {"type":"ONLINE_USERS_COUNT","count":1}
+// GamePendingPage.js:83 messageData Object
+// GamePendingPage.js:58 Game data: Object
+// GamePendingPage.js:62 Game is ready. Navigating to game page...
+// GamePendingPage.js:63 Game contract address: 0xEC8bAC9374450D79E4956aAf002471E25B09710a
+// useWebsocket.js:21 Received message in useWebsocket hook: {"type":"ONLINE_USERS_COUNT","count":2}
+// GamePendingPage.js:81 Received message in GamePendingPage: {"type":"ONLINE_USERS_COUNT","count":2}
+// GamePendingPage.js:83 messageData Object
+// GamePendingPage.js:190  Error: uR: Parameter decoding error: Returned values aren't valid, did it run Out of Gas? You might also see this error if you are not using the correct ABI for the contract you are retrieving data from, requesting data from a block number that does not exist, or querying a node which is not fully synced.
+//     at eH (https://cheth-client.vercel.app/static/js/main.8505e924.js:2:2837719)
+//     at tH (https://cheth-client.vercel.app/static/js/main.8505e924.js:2:2837802)
+//     at https://cheth-client.vercel.app/static/js/main.8505e924.js:2:2886299
+//     at Contract.<anonymous> (https://cheth-client.vercel.app/static/js/main.8505e924.js:2:2886352)
+//     at Generator.next (<anonymous>)
+//     at a (https://cheth-client.vercel.app/static/js/main.8505e924.js:2:2877622)
+// onClick @ GamePendingPage.js:190
+// useWebsocket.js:21 Received message in useWebsocket hook: {"type":"GAME_JOINED","gameId":112,"player":"0x883fFb458336966669473732baD48e5438AF8fde"}
+// GamePendingPage.js:81 Received message in GamePendingPage: {"type":"GAME_JOINED","gameId":112,"player":"0x883fFb458336966669473732baD48e5438AF8fde"}
+// GamePendingPage.js:83 messageData {type: 'GAME_JOINED', gameId: 112, player: '0x883fFb458336966669473732baD48e5438AF8fde'}
+// GamePendingPage.js:86 Game Joined. Updating contract balance...
+// GamePendingPage.js:52 Fetching game info...
+// GamePendingPage.js:58 Game data: {game_id: 112, contract_address: '0xEC8bAC9374450D79E4956aAf002471E25B09710a', transaction_hash: '0xc1c8db8e1b813d4195358a3f09454e5b77097485ecd26611c4276190612cfe30', game_creator_address: '0x1740CC8924FC812725ACA36Be29a0B677B300171', player1_id: 9, …}
+// useWebsocket.js:21 Received message in useWebsocket hook: {"type":"FUNDS_TRANSFERRED","to":"0x883fFb458336966669473732baD48e5438AF8fde","amount":"10000000000000000"}
+// GamePendingPage.js:81 Received message in GamePendingPage: {"type":"FUNDS_TRANSFERRED","to":"0x883fFb458336966669473732baD48e5438AF8fde","amount":"10000000000000000"}
+// GamePendingPage.js:83 messageData {type: 'FUNDS_TRANSFERRED', to: '0x883fFb458336966669473732baD48e5438AF8fde', amount: '10000000000000000'}
+// GamePendingPage.js:108 ETH to USD conversion rate not available
+
+// The ETH to USD conversion rate is not available because the fetchEthToUsdRate function is called in the useEffect hook with an empty dependency array. This means that the function is only called once when the component mounts, and the conversion rate is fetched only once. If the conversion rate is not available at that time, it will not be fetched again.
+// but the conversion rate is fetched when the component mounts, so why is it not available when the funds are transferred?
+// The issue is that the funds are transferred before the conversion rate is fetched. The fetchEthToUsdRate function is asynchronous, so it takes some time to fetch the conversion rate. If the funds are transferred before the conversion rate is available, the conversion rate will be 0, and the message "ETH to USD conversion rate not available" will be logged.
+// To fix this issue, you can wait for the conversion rate to be fetched before processing the transferred funds. You can do this by checking if the conversion rate is available before converting the funds from wei to USD. If the conversion rate is not available, you can log a message or handle the funds differently. Here's an updated version of the handleWebSocketMessage function that checks if the conversion rate is available before processing the transferred funds:
+// Inside the handleWebSocketMessage function
+// if (messageData.type === "FUNDS_TRANSFERRED") {
+//     // Check if ethToUsdRate is available
+//     if (ethToUsdRate > 0) {
+//         // Convert transferred funds from wei to ether
+//         const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+//         // Convert transferred funds from ether to USD using the conversion rate
+//         const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+//         // Show Snackbar notification with transferred funds in USD
+//         setSnackbarMessage(`You received $${transferredInUsd}.`);
+//         setSnackbarOpen(true);
+//     } else {
+//         console.log('ETH to USD conversion rate not available');
+//     }
+// }
+
+// This updated version of the handleWebSocketMessage function checks if the ethToUsdRate is greater than 0 before processing the transferred funds. If the conversion rate is available, the transferred funds are converted from wei to USD and a Snackbar notification is shown. If the conversion rate is not available, a message is logged to indicate that the conversion rate is not available. This ensures that the transferred funds are processed correctly when the conversion rate is available.
+// By making this change, you can ensure that the transferred funds are processed correctly even if the conversion rate is not available at the time of the transfer.
+
+// but I want the conversion rate to be fetched before the funds are transferred, how can I do that?
+// To ensure that the conversion rate is fetched before the funds are transferred, you can update the useEffect hook that fetches the conversion rate to also fetch the funds transfer message. This way, the conversion rate will be available before the funds are transferred, and the transferred funds can be processed correctly. Here's an updated version of the useEffect hook that fetches the conversion rate and funds transfer message:
+// useEffect(() => {
+//     const fetchEthToUsdRate = async () => {
+//         try {
+//             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+//             if (!response.ok) {
+//                 throw new Error('Failed to fetch ETH to USD conversion rate');
+//             }
+//             const data = await response.json();
+//             console.log('ETH to USD conversion rate:', data);
+//             setEthToUsdRate(data);
+
+//             // Check if funds transfer message is available
+//             if (fundsTransferMessage) {
+//                 // Process the transferred funds
+//                 handleWebSocketMessage(fundsTransferMessage);
+//             }
+//         } catch (error) {
+//             console.error('Error fetching ETH to USD conversion rate:', error);
+//         }
+//     };
+
+//     fetchEthToUsdRate();
+// }, [fundsTransferMessage]);
