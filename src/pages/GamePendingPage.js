@@ -20,16 +20,32 @@ const GamePendingPage = () => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
+    const [ethToUsdRate, setEthToUsdRate] = useState(0);
 
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
 
     const navigate = useNavigate();
 
-    // CONCERNED THAT THESE ARE NOT IN THE RIGHT PLACE (MOVED FROM CONTRACT_READY WEB SOCKET MESSAGE HANDLER)
-    // const contract = new web3.eth.Contract(Chess.abi, contractAddress);
-    // setContractInstance(contract);
-    // END OF CONCERN
+    
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                console.log('ETH to USD conversion rate:', data);
+                setEthToUsdRate(data)
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
+            }
+        };
+
+        fetchEthToUsdRate();
+    }, []);
+    
 
     const getGameInfo = async () => {
         try {
@@ -77,10 +93,14 @@ const GamePendingPage = () => {
             navigate(`/game/${gameId}`);
         }
 
-        // Handle FUNDS_TRANSFERRED message
+        // Inside the handleWebSocketMessage function
         if (messageData.type === "FUNDS_TRANSFERRED") {
-            // Show Snackbar notification
-            setSnackbarMessage(`You received ${messageData.amount} ETH.`);
+            // Convert transferred funds from wei to ether
+            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+            // Convert transferred funds from ether to USD using the conversion rate
+            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+            // Show Snackbar notification with transferred funds in USD
+            setSnackbarMessage(`You received $${transferredInUsd}.`);
             setSnackbarOpen(true);
         }
     }
@@ -219,6 +239,7 @@ const GamePendingPage = () => {
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
                 message={snackbarMessage}
+                sx={{ background: 'green', color: 'white' }} // Custom styling for green background and white text
             />
         </div>
     );
