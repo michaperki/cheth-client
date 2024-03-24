@@ -27,7 +27,7 @@ const GamePendingPage = () => {
 
     const navigate = useNavigate();
 
-    
+
     useEffect(() => {
         const fetchEthToUsdRate = async () => {
             try {
@@ -45,7 +45,7 @@ const GamePendingPage = () => {
 
         fetchEthToUsdRate();
     }, []);
-    
+
 
     const getGameInfo = async () => {
         try {
@@ -94,14 +94,19 @@ const GamePendingPage = () => {
         }
 
         // Inside the handleWebSocketMessage function
-        if (messageData.type === "FUNDS_TRANSFERRED" && ethToUsdRate > 0) {
-            // Convert transferred funds from wei to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            // Convert transferred funds from ether to USD using the conversion rate
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            // Show Snackbar notification with transferred funds in USD
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
+        if (messageData.type === "FUNDS_TRANSFERRED") {
+            // Inside the handleWebSocketMessage function
+            if (messageData.type === "FUNDS_TRANSFERRED" && ethToUsdRate > 0) {
+                // Convert transferred funds from wei to ether
+                const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+                // Convert transferred funds from ether to USD using the conversion rate
+                const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+                // Show Snackbar notification with transferred funds in USD
+                setSnackbarMessage(`You received $${transferredInUsd}.`);
+                setSnackbarOpen(true);
+            } else {
+                console.log('ETH to USD conversion rate not available');
+            }
         }
     }
 
