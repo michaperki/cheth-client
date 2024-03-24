@@ -27,25 +27,24 @@ const GamePendingPage = () => {
 
     const navigate = useNavigate();
 
+    // Function to fetch the ETH to USD conversion rate
+    const fetchEthToUsdRate = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch ETH to USD conversion rate');
+            }
+            const data = await response.json();
+            console.log('ETH to USD conversion rate:', data);
+            setEthToUsdRate(data);
+        } catch (error) {
+            console.error('Error fetching ETH to USD conversion rate:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                setEthToUsdRate(data)
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-
         fetchEthToUsdRate();
     }, []);
-
 
     const getGameInfo = async () => {
         try {
@@ -95,8 +94,9 @@ const GamePendingPage = () => {
 
         // Inside the handleWebSocketMessage function
         if (messageData.type === "FUNDS_TRANSFERRED") {
-            // Inside the handleWebSocketMessage function
-            if (messageData.type === "FUNDS_TRANSFERRED" && ethToUsdRate > 0) {
+            // Check if ethToUsdRate is available
+
+            if (ethToUsdRate > 0) {
                 // Convert transferred funds from wei to ether
                 const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
                 // Convert transferred funds from ether to USD using the conversion rate
@@ -251,3 +251,14 @@ const GamePendingPage = () => {
 }
 
 export default GamePendingPage;
+
+
+/// why is the ethToUsdRate zero when the FUNDS_TRANSFERRED message is received?
+// answer: The ethToUsdRate is zero when the FUNDS_TRANSFERRED message is received because the ethToUsdRate state variable is set asynchronously in the fetchEthToUsdRate function. The fetchEthToUsdRate function fetches the ETH to USD conversion rate from the server and updates the ethToUsdRate state variable. However, the FUNDS_TRANSFERRED message is received before the ethToUsdRate state variable is updated, resulting in the ethToUsdRate being zero when the message is processed.
+// to fix this issue, we can check if the ethToUsdRate is greater than zero before processing the FUNDS_TRANSFERRED message. If the ethToUsdRate is zero, we can log a message to indicate that the conversion rate is not available and handle the message accordingly. Additionally, we can add a loading indicator or disable the functionality that depends on the ethToUsdRate until the conversion rate is fetched and updated in the state. This way, we ensure that the conversion rate is available before processing messages that depend on it.
+// I'm already doing that... but I think the issue is that the ethToUsdRate is fetched only once when the component mounts. If the conversion rate changes while the user is on the page, the component won't be aware of the change. How can I handle this scenario?
+// answer: To handle the scenario where the ETH to USD conversion rate changes while the user is on the page, you can implement a periodic refresh mechanism to fetch the latest conversion rate at regular intervals. This way, the component can stay up to date with the latest conversion rate and ensure that the FUNDS_TRANSFERRED message is processed correctly with the updated rate.
+// You can achieve this by using the setInterval function to periodically fetch the conversion rate at a specified interval. Here's an example of how you can implement this in your component:
+
+// Add a new state variable to store the interval ID
+// Implement a function to fetch the conversion rate and update the state
