@@ -21,9 +21,10 @@ const GamePendingPage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
+    const [conversionRateAvailable, setConversionRateAvailable] = useState(false);
 
     const theme = useTheme(); // Get the current theme
-    const web3 = new Web3(provider);
+    const web3 = new Web3(provider); // Create a new Web3 instance
 
     const navigate = useNavigate();
 
@@ -56,30 +57,6 @@ const GamePendingPage = () => {
         }
     };
 
-    // Function to fetch the ETH to USD conversion rate
-    useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                // if the data is not zero, then set the eth to usd rate
-                if (data !== 0) {
-                    setEthToUsdRate(data);
-                }
-
-                // Check if funds transfer message is av
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-
-        fetchEthToUsdRate();
-    }, []);
-    
     // Function declaration moved above the useWebSocket hook
     function handleWebSocketMessage(message) {
         console.log('Received message in GamePendingPage:', message);
@@ -98,28 +75,36 @@ const GamePendingPage = () => {
         }
 
         // Inside the handleWebSocketMessage function
-        if (messageData.type === "FUNDS_TRANSFERRED") {
-            console.log('messageData', messageData);
+        if (conversionRateAvailable && message.type === "FUNDS_TRANSFERRED") {
 
-            console.log('ETH to USD conversion rate:', ethToUsdRate);
-            // Check if ethToUsdRate is available
-
-            if (ethToUsdRate > 0) {
-                // Convert transferred funds from wei to ether
-                const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-                // Convert transferred funds from ether to USD using the conversion rate
-                const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-                // Show Snackbar notification with transferred funds in USD
-                setSnackbarMessage(`You received $${transferredInUsd}.`);
-                setSnackbarOpen(true);
-            } else {
-                console.log('ETH to USD conversion rate not available');
-            }
+            // Convert transferred funds from wei to ether
+            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+            // Convert transferred funds from ether to USD using the conversion rate
+            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+            // Show Snackbar notification with transferred funds in USD
+            setSnackbarMessage(`You received $${transferredInUsd}.`);
+            setSnackbarOpen(true);
         }
     }
 
-    // Use the useWebSocket hook    
-    const socket = useWebSocket(handleWebSocketMessage);
+    // Fetch ETH to USD conversion rate
+    useEffect(() => {
+        const fetchEthToUsdRate = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch ETH to USD conversion rate');
+                }
+                const data = await response.json();
+                console.log('ETH to USD conversion rate:', data);
+                setEthToUsdRate(data)
+                setConversionRateAvailable(true);
+            } catch (error) {
+                console.error('Error fetching ETH to USD conversion rate:', error);
+            }
+        };
+        fetchEthToUsdRate();
+    }, []);
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
