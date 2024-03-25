@@ -20,18 +20,12 @@ const GamePendingPage = () => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
-    const [ethToUsdRate, setEthToUsdRate] = useState(0);
-    const [conversionRateAvailable, setConversionRateAvailable] = useState(false);
 
     const theme = useTheme(); // Get the current theme
-    const web3 = provider ? new Web3(provider) : null; // Initialize web3 if provider is available
-
-    if (!provider) {
-        console.error('Provider is not available');
-    }
+    const web3 = new Web3(provider);
 
     const navigate = useNavigate();
-
+    
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
@@ -61,24 +55,33 @@ const GamePendingPage = () => {
         }
     };
 
-    // Fetch ETH to USD conversion rate
-    useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                setEthToUsdRate(data)
-                setConversionRateAvailable(true);
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-        fetchEthToUsdRate();
-    }, []);
+    // Function declaration moved above the useWebSocket hook
+    function handleWebSocketMessage(message) {
+        console.log('Received message in GamePendingPage:', message);
+        const messageData = JSON.parse(message);
+        console.log('messageData', messageData);
+
+        if (messageData.type === "GAME_JOINED") {
+            console.log("Game Joined. Updating contract balance...");
+            // Update contract balance with the reward pool from the database
+            getGameInfo();
+        }
+
+        if (messageData.type === "GAME_PRIMED") {
+            console.log("Game is primed. Navigating to game page...");
+            navigate(`/game/${gameId}`);
+        }
+
+        // Handle FUNDS_TRANSFERRED message
+        if (messageData.type === "FUNDS_TRANSFERRED") {
+            // Show Snackbar notification
+            setSnackbarMessage(`You received ${messageData.amount} ETH.`);
+            setSnackbarOpen(true);
+        }
+    }
+
+    // Use the useWebSocket hook    
+    const socket = useWebSocket(handleWebSocketMessage);
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -94,43 +97,6 @@ const GamePendingPage = () => {
             getGameInfo();
         }
     }, [gameId]);
-
-    // Use the useWebSocket hook to establish WebSocket connection
-    const socket = useWebSocket(handleWebSocketMessage);
-
-    // Function declaration moved above the useWebSocket hook
-    function handleWebSocketMessage(message) {
-        console.log('Received message in GamePendingPage:', message);
-        const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
-
-        if (messageData.type === "GAME_JOINED") {
-            console.log("Game Joined. Updating contract balance...");
-            // Update contract balance with the reward pool from the database
-            getGameInfo();
-            // log the eth to usd rate
-            console.log('eth to usd rate when game is joined:', ethToUsdRate);
-            console.log('conversionRateAvailable:', conversionRateAvailable)
-        }
-
-        if (messageData.type === "GAME_PRIMED") {
-            console.log("Game is primed. Navigating to game page...");
-            navigate(`/game/${gameId}`);
-        }
-
-        // Inside the handleWebSocketMessage function
-        if (conversionRateAvailable && message.type === "FUNDS_TRANSFERRED") {
-
-            // Convert transferred funds from wei to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            // Convert transferred funds from ether to USD using the conversion rate
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            // Show Snackbar notification with transferred funds in USD
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
-        }
-    }
-
 
     useEffect(() => {
         // Set up contract instance when contract address is available
@@ -212,7 +178,7 @@ const GamePendingPage = () => {
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
-            {web3 && gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
+            {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <div>
@@ -248,7 +214,6 @@ const GamePendingPage = () => {
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
                 message={snackbarMessage}
-                sx={{ background: 'green', color: 'white' }} // Custom styling for green background and white text
             />
         </div>
     );
