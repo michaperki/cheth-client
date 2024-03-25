@@ -212,7 +212,7 @@ const GamePendingPage = () => {
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
-            {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
+            {web3 && gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
                     <div>
