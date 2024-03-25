@@ -219,6 +219,22 @@ const GamePendingPage = () => {
                     </Button>
                 </div>
             )}
+            {gameInfo && parseInt(gameInfo.state) === 3 && (
+                <div>
+                    <Typography sx={{ mb: 2 }}>Waiting for other player to join...</Typography>
+                    <Button
+                        onClick={cancelGame}
+                        variant="contained"
+                        color="error"
+                        sx={{ '&:hover': { bgcolor: 'error.dark' } }}
+                    >
+                        Cancel Game
+                    </Button>
+                </div>
+            )}
+            {gameInfo && parseInt(gameInfo.state) === -1 && (
+                <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
+            )}
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 open={snackbarOpen}
