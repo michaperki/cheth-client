@@ -7,6 +7,7 @@ import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
+import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -23,6 +24,7 @@ const GamePendingPage = () => {
 
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
+    const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
     const navigate = useNavigate();
     
@@ -74,8 +76,12 @@ const GamePendingPage = () => {
 
         // Handle FUNDS_TRANSFERRED message
         if (messageData.type === "FUNDS_TRANSFERRED") {
+            // Convert transferred amount from wei to USD
+            // first convert the amount to ether
+            const transferredInEth = web3.utils.fromWei(messageData.amount, 'ether');
+            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
             // Show Snackbar notification
-            setSnackbarMessage(`You received ${messageData.amount} ETH.`);
+            setSnackbarMessage(`You received $${transferredInUsd}.`);
             setSnackbarOpen(true);
         }
     }
@@ -174,6 +180,7 @@ const GamePendingPage = () => {
             console.error('Error:', error);
         }
     }
+
 
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>

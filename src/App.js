@@ -8,7 +8,8 @@ import GamePendingPage from './pages/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
 import useWebSocket from './hooks/useWebsocket';
-import useWallet from './hooks/useWallet'; // Import useWallet hook
+import useWallet from './hooks/useWallet';
+import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -76,21 +77,23 @@ function App() {
     console.log('Pinging WebSocket...');
     socket.send(JSON.stringify({ type: 'PING' }));
   };
-  
+
   return (
     <Router>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
-        <Routes>
-          <Route path="/" element={<LandingPage userInfo={userInfo} />} />
-          <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-          <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
-          <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
-          <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
-          <Route path="/admin" element={<AdminPage />} />
-        </Routes>
-      </ThemeProvider>
+      <EthereumPriceProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
+          <Routes>
+            <Route path="/" element={<LandingPage userInfo={userInfo} />} />
+            <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
+            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
+            <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
+            <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+        </ThemeProvider>
+      </EthereumPriceProvider>
     </Router>
   );
 }
