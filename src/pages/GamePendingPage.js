@@ -8,6 +8,7 @@ import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
+import NumberDisplay from '../components/game/NumberDisplay';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
@@ -27,7 +28,7 @@ const GamePendingPage = () => {
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
     const navigate = useNavigate();
-    
+
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
@@ -187,32 +188,35 @@ const GamePendingPage = () => {
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
             {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
-                    <p>Game is ready. Contract address: {gameInfo.contract_address}</p>
-                    <div>
-                        <p>Game creator: {ownerAddress}</p>
-                        <p>Contract balance: {web3.utils.fromWei(contractBalance, 'ether')} ETH</p>
-                        <Button
-                            onClick={joinGame}
-                            variant="contained"
-                            color="primary"
-                            sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
-                        >
-                            Join Game
-                        </Button>
-                        <Button
-                            onClick={cancelGame}
-                            variant="contained"
-                            color="error"
-                            sx={{ '&:hover': { bgcolor: 'error.dark' } }}
-                        >
-                            Cancel Game
-                        </Button>
-                    </div>
+                    <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
+
+                    <Typography sx={{ mb: 2 }}>Contract Balance
+                        <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
+
+                    </Typography>
+                    
+                    {/* display the players */}
+                    <Typography sx={{ mb: 2 }}>Players: {gameInfo.player1_id} vs {gameInfo.player2_id}</Typography>
                 </div>
             )}
-            {gameInfo && gameInfo.state === 3 && (
+            {gameInfo && parseInt(gameInfo.state) === 2 && (
                 <div>
-                    <p>Game is in progress. Transaction hash: {gameInfo.transactionHash}</p>
+                    <Button
+                        onClick={joinGame}
+                        variant="contained"
+                        color="primary"
+                        sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
+                    >
+                        Join Game
+                    </Button>
+                    <Button
+                        onClick={cancelGame}
+                        variant="contained"
+                        color="error"
+                        sx={{ '&:hover': { bgcolor: 'error.dark' } }}
+                    >
+                        Cancel Game
+                    </Button>
                 </div>
             )}
             <Snackbar
