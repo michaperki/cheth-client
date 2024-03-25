@@ -27,6 +27,9 @@ const GamePendingPage = () => {
     const web3 = new Web3(provider); // Create a new Web3 instance
 
     const navigate = useNavigate();
+    
+    // Use the useWebSocket hook to establish WebSocket connection
+    const socket = useWebSocket(handleWebSocketMessage);
 
     const getGameInfo = async () => {
         try {
