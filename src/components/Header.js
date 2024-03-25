@@ -4,8 +4,9 @@ import useWallet from '../hooks/useWallet';
 import IconButton from '@mui/material/IconButton';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
-const Header = ({ userInfo, toggleDarkMode, darkMode }) => {
+const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket }) => {
     const { walletAddress, connectAccount } = useWallet();
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
 
@@ -32,6 +33,9 @@ const Header = ({ userInfo, toggleDarkMode, darkMode }) => {
                             {`(${abbreviatedWalletAddress})`}
                             <IconButton onClick={toggleDarkMode} color="inherit">
                                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+                            </IconButton>
+                            <IconButton onClick={refreshWebSocket} color="inherit">
+                                <RefreshIcon />
                             </IconButton>
                         </div>
                     )}

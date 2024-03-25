@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import GamePendingPage from './pages/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
+import useWebSocket from './hooks/useWebsocket';
 import useWallet from './hooks/useWallet'; // Import useWallet hook
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -64,11 +65,23 @@ function App() {
     },
   });
 
+  const handleWebSocketMessage = (message) => {
+    console.log('Received message in App:', message);
+  };
+
+  // Use the useWebSocket hook to establish WebSocket connection
+  const socket = useWebSocket(handleWebSocketMessage);
+
+  const pingWebSocket = () => {
+    console.log('Pinging WebSocket...');
+    socket.send(JSON.stringify({ type: 'PING' }));
+  };
+  
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+        <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
         <Routes>
           <Route path="/" element={<LandingPage userInfo={userInfo} />} />
           <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
