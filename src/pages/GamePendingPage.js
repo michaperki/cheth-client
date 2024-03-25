@@ -30,7 +30,7 @@ const GamePendingPage = () => {
     } else {
         console.error('Provider is not available');
     }
-    
+
     const navigate = useNavigate();
     
     // Use the useWebSocket hook to establish WebSocket connection
@@ -75,6 +75,9 @@ const GamePendingPage = () => {
             console.log("Game Joined. Updating contract balance...");
             // Update contract balance with the reward pool from the database
             getGameInfo();
+            // log the eth to usd rate
+            console.log('eth to usd rate when game is joined:', ethToUsdRate);
+            console.log('conversionRateAvailable:', conversionRateAvailable)
         }
 
         if (messageData.type === "GAME_PRIMED") {
