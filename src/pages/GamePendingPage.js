@@ -81,6 +81,8 @@ const GamePendingPage = () => {
             // first convert the amount to ether
             const transferredInEth = web3.utils.fromWei(messageData.amount, 'ether');
             const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+            console.log('Received funds:', transferredInEth, 'ETH');
+            console.log('Received funds:', transferredInUsd, 'USD');
             // Show Snackbar notification
             setSnackbarMessage(`You received $${transferredInUsd}.`);
             setSnackbarOpen(true);
