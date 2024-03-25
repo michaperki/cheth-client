@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './NumberDisplay.css'; // Import CSS for styling
 
 const NumberDisplay = ({ amount }) => {
-    console.log('amount:', amount);
   const [displayAmount, setDisplayAmount] = useState(0);
 
   useEffect(() => {
