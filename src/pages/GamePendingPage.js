@@ -24,10 +24,9 @@ const GamePendingPage = () => {
     const [conversionRateAvailable, setConversionRateAvailable] = useState(false);
 
     const theme = useTheme(); // Get the current theme
-    if (provider) {
-        const web3 = new Web3(provider); // Create a new Web3 instance
-        // Now you can use the web3 instance for interacting with the Ethereum network
-    } else {
+    const web3 = provider ? new Web3(provider) : null; // Initialize web3 if provider is available
+
+    if (!provider) {
         console.error('Provider is not available');
     }
 
