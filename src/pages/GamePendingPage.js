@@ -31,9 +31,6 @@ const GamePendingPage = () => {
     }
 
     const navigate = useNavigate();
-    
-    // Use the useWebSocket hook to establish WebSocket connection
-    const socket = useWebSocket(handleWebSocketMessage);
 
     const getGameInfo = async () => {
         try {
@@ -63,39 +60,6 @@ const GamePendingPage = () => {
             console.error('Error fetching game status:', error);
         }
     };
-
-    // Function declaration moved above the useWebSocket hook
-    function handleWebSocketMessage(message) {
-        console.log('Received message in GamePendingPage:', message);
-        const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
-
-        if (messageData.type === "GAME_JOINED") {
-            console.log("Game Joined. Updating contract balance...");
-            // Update contract balance with the reward pool from the database
-            getGameInfo();
-            // log the eth to usd rate
-            console.log('eth to usd rate when game is joined:', ethToUsdRate);
-            console.log('conversionRateAvailable:', conversionRateAvailable)
-        }
-
-        if (messageData.type === "GAME_PRIMED") {
-            console.log("Game is primed. Navigating to game page...");
-            navigate(`/game/${gameId}`);
-        }
-
-        // Inside the handleWebSocketMessage function
-        if (conversionRateAvailable && message.type === "FUNDS_TRANSFERRED") {
-
-            // Convert transferred funds from wei to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            // Convert transferred funds from ether to USD using the conversion rate
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            // Show Snackbar notification with transferred funds in USD
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
-        }
-    }
 
     // Fetch ETH to USD conversion rate
     useEffect(() => {
@@ -130,6 +94,43 @@ const GamePendingPage = () => {
             getGameInfo();
         }
     }, [gameId]);
+
+    // Use the useWebSocket hook to establish WebSocket connection
+    const socket = useWebSocket(handleWebSocketMessage);
+
+    // Function declaration moved above the useWebSocket hook
+    function handleWebSocketMessage(message) {
+        console.log('Received message in GamePendingPage:', message);
+        const messageData = JSON.parse(message);
+        console.log('messageData', messageData);
+
+        if (messageData.type === "GAME_JOINED") {
+            console.log("Game Joined. Updating contract balance...");
+            // Update contract balance with the reward pool from the database
+            getGameInfo();
+            // log the eth to usd rate
+            console.log('eth to usd rate when game is joined:', ethToUsdRate);
+            console.log('conversionRateAvailable:', conversionRateAvailable)
+        }
+
+        if (messageData.type === "GAME_PRIMED") {
+            console.log("Game is primed. Navigating to game page...");
+            navigate(`/game/${gameId}`);
+        }
+
+        // Inside the handleWebSocketMessage function
+        if (conversionRateAvailable && message.type === "FUNDS_TRANSFERRED") {
+
+            // Convert transferred funds from wei to ether
+            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+            // Convert transferred funds from ether to USD using the conversion rate
+            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+            // Show Snackbar notification with transferred funds in USD
+            setSnackbarMessage(`You received $${transferredInUsd}.`);
+            setSnackbarOpen(true);
+        }
+    }
+
 
     useEffect(() => {
         // Set up contract instance when contract address is available
