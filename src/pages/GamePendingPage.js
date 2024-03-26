@@ -42,7 +42,7 @@ const GamePendingPage = () => {
     useEffect(() => {
         const getUser = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -76,14 +76,14 @@ const GamePendingPage = () => {
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info...');
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`);
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGame?gameId=${gameId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch game information');
             }
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
-
+    
             if (gameData && parseInt(gameData.state) === 2) {
                 console.log('Game is ready. Navigating to game page...');
                 console.log('Game contract address:', gameData.contract_address);
@@ -91,7 +91,7 @@ const GamePendingPage = () => {
                 setOwnerAddress(gameData.game_creator_address);
                 setContractBalance(gameData.reward_pool); // Update contract balance
             }
-
+    
             if (gameData && parseInt(gameData.state) === 3) {
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);

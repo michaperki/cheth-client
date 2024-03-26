@@ -14,7 +14,7 @@ const Onboarding = () => {
 
     const submitUserInfo = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/addUser`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/addUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

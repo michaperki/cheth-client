@@ -22,7 +22,7 @@ function LandingPage({ userInfo }) {
     try {
       console.log('Checking eligibility for', username);
       console.log("process.env.REACT_APP_SERVER_BASE_URL", process.env.REACT_APP_SERVER_BASE_URL)
-      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/checkEligibility`, {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/checkEligibility`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

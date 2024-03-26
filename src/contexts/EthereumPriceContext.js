@@ -10,7 +10,7 @@ export const EthereumPriceProvider = ({ children }) => {
   useEffect(() => {
     const fetchEthToUsdRate = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/crypto/ethToUsd`);
         if (!response.ok) {
           throw new Error('Failed to fetch ETH to USD conversion rate');
         }

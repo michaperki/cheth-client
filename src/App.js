@@ -30,7 +30,7 @@ function App() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

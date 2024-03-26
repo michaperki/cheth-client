@@ -29,7 +29,7 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchGames = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/games`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGames`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch games');
                 }
@@ -47,7 +47,7 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/users`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/users`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch users');
                 }
@@ -64,7 +64,7 @@ const AdminPage = () => {
 
     const cancelGame = async (gameId) => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/cancelGame`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const AdminPage = () => {
 
       const finishGame = async (gameId) => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/forceDraw`, {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/forceDraw`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const AdminPage = () => {
 
       const deleteGame = async (gameId) => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/deleteGame`, {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/deleteGame`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const AdminPage = () => {
       const refreshContractBalance = async (gameId) => {
         // send the game id to the refresh contract balance endpoint
         try {
-          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/refreshContractBalance`, {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/refreshContractBalance`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const AdminPage = () => {
           }
 
           // fetch the games again to get the updated balances
-          const responseGames = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/games`);
+          const responseGames = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGames`);
           if (!responseGames.ok) {
             throw new Error('Failed to fetch games');
           }

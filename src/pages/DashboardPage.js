@@ -71,7 +71,7 @@ const DashboardPage = ({ userInfo }) => {
             console.log('Playing game for user:', userInfo.user_id);
             setSearchingForOpponent(true); // Set state to indicate searching for opponent
 
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/playGame`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/playGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
