@@ -183,7 +183,7 @@ const GamePendingPage = () => {
 
     const cancelGame = async () => {
         try {
-            await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/cancelGame`, {
+            await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/cancelGame`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
