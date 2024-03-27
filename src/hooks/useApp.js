@@ -1,3 +1,4 @@
+//useApp Hook
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from './useWallet';
 
