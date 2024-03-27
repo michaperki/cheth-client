@@ -13,32 +13,20 @@ const GamePendingPage = () => {
     const { walletAddress, connectAccount } = useWallet();
 
 
-
-
     const getGameInfo = async (gameId) => {
         try {
             console.log('Getting game info for game ID:', gameId);
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGame`, {
-                method: 'POST', // Change the method to POST
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ gameId })
             });
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch game data');
-            }
-    
-            const data = await response.json();
-            return data; // Return the retrieved game info
         } catch (error) {
             console.error('Error:', error);
-            throw error; // Re-throw the error for the caller to handle
         }
     }
-
-
 
     const { gameInfo, joinGame, cancelGame, hasPlayerJoined, snackbarOpen, snackbarMessage, handleSnackbarClose, handleWebSocketMessage } = useGame(gameId, getGameInfo);
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
