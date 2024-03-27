@@ -102,11 +102,12 @@ const GamePage = () => {
     useEffect(() => {
         const getGameInfo = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/game/${gameId}`, {
-                    method: 'GET',
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGame`, {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    body: JSON.stringify({ gameId })
                 });
 
                 if (!response.ok) {
