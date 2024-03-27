@@ -16,7 +16,10 @@ const useGame = (gameId, getGameInfo) => {
     const ethToUsdRate = 0; // Placeholder for ethToUsdRate
 
     useEffect(() => {
-        getGameInfo(gameId); // Call the passed function with gameId
+        if (gameId) {
+            const data = getGameInfo(gameId); // Call the passed function with gameId
+            setGameInfo(data);
+        }
     }, [gameId, getGameInfo]); // Add gameId and getGameInfo to the dependency array
 
     useEffect(() => {
@@ -46,7 +49,8 @@ const useGame = (gameId, getGameInfo) => {
 
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined. Updating contract balance...");
-            getGameInfo(gameId); // Call the passed function with gameId
+            const data = getGameInfo(gameId); // Call the passed function with gameId
+            setGameInfo(data);
         }
 
         if (messageData.type === "GAME_PRIMED") {
