@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
+import useContract from '../hooks/useContract';
 import useWebSocket from '../hooks/useWebsocket';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
@@ -23,10 +24,10 @@ const GamePendingPage = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
     const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
     const [hasPlayerJoined, setHasPlayerJoined] = useState(false); // State to indicate if the player has joined the game
-    const [joinedPlayers, setJoinedPlayers] = useState([]); // State to store the list of joined players
-
+    const [joinedPlayers, setJoinedPlayers] = useState([]); // State to store the list of joined players   
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider);
+    console.log('chainId:', chainId);
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
     const navigate = useNavigate();
@@ -34,6 +35,9 @@ const GamePendingPage = () => {
     useEffect(() => {
         // Set up contract instance when contract address is available
         if (contractAddress && provider) {
+            console.log('Setting up contract instance...');
+            console.log('Contract address:', contractAddress);
+            console.log('Provider:', provider);
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
@@ -169,7 +173,10 @@ const GamePendingPage = () => {
                 throw new Error('Contract instance not available');
             }
 
+
             const entryFeeInWei = await contractInstance.methods.getEntryFee().call();
+            console.log('Entry fee in wei:', entryFeeInWei);
+            console.log('contract methods:', contractInstance.methods);
             const tx = await contractInstance.methods.joinGame().send({
                 from: walletAddress,
                 value: entryFeeInWei,
