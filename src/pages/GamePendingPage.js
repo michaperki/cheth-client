@@ -26,7 +26,10 @@ const GamePendingPage = () => {
     const [hasPlayerJoined, setHasPlayerJoined] = useState(false); // State to indicate if the player has joined the game
     const [joinedPlayers, setJoinedPlayers] = useState([]); // State to store the list of joined players   
     const theme = useTheme(); // Get the current theme
-    const web3 = new Web3(provider);
+    const web3 = new Web3(provider); // Create 
+    if (provider) {
+        console.log('provider:', provider);
+    }
     console.log('chainId:', chainId);
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
