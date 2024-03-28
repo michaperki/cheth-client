@@ -16,7 +16,11 @@ const GamePage = ({ userInfo }) => {
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
     const theme = useTheme(); // Get the current theme
 
-
+    useEffect(() => {
+        if (userInfo) {
+            setCurrentUser(userInfo.username);
+        }
+    }, [userInfo]);
 
     // Fetch ETH to USD conversion rate
     useEffect(() => {
