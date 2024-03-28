@@ -70,7 +70,6 @@ const DashboardPage = ({ userInfo }) => {
     return (
         <Container maxWidth="100%" sx={{
             py: 8,
-            display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             background: theme.palette.mode === 'dark' ? 'black' : 'white'
@@ -103,7 +102,7 @@ const DashboardPage = ({ userInfo }) => {
                         onClick={playGame}
                         variant="contained"
                         color="primary"
-                        sx={{ width: '100%', '&:hover': { bgcolor: 'primary.dark' } }}
+                        sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
                     >
                         Play a Game for
                         <Typography
@@ -113,7 +112,7 @@ const DashboardPage = ({ userInfo }) => {
                                 fontSize: '1.2rem', // Adjust the font size
                                 fontWeight: 'bold', // Make the text bold
                                 // dark green / light green based on the theme
-                                color: theme.palette.mode === 'dark' ? '#2b8a3e' : '#4caf50'
+                                color: theme.palette.mode === 'dark' ? '#2b8a3e' : '#4caf50',
                             }}
                             variant="h6" component="span"
                         >
