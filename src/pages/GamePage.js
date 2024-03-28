@@ -35,7 +35,7 @@ const GamePage = ({ userInfo }) => {
 
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
-                setGameUrl(gameData.url);
+                setGameUrl(gameData.lichess_id);
                 setRewardPool(gameData.reward_pool);
 
                 // Fetch player 1's username
@@ -78,8 +78,9 @@ const GamePage = ({ userInfo }) => {
     }, [gameId]);
 
     const handleJoinGame = () => {
+        // semd them to the lichess url
         window
-            .open(gameUrl, '_blank')
+            .open(`https://lichess.org/${gameUrl}`, '_blank')
             .focus();
     }
 
