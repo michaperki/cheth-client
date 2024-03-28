@@ -14,10 +14,10 @@ const GamePage = ({ userInfo }) => {
     const [player1Username, setPlayer1Username] = useState('');
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
-    const [rewardPool, setRewardPool] = useState(0);
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
     const [rewardPoolEth, setRewardPoolEth] = useState(0);
+    const [rewardPool, setRewardPool] = useState(0);
     
     useEffect(() => {
         if (userInfo) {
@@ -25,32 +25,27 @@ const GamePage = ({ userInfo }) => {
         }
     }, [userInfo]);
 
-    const weiToEth = (weiAmount) => {
-        return Web3.utils.fromWei(weiAmount, 'ether');
-    };
+    useEffect(() => {
+        setRewardPool(parseFloat(rewardPoolEth) * ethToUsdRate);
+    }, [ethToUsdRate, rewardPoolEth]);
 
     useEffect(() => {
-        const getGameInfo = async () => {
+        const fetchData = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
-
+    
                 if (!response.ok) {
                     throw new Error('Failed to fetch game data');
                 }
-
+    
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
                 setGameUrl(gameData.lichess_id);
-
-                // reward pool is in wei
-                console.log('reward_pool', gameData.reward_pool);
-                const rewardPoolEth = weiToEth(gameData.reward_pool);
-                console.log('reward_pool_eth', rewardPoolEth);
+    
+                // Convert reward pool from wei to eth
+                const rewardPoolEth = Web3.utils.fromWei(gameData.reward_pool, 'ether');
                 setRewardPoolEth(rewardPoolEth);
-                setRewardPool(parseFloat(rewardPoolEth) * ethToUsdRate);
-
-
-
+    
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
                     method: 'POST', // Send a POST request
@@ -62,11 +57,11 @@ const GamePage = ({ userInfo }) => {
                 if (!player1Response.ok) {
                     throw new Error('Failed to fetch player 1 data');
                 }
-
+    
                 const player1Data = await player1Response.json();
                 console.log('Player 1 data:', player1Data);
                 setPlayer1Username(player1Data.username);
-
+    
                 // Fetch player 2's username
                 const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`, {
                     method: 'POST', // Send a POST request
@@ -78,16 +73,16 @@ const GamePage = ({ userInfo }) => {
                 if (!player2Response.ok) {
                     throw new Error('Failed to fetch player 2 data');
                 }
-
+    
                 const player2Data = await player2Response.json();
                 setPlayer2Username(player2Data.username);
-
+    
             } catch (error) {
                 console.error('Error:', error);
             }
         };
-
-        getGameInfo();
+    
+        fetchData();
     }, [gameId]);
 
     const handleJoinGame = () => {
