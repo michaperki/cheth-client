@@ -5,11 +5,12 @@ import { useSDK } from "@metamask/sdk-react";
 const useWallet = () => {
     const [walletAddress, setWalletAddress] = useState(null);
 
-    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { sdk, connected, connecting, provider, chainId, account, balance } = useSDK();
+    
 
     useEffect(() => {
         if (connected) {
-            setWalletAddress(provider.selectedAddress);
+            setWalletAddress(account);
         }
     }, [connected, provider]);
 
@@ -17,6 +18,7 @@ const useWallet = () => {
     const connectAccount = async () => {
         console.log("Connecting account...");
         try {
+            // Using the connect method from sdk
             const accounts = await sdk?.connect();
             console.log("Connected account:", accounts);
             if (accounts && accounts.length > 0) {
@@ -32,4 +34,3 @@ const useWallet = () => {
 }
 
 export default useWallet;
-

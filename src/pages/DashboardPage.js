@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useWebSocket from '../hooks/websocket/useWebsocket';
+import React from 'react';
 import { Button, Container, Typography, CircularProgress, Snackbar } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import Web3 from 'web3';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import useDashboardWebsocket from '../hooks/websocket/useDashboardWebsocket';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
-    const navigate = useNavigate();
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice();
 

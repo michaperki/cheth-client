@@ -14,9 +14,8 @@ import UseGamePendingWebsocket from '../hooks/websocket/UseGamePendingWebsocket'
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
-    const { sdk, connected, connecting, provider, chainId } = useSDK();
+    const { sdk, connected, connecting, provider } = useSDK();
     const { walletAddress, connectAccount } = useWallet();
-    const [userInfo, setUserInfo] = useState(null);
     const [contractInstance, setContractInstance] = useState(null);
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider); // Create 
