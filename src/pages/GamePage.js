@@ -24,44 +24,6 @@ const GamePage = ({ userInfo }) => {
         }
     }, [userInfo]);
 
-
-
-    // Function to create a challenge
-    const createChallenge = async () => {
-        console.log('Creating challenge...');
-        console.log('player1Username', player1Username);
-        console.log('player2Username', player2Username);
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/lichess/initiateChallenge`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ player1Username, player2Username, gameId })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create challenge');
-            }
-
-            const challengeData = await response.json();
-            console.log('Challenge created:', challengeData);
-            console.log('Challenge URL:', challengeData.challenge.url);
-
-            // set game URL
-            setGameUrl(challengeData.challenge.url);
-
-        } catch (error) {
-            console.error('Error creating challenge:', error);
-        }
-    };
-
-    useEffect(() => {
-        if (player1Username && player2Username) {
-            createChallenge();
-        }
-    }, [player1Username, player2Username, gameId]);
-
     useEffect(() => {
         const getGameInfo = async () => {
             try {
