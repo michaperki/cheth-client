@@ -106,18 +106,13 @@ const GamePage = ({ userInfo }) => {
         }
     };
 
-    const rewardPoolMinusCommission = rewardPool - (rewardPool * 0.05);
-    const rewardPoolMinusCommissionInEth = Web3.utils.fromWei(rewardPoolMinusCommission.toString(), 'ether');
-    const rewardPoolMinusCommissionInUsd = (rewardPoolMinusCommissionInEth * ethToUsdRate).toFixed(2);
 
     return (
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Page</Typography>
             {currentUser && <Typography variant="body1" sx={{ mb: 2 }}>Hello, {currentUser}!</Typography>}
             <Typography variant="body1" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPoolMinusCommission} wei</Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPoolMinusCommissionInEth} eth</Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: ${rewardPoolMinusCommissionInUsd}</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPool} ETH (${(rewardPool * ethToUsdRate).toFixed(2)})</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 1: {player1Username}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 2: {player2Username}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Game URL: {gameUrl}</Typography>
