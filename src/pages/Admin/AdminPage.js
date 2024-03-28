@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Container, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import useWebSocket from '../../hooks/useWebsocket';
+import useWebSocket from '../../hooks/websocket/useWebsocket';
 import StateBox from './StateBox';
 import GameTable from './GameTable';
 

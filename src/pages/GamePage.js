@@ -20,7 +20,7 @@ const GamePage = () => {
     useEffect(() => {
         const getUser = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ const GamePage = () => {
     useEffect(() => {
         const fetchEthToUsdRate = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/ethToUsd`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/crypto/ethToUsd`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch ETH to USD conversion rate');
                 }
@@ -69,7 +69,7 @@ const GamePage = () => {
         console.log('player1Username', player1Username);
         console.log('player2Username', player2Username);
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/createChallenge`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/createChallenge`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -120,7 +120,7 @@ const GamePage = () => {
                 setRewardPool(gameData.reward_pool);
 
                 // Fetch player 1's username
-                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -136,7 +136,7 @@ const GamePage = () => {
                 setPlayer1Username(player1Data.username);
 
                 // Fetch player 2's username
-                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -162,7 +162,7 @@ const GamePage = () => {
     useEffect(() => {
         const getCurrentUser = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/getUser`, {
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -196,7 +196,7 @@ const GamePage = () => {
         console.log('Reporting game over...');
         console.log('gameId', gameId);
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/api/reportGameOver`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/reportGameOver`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

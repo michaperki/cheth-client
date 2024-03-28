@@ -1,64 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useWebSocket from '../hooks/useWebsocket';
+import useWebSocket from '../hooks/websocket/useWebsocket';
 import { Button, Container, Typography, CircularProgress, Snackbar } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import Web3 from 'web3';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
+import useDashboardWebsocket from '../hooks/websocket/useDashboardWebsocket';
 
 const DashboardPage = ({ userInfo }) => {
     const navigate = useNavigate();
     const theme = useTheme(); // Get the current theme
-    const [onlineUsersCount, setOnlineUsersCount] = useState(0); // State to store the online users count
-    const [searchingForOpponent, setSearchingForOpponent] = useState(false); // State to indicate if searching for opponent
-    const [opponentFound, setOpponentFound] = useState(false); // State to indicate if opponent found
-    const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
-    const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
     const ethToUsdRate = useEthereumPrice();
 
-    // Function to handle WebSocket messages
-    const handleWebSocketMessage = (message) => {
-        console.log('Received message in DashboardPage:', message);
-        const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
-
-        if (messageData.type === "START_GAME") {
-            console.log('Game started:', messageData);
-            setOpponentFound(true); // Set state to indicate opponent found
-        }
-
-        if (messageData.type === "CONTRACT_READY") {
-            console.log('Game contract ready:', messageData);
-            // Implement logic to navigate to game page
-            navigate(`/game-pending/${messageData.gameId}`);
-        }
-
-        // Update online users count if received
-        if (messageData.type === "ONLINE_USERS_COUNT") {
-            setOnlineUsersCount(messageData.count);
-        }
-
-        // Inside the handleWebSocketMessage function
-        if (messageData.type === "FUNDS_TRANSFERRED") {
-            // Convert transferred funds from wei to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            // Convert transferred funds from ether to USD using the conversion rate
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            // Show Snackbar notification with transferred funds in USD
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
-        }
-    };
-
-    // Use the useWebSocket hook to establish WebSocket connection
-    const socket = useWebSocket(handleWebSocketMessage);
+    const {
+        onlineUsersCount,
+        searchingForOpponent,
+        opponentFound,
+        snackbarOpen,
+        snackbarMessage,
+        setSnackbarOpen, 
+        setSearchingForOpponent
+      } = useDashboardWebsocket();
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
-        setSnackbarOpen(false);
+        setSnackbarOpen(false); // Use the state updater function
     };
 
     const playGame = async () => {
@@ -69,7 +38,7 @@ const DashboardPage = ({ userInfo }) => {
             }
 
             console.log('Playing game for user:', userInfo.user_id);
-            setSearchingForOpponent(true); // Set state to indicate searching for opponent
+            setSearchingForOpponent(true); // Use the state updater function
 
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/playGame`, {
                 method: 'POST',
@@ -96,7 +65,7 @@ const DashboardPage = ({ userInfo }) => {
         } catch (error) {
             console.error('Error:', error);
         } finally {
-            setSearchingForOpponent(false); // Reset state when search is cancelled
+            setSearchingForOpponent(false); // Use the state updater function
         }
     }
 

@@ -7,7 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import GamePendingPage from './pages/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
-import useWebSocket from './hooks/useWebsocket';
+import useWebSocket from './hooks/websocket/useWebsocket';
 import useWallet from './hooks/useWallet';
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
 import useMediaQuery from '@mui/material/useMediaQuery';

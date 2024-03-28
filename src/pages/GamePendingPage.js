@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import useContract from '../hooks/useContract';
-import useWebSocket from '../hooks/useWebsocket';
+import useWebSocket from '../hooks/websocket/useWebsocket';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
