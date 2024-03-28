@@ -4,6 +4,8 @@ import useWallet from '../hooks/useWallet';
 import Web3 from 'web3';
 import { Button, Typography } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
+import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
+
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -13,8 +15,8 @@ const GamePage = ({ userInfo }) => {
     const [player2Username, setPlayer2Username] = useState('');
     const [currentUser, setCurrentUser] = useState('');
     const [rewardPool, setRewardPool] = useState(0);
-    const [ethToUsdRate, setEthToUsdRate] = useState(0);
     const theme = useTheme(); // Get the current theme
+    const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
     useEffect(() => {
         if (userInfo) {
@@ -22,23 +24,7 @@ const GamePage = ({ userInfo }) => {
         }
     }, [userInfo]);
 
-    // Fetch ETH to USD conversion rate
-    useEffect(() => {
-        const fetchEthToUsdRate = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/crypto/ethToUsd`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch ETH to USD conversion rate');
-                }
-                const data = await response.json();
-                console.log('ETH to USD conversion rate:', data);
-                setEthToUsdRate(data)
-            } catch (error) {
-                console.error('Error fetching ETH to USD conversion rate:', error);
-            }
-        };
-        fetchEthToUsdRate();
-    }, []);
+
 
     // Function to create a challenge
     const createChallenge = async () => {
@@ -91,14 +77,7 @@ const GamePage = ({ userInfo }) => {
                 setRewardPool(gameData.reward_pool);
 
                 // Fetch player 1's username
-                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: gameData.player1_id })
-                });
-
+                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`);
                 if (!player1Response.ok) {
                     throw new Error('Failed to fetch player 1 data');
                 }
@@ -108,14 +87,7 @@ const GamePage = ({ userInfo }) => {
                 setPlayer1Username(player1Data.username);
 
                 // Fetch player 2's username
-                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: gameData.player2_id })
-                });
-
+                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`);
                 if (!player2Response.ok) {
                     throw new Error('Failed to fetch player 2 data');
                 }
