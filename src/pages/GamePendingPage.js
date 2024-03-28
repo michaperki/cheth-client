@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import useWallet from '../hooks/useWallet';
-import useContract from '../hooks/useContract';
-import useWebSocket from '../hooks/websocket/useWebsocket';
+import { useParams } from 'react-router-dom';
 import Chess from '../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
@@ -12,10 +9,9 @@ import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import E
 import NumberDisplay from '../components/game/NumberDisplay';
 import UseGamePendingWebsocket from '../hooks/websocket/UseGamePendingWebsocket';
 
-const GamePendingPage = () => {
+const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
-    const { sdk, connected, connecting, provider } = useSDK();
-    const { walletAddress, connectAccount } = useWallet();
+    const { sdk, connected, provider } = useSDK();
     const [contractInstance, setContractInstance] = useState(null);
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider); // Create 
@@ -29,11 +25,9 @@ const GamePendingPage = () => {
         gameInfo,
         setGameInfo,
         contractAddress,
-        ownerAddress,
         contractBalance,
         getGameInfo } = UseGamePendingWebsocket(gameId);
 
-    const navigate = useNavigate();
 
     useEffect(() => {
         // Set up contract instance when contract address is available
@@ -44,7 +38,7 @@ const GamePendingPage = () => {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
-    }, [contractAddress, provider]);
+    }, [contractAddress, provider, web3.eth.Contract]);
 
     useEffect(() => {
         getGameInfo();
@@ -72,7 +66,7 @@ const GamePendingPage = () => {
             console.log('Entry fee in wei:', entryFeeInWei);
             console.log('contract methods:', contractInstance.methods);
             const tx = await contractInstance.methods.joinGame().send({
-                from: walletAddress,
+                from: userInfo.wallet_address,
                 value: entryFeeInWei,
                 gas: 3000000
             });
@@ -102,24 +96,29 @@ const GamePendingPage = () => {
             {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
-
+    
                     <Typography sx={{ mb: 2 }}>Contract Balance
                         <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
-
+    
                     </Typography>
-
+    
                     {/* display the players */}
                     <Typography sx={{ mb: 2 }}>Players: {gameInfo.player1_id} vs {gameInfo.player2_id}</Typography>
-                    <Button
-                        onClick={joinGame}
-                        variant="contained"
-                        color="primary"
-                        sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
-                        disabled={hasPlayerJoined} // Disable the button if the player has already joined
-                    >
-                        Join Game
-                    </Button>
-
+    
+                    {/* Show different content based on whether the player has joined */}
+                    {hasPlayerJoined ? (
+                        <Typography sx={{ mb: 2 }}>Waiting for opponent to join</Typography>
+                    ) : (
+                        <Button
+                            onClick={joinGame}
+                            variant="contained"
+                            color="primary"
+                            sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
+                        >
+                            Join Game
+                        </Button>
+                    )}
+    
                     <Button
                         onClick={cancelGame}
                         variant="contained"
@@ -128,6 +127,15 @@ const GamePendingPage = () => {
                     >
                         Cancel Game
                     </Button>
+                </div>
+            )}
+            {/* show the joined players, if any */}
+            {joinedPlayers.length > 0 && (
+                <div>
+                    <Typography sx={{ mt: 4, mb: 2 }}>Players Joined:</Typography>
+                    {joinedPlayers.map((player, index) => (
+                        <Typography key={index} sx={{ mb: 2 }}>{player}</Typography>
+                    ))}
                 </div>
             )}
             {gameInfo && parseInt(gameInfo.state) === -1 && (

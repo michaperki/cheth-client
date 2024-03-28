@@ -5,7 +5,7 @@ import { useSDK } from "@metamask/sdk-react";
 const useWallet = () => {
     const [walletAddress, setWalletAddress] = useState(null);
 
-    const { sdk, connected, connecting, provider, chainId, account, balance } = useSDK();
+    const { sdk, connected, provider, account } = useSDK();
     
 
     useEffect(() => {
