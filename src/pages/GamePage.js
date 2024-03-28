@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { Button, Typography } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
-const GamePage = () => {
+const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
     const { walletAddress } = useWallet();
     const [gameUrl, setGameUrl] = useState('');
@@ -14,36 +14,9 @@ const GamePage = () => {
     const [currentUser, setCurrentUser] = useState('');
     const [rewardPool, setRewardPool] = useState(0);
     const [ethToUsdRate, setEthToUsdRate] = useState(0);
-    const [userInfo, setUserInfo] = useState(null);
     const theme = useTheme(); // Get the current theme
 
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ walletAddress: walletAddress })
-                });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-
-                const data = await response.json();
-                setUserInfo(data);
-
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        if (walletAddress) {
-            getUser();
-        }
-    }, [walletAddress]);
 
     // Fetch ETH to USD conversion rate
     useEffect(() => {
@@ -127,6 +100,7 @@ const GamePage = () => {
                 }
 
                 const player1Data = await player1Response.json();
+                console.log('Player 1 data:', player1Data);
                 setPlayer1Username(player1Data.username);
 
                 // Fetch player 2's username
@@ -152,33 +126,6 @@ const GamePage = () => {
 
         getGameInfo();
     }, [gameId]);
-
-    useEffect(() => {
-        const getCurrentUser = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ walletAddress: walletAddress })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch current user data');
-                }
-
-                const userData = await response.json();
-                setCurrentUser(userData.username);
-            } catch (error) {
-                console.error('Error fetching current user:', error);
-            }
-        };
-
-        if (walletAddress) {
-            getCurrentUser();
-        }
-    }, [walletAddress]);
 
     const handleJoinGame = () => {
         window
