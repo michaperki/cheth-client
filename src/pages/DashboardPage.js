@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import useDashboardWebsocket from '../hooks/websocket/useDashboardWebsocket';
 
-const DashboardPage = ({ userInfo, onlineUsersCount }) => {
+const DashboardPage = ({ userInfo }) => {
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice();
 
@@ -13,9 +13,9 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         opponentFound,
         snackbarOpen,
         snackbarMessage,
-        setSnackbarOpen, 
+        setSnackbarOpen,
         setSearchingForOpponent
-      } = useDashboardWebsocket({ ethToUsdRate });
+    } = useDashboardWebsocket({ ethToUsdRate });
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -68,43 +68,60 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const ethereumAmountForFiveDollars = (5 / ethToUsdRate).toFixed(6);
 
     return (
-        <Container maxWidth="md" sx={{ py: 8 }}>
-            <div className={`min-h-screen flex flex-col justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : 'light-mode'}`}>
-                <div className="max-w-md w-full p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
-                    <Typography variant="h3" sx={{ mb: 4 }}>Dashboard</Typography>
-                    <Typography sx={{ mb: 2 }}>Welcome, {userInfo?.username}</Typography>
-                    <Typography sx={{ mb: 4 }}>Online Users: {onlineUsersCount}</Typography>
-                    {searchingForOpponent ? (
-                        <div className="flex items-center justify-center">
-                            <CircularProgress />
-                            {opponentFound ? (
-                                <Typography sx={{ ml: 2 }}>Opponent found! Setting Up Contract</Typography>
-                            ) : (
-                                <Typography sx={{ ml: 2 }}>Searching for opponent...</Typography>
-                            )}
-                            {!opponentFound && (
-                                <Button
-                                    onClick={cancelSearch}
-                                    variant="contained"
-                                    color="error"
-                                    sx={{ ml: 2 }}
-                                >
-                                    Cancel
-                                </Button>
-                            )}
+        <Container maxWidth="100%" sx={{
+            py: 8,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: theme.palette.mode === 'dark' ? 'black' : 'white'
+        }}>
+            <div className="p-8 bg-white rounded shadow-lg dark:bg-gray-800 dark:text-white">
+                <Typography variant="h3" sx={{ mb: 4 }}>Dashboard</Typography>
+                <Typography sx={{ mb: 2 }}>Welcome, {userInfo?.username}</Typography>
+                {searchingForOpponent ? (
+                    <div className="flex items-center justify-center">
+                        <CircularProgress />
+                        {opponentFound ? (
+                            <Typography sx={{ ml: 2 }}>Opponent found! Setting Up Contract</Typography>
+                        ) : (
+                            <Typography sx={{ ml: 2 }}>Searching for opponent...</Typography>
+                        )}
+                        {!opponentFound && (
+                            <Button
+                                onClick={cancelSearch}
+                                variant="contained"
+                                color="error"
+                                sx={{ ml: 2 }}
+                            >
+                                Cancel
+                            </Button>
+                        )}
 
-                        </div>
-                    ) : (
-                        <Button
-                            onClick={playGame}
-                            variant="contained"
-                            color="primary"
-                            sx={{ width: '100%', '&:hover': { bgcolor: 'primary.dark' } }}
+                    </div>
+                ) : (
+                    <Button
+                        onClick={playGame}
+                        variant="contained"
+                        color="primary"
+                        sx={{ width: '100%', '&:hover': { bgcolor: 'primary.dark' } }}
+                    >
+                        Play a Game for
+                        <Typography
+                            sx={{
+                                ml: 1, 
+                                mr: 1,
+                                fontSize: '1.2rem', // Adjust the font size
+                                fontWeight: 'bold', // Make the text bold
+                                // dark green / light green based on the theme
+                                color: theme.palette.mode === 'dark' ? '#2b8a3e' : '#4caf50'
+                            }}
+                            variant="h6" component="span"
                         >
-                            Play a Game for $5 ({ethereumAmountForFiveDollars} ETH)
-                        </Button>
-                    )}
-                </div>
+                            $5
+                        </Typography>
+                        ({ethereumAmountForFiveDollars} ETH)
+                    </Button>
+                )}
             </div>
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

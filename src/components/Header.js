@@ -5,6 +5,8 @@ import IconButton from '@mui/material/IconButton';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import UserIcon from '@mui/icons-material/PeopleAlt';
+import Typography from '@mui/material/Typography';
 
 const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket, onlineUsersCount }) => {
     const { walletAddress, connectAccount } = useWallet();
@@ -23,7 +25,13 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket, onlineUs
                 </ul>
                 {onlineUsersCount !== null && (
                     <div>
-                        Online Users: {onlineUsersCount}
+                        <Typography variant="body2" component="span" className="mr-2">
+                            {onlineUsersCount}
+                        </Typography>
+                        <UserIcon 
+                            className="ml-2"
+                            sx={{ fontSize: 20 }}
+                        />                        
                     </div>
                 )}
                 <div>

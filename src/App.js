@@ -70,7 +70,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage userInfo={userInfo} />} />
             <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} onlineUsersCount={onlineUsersCount} />} />
+            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/admin" element={<AdminPage />} />
