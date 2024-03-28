@@ -10,24 +10,29 @@ import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
 import NumberDisplay from '../components/game/NumberDisplay';
+import UseGamePendingWebsocket from '../hooks/websocket/UseGamePendingWebsocket';
 
 const GamePendingPage = () => {
     const { gameId } = useParams();
     const { sdk, connected, connecting, provider, chainId } = useSDK();
     const { walletAddress, connectAccount } = useWallet();
     const [userInfo, setUserInfo] = useState(null);
-    const [gameInfo, setGameInfo] = useState(null);
     const [contractInstance, setContractInstance] = useState(null);
-    const [contractAddress, setContractAddress] = useState(null);
-    const [ownerAddress, setOwnerAddress] = useState(null);
-    const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
-    const [snackbarOpen, setSnackbarOpen] = useState(false); // State to manage Snackbar open/close
-    const [snackbarMessage, setSnackbarMessage] = useState(''); // State to store Snackbar message
-    const [hasPlayerJoined, setHasPlayerJoined] = useState(false); // State to indicate if the player has joined the game
-    const [joinedPlayers, setJoinedPlayers] = useState([]); // State to store the list of joined players   
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider); // Create 
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
+    const {         
+        snackbarOpen,
+        snackbarMessage,
+        setSnackbarOpen,
+        hasPlayerJoined,
+        joinedPlayers,
+        gameInfo,
+        setGameInfo,
+        contractAddress,
+        ownerAddress,
+        contractBalance,
+        getGameInfo } = UseGamePendingWebsocket(gameId);
 
     const navigate = useNavigate();
 
@@ -42,77 +47,12 @@ const GamePendingPage = () => {
         }
     }, [contractAddress, provider]);
 
-    const getGameInfo = async () => {
-        try {
-            console.log('Fetching game info...');
-            // game is available at /game/:gameId
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
-            
-            if (!response.ok) {
-                throw new Error('Failed to fetch game information');
-            }
-            const gameData = await response.json();
-            console.log('Game data:', gameData);
-            setGameInfo(gameData);
+    useEffect(() => {
+        getGameInfo();
+    }, []);
     
-            if (gameData && parseInt(gameData.state) === 2) {
-                console.log('Game is ready. Navigating to game page...');
-                console.log('Game contract address:', gameData.contract_address);
-                setContractAddress(gameData.contract_address);
-                setOwnerAddress(gameData.game_creator_address);
-                setContractBalance(gameData.reward_pool); // Update contract balance
-            }
-    
-            if (gameData && parseInt(gameData.state) === 3) {
-                setContractAddress(gameData.contract_address);
-                setOwnerAddress(gameData.game_creator_address);
-                setContractBalance(gameData.reward_pool); // Update contract balance
-            }
-        } catch (error) {
-            console.error('Error fetching game status:', error);
-        }
-    };
 
-    // Inside the handleWebSocketMessage function
-    function handleWebSocketMessage(message) {
-        console.log('Received message in GamePendingPage:', message);
-        const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
 
-        if (messageData.type === "GAME_JOINED") {
-            console.log("Game Joined. Updating contract balance...");
-
-            // update the joined players list
-            setJoinedPlayers(prev => [...prev, messageData.player]);
-
-            // Check if the player's address matches any of the joined players
-            const hasJoined = joinedPlayers.some(player => player === walletAddress);
-            setHasPlayerJoined(hasJoined);
-
-            getGameInfo();
-        }
-
-        if (messageData.type === "GAME_PRIMED") {
-            console.log("Game is primed. Navigating to game page...");
-            navigate(`/game/${gameId}`);
-        }
-
-        // Handle FUNDS_TRANSFERRED message
-        if (messageData.type === "FUNDS_TRANSFERRED") {
-            // Convert transferred amount from wei to USD
-            // first convert the amount to ether
-            const transferredInEth = web3.utils.fromWei(messageData.amount, 'ether');
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            console.log('Received funds:', transferredInEth, 'ETH');
-            console.log('Received funds:', transferredInUsd, 'USD');
-            // Show Snackbar notification
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
-        }
-    }
-
-    // Use the useWebSocket hook    
-    const socket = useWebSocket(handleWebSocketMessage);
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -121,15 +61,6 @@ const GamePendingPage = () => {
         }
         setSnackbarOpen(false);
     };
-
-    useEffect(() => {
-        // Fetch game info when gameId changes
-        if (gameId) {
-            getGameInfo();
-        }
-    }, [gameId]);
-
-
 
     const joinGame = async () => {
         try {
@@ -169,7 +100,6 @@ const GamePendingPage = () => {
         }
     }
 
-
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
@@ -193,8 +123,6 @@ const GamePendingPage = () => {
                     >
                         Join Game
                     </Button>
-
-
 
                     <Button
                         onClick={cancelGame}
