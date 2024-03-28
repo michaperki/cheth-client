@@ -17,12 +17,18 @@ const GamePage = ({ userInfo }) => {
     const [rewardPool, setRewardPool] = useState(0);
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
-
+    const [rewardPoolWei, setRewardPoolWei] = useState(0);
+    const [rewardPoolEth, setRewardPoolEth] = useState(0);
+    
     useEffect(() => {
         if (userInfo) {
             setCurrentUser(userInfo.username);
         }
     }, [userInfo]);
+
+    const weiToEth = (weiAmount) => {
+        return Web3.utils.fromWei(weiAmount, 'ether');
+    };
 
     useEffect(() => {
         const getGameInfo = async () => {
@@ -36,7 +42,11 @@ const GamePage = ({ userInfo }) => {
                 const gameData = await response.json();
                 console.log('Game data:', gameData);
                 setGameUrl(gameData.lichess_id);
-                setRewardPool(gameData.reward_pool);
+
+                setRewardPoolWei(gameData.reward_pool);
+                setRewardPoolEth(weiToEth(gameData.reward_pool));
+                // reward pool is USD
+                setRewardPool(weiToEth(gameData.reward_pool) * ethToUsdRate);
 
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
@@ -114,7 +124,7 @@ const GamePage = ({ userInfo }) => {
             {currentUser && <Typography variant="body1" sx={{ mb: 2 }}>Hello, {currentUser}!</Typography>}
             <Typography variant="body1" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
-                Reward Pool: {rewardPool} ETH (${(rewardPool * ethToUsdRate).toFixed(2)})
+                Reward Pool: {rewardPoolEth} ETH (${rewardPool.toFixed(2)})
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 1: {player1Username}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 2: {player2Username}</Typography>
