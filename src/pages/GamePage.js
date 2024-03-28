@@ -46,7 +46,9 @@ const GamePage = ({ userInfo }) => {
                 setRewardPoolWei(gameData.reward_pool);
                 setRewardPoolEth(weiToEth(gameData.reward_pool));
                 // reward pool is USD
-                setRewardPool(rewardPoolEth * ethToUsdRate);
+                console.log('rewardPoolEth', rewardPoolEth);
+                setRewardPool(parseInt(rewardPoolEth) * ethToUsdRate);
+                console.log('rewardPool', rewardPool);
 
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
