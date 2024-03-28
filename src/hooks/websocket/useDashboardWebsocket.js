@@ -4,15 +4,13 @@ import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Web3 from 'web3';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 
-const useDashboardWebsocket = () => {
+const useDashboardWebsocket = ({ ethToUsdRate }) => {
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
   const [searchingForOpponent, setSearchingForOpponent] = useState(false);
   const [opponentFound, setOpponentFound] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const ethToUsdRate = useEthereumPrice();
   const navigate = useNavigate();
 
   const handleDashboardPageWebSocketMessage = (message) => {

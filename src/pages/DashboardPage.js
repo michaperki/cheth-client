@@ -20,7 +20,7 @@ const DashboardPage = ({ userInfo }) => {
         snackbarMessage,
         setSnackbarOpen, 
         setSearchingForOpponent
-      } = useDashboardWebsocket();
+      } = useDashboardWebsocket({ ethToUsdRate });
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
