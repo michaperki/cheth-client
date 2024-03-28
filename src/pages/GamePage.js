@@ -113,7 +113,9 @@ const GamePage = ({ userInfo }) => {
             <Typography variant="h3" sx={{ mb: 4 }}>Game Page</Typography>
             {currentUser && <Typography variant="body1" sx={{ mb: 2 }}>Hello, {currentUser}!</Typography>}
             <Typography variant="body1" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>Reward Pool: {rewardPool} ETH (${(rewardPool * ethToUsdRate).toFixed(2)})</Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+                Reward Pool: {rewardPool} ETH (${(rewardPool * ethToUsdRate).toFixed(2)})
+            </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 1: {player1Username}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Player 2: {player2Username}</Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>Game URL: {gameUrl}</Typography>
