@@ -50,9 +50,6 @@ const GamePendingPage = () => {
     useEffect(() => {
         getGameInfo();
     }, []);
-    
-
-
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {

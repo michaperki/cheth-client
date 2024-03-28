@@ -32,7 +32,7 @@ const GamePage = ({ userInfo }) => {
         console.log('player1Username', player1Username);
         console.log('player2Username', player2Username);
         try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/createChallenge`, {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/lichess/initiateChallenge`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
