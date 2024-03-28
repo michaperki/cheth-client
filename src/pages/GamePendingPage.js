@@ -27,10 +27,6 @@ const GamePendingPage = () => {
     const [joinedPlayers, setJoinedPlayers] = useState([]); // State to store the list of joined players   
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider); // Create 
-    if (provider) {
-        console.log('provider:', provider);
-    }
-    console.log('chainId:', chainId);
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
 
     const navigate = useNavigate();
@@ -45,40 +41,6 @@ const GamePendingPage = () => {
             setContractInstance(contract);
         }
     }, [contractAddress, provider]);
-
-    useEffect(() => {
-        const getUser = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ walletAddress: walletAddress })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-
-                const data = await response.json();
-                setUserInfo(data);
-
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        if (walletAddress) {
-            getUser();
-        }
-    }, [walletAddress]);
-
-    useEffect(() => {
-        if (!walletAddress) {
-            connectAccount();
-        }
-    }, [walletAddress, connectAccount]);
 
     const getGameInfo = async () => {
         try {
