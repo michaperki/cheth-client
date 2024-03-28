@@ -77,7 +77,13 @@ const GamePage = ({ userInfo }) => {
                 setRewardPool(gameData.reward_pool);
 
                 // Fetch player 1's username
-                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`);
+                const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
+                    method: 'POST', // Send a POST request
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: gameData.player1_id }) // Send user ID in the request body
+                });
                 if (!player1Response.ok) {
                     throw new Error('Failed to fetch player 1 data');
                 }
@@ -87,7 +93,13 @@ const GamePage = ({ userInfo }) => {
                 setPlayer1Username(player1Data.username);
 
                 // Fetch player 2's username
-                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`);
+                const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`, {
+                    method: 'POST', // Send a POST request
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: gameData.player2_id }) // Send user ID in the request body
+                });
                 if (!player2Response.ok) {
                     throw new Error('Failed to fetch player 2 data');
                 }
