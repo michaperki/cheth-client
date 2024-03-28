@@ -6,7 +6,6 @@ import { useState } from 'react';
 import Web3 from 'web3';
 
 const useDashboardWebsocket = ({ ethToUsdRate }) => {
-  const [onlineUsersCount, setOnlineUsersCount] = useState(0);
   const [searchingForOpponent, setSearchingForOpponent] = useState(false);
   const [opponentFound, setOpponentFound] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -29,11 +28,6 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
       navigate(`/game-pending/${messageData.gameId}`);
     }
 
-    // Update online users count if received
-    if (messageData.type === "ONLINE_USERS_COUNT") {
-      setOnlineUsersCount(messageData.count);
-    }
-
     // Inside the handleWebSocketMessage function
     if (messageData.type === "FUNDS_TRANSFERRED") {
       // Convert transferred funds from wei to ether
@@ -46,7 +40,7 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
     }
   };
 
-  const socket = useWebSocket(handleDashboardPageWebSocketMessage);
+  const socket = useWebSocket(handleDashboardPageWebSocketMessage, ['ONLINE_USERS_COUNT']);
 
   useEffect(() => {
     // Add any additional logic specific to the DashboardPage WebSocket here
@@ -58,7 +52,6 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
   }, []); // Adjust the dependency array as needed
   
   return {
-    onlineUsersCount,
     searchingForOpponent,
     opponentFound,
     snackbarOpen,

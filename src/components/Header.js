@@ -6,7 +6,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
-const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket }) => {
+const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket, onlineUsersCount }) => {
     const { walletAddress, connectAccount } = useWallet();
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
 
@@ -21,6 +21,11 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, refreshWebSocket }) => {
                         <Link to="/admin" className="hover:text-gray-300">Admin</Link>
                     </li>
                 </ul>
+                {onlineUsersCount !== null && (
+                    <div>
+                        Online Users: {onlineUsersCount}
+                    </div>
+                )}
                 <div>
                     {!walletAddress && (
                         <button onClick={connectAccount} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

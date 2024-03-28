@@ -7,13 +7,12 @@ import Web3 from 'web3';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import useDashboardWebsocket from '../hooks/websocket/useDashboardWebsocket';
 
-const DashboardPage = ({ userInfo }) => {
+const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const navigate = useNavigate();
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice();
 
     const {
-        onlineUsersCount,
         searchingForOpponent,
         opponentFound,
         snackbarOpen,

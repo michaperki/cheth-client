@@ -54,7 +54,7 @@ function App() {
   };
 
   // Use the useWebSocket hook to establish WebSocket connection
-  const socket = useWebSocket(handleWebSocketMessage);
+  const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage);
 
   const pingWebSocket = () => {
     console.log('Pinging WebSocket...');
@@ -63,20 +63,20 @@ function App() {
 
   return (
     <Router>
-      <EthereumPriceProvider>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <EthereumPriceProvider>
           <CssBaseline />
-          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
+          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} onlineUsersCount={onlineUsersCount} />
           <Routes>
             <Route path="/" element={<LandingPage userInfo={userInfo} />} />
             <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
+            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} onlineUsersCount={onlineUsersCount} />} />
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
-        </ThemeProvider>
-      </EthereumPriceProvider>
+        </EthereumPriceProvider>
+      </ThemeProvider>
     </Router>
   );
 }
