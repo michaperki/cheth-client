@@ -34,6 +34,8 @@ function App() {
 
     if (walletAddress) {
       fetchData();
+    } else {
+      connectAccount();
     }
   }, [walletAddress]);
 
