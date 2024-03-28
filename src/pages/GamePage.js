@@ -17,7 +17,6 @@ const GamePage = ({ userInfo }) => {
     const [rewardPool, setRewardPool] = useState(0);
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
-    const [rewardPoolWei, setRewardPoolWei] = useState(0);
     const [rewardPoolEth, setRewardPoolEth] = useState(0);
     
     useEffect(() => {
@@ -43,12 +42,14 @@ const GamePage = ({ userInfo }) => {
                 console.log('Game data:', gameData);
                 setGameUrl(gameData.lichess_id);
 
-                setRewardPoolWei(gameData.reward_pool);
-                setRewardPoolEth(weiToEth(gameData.reward_pool));
-                // reward pool is USD
-                console.log('rewardPoolEth', rewardPoolEth);
-                setRewardPool(parseInt(rewardPoolEth) * ethToUsdRate);
-                console.log('rewardPool', rewardPool);
+                // reward pool is in wei
+                console.log('reward_pool', gameData.reward_pool);
+                const rewardPoolEth = weiToEth(gameData.reward_pool);
+                console.log('reward_pool_eth', rewardPoolEth);
+                setRewardPoolEth(rewardPoolEth);
+                setRewardPool(parseFloat(rewardPoolEth) * ethToUsdRate);
+
+
 
                 // Fetch player 1's username
                 const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
