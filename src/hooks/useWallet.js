@@ -11,8 +11,7 @@ const useWallet = () => {
         if (connected) {
             setWalletAddress(provider.selectedAddress);
         }
-    }
-        , [connected, provider]);
+    }, [connected, provider]);
 
 
     const connectAccount = async () => {

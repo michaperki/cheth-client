@@ -13,6 +13,7 @@ import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Impo
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import getUser from './services/userService';
 import './App.css';
 
 function App() {
@@ -22,37 +23,17 @@ function App() {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    if (!walletAddress) {
-      connectAccount();
-    }
-  }, [walletAddress, connectAccount]);
-
-  useEffect(() => {
-    const getUser = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUser`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ walletAddress: walletAddress })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-
-        const data = await response.json();
-        console.log('User data:', data);
-        setUserInfo(data);
-
+        const userData = await getUser(walletAddress);
+        setUserInfo(userData);
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching user data:', error);
       }
     };
 
     if (walletAddress) {
-      getUser();
+      fetchData();
     }
   }, [walletAddress]);
 
