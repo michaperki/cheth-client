@@ -1,8 +1,6 @@
-// hooks/UseGamePendingWebsocket.js
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import Web3 from 'web3';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
@@ -52,6 +50,7 @@ const UseGamePendingWebsocket = (gameId) => {
             console.error('Error fetching game status:', error);
         }
     };
+
     const handleGamePendingPageWebSocketMessage = (message) => {
         console.log('Received message in GamePendingWebsocket:', message);
         const messageData = JSON.parse(message);
@@ -104,6 +103,9 @@ const UseGamePendingWebsocket = (gameId) => {
         };
     }, []); // Adjust the dependency array as needed
 
+    // Memoize getGameInfo function
+    const memoizedGetGameInfo = useMemo(() => getGameInfo, []);
+
     return {
         snackbarOpen,
         snackbarMessage,
@@ -115,7 +117,7 @@ const UseGamePendingWebsocket = (gameId) => {
         contractAddress,
         ownerAddress,
         contractBalance,
-        getGameInfo
+        getGameInfo: memoizedGetGameInfo
     };
 };
 
