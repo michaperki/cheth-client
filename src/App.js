@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/Dashboard/DashboardPage';
 import GamePendingPage from './pages/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
@@ -66,11 +66,11 @@ function App() {
       <ThemeProvider theme={theme}>
         <EthereumPriceProvider>
           <CssBaseline />
-          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} onlineUsersCount={onlineUsersCount} />
+          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
           <Routes>
             <Route path="/" element={<LandingPage userInfo={userInfo} />} />
             <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} />} />
+            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} onlineUsersCount={onlineUsersCount} />} />
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/admin" element={<AdminPage />} />
