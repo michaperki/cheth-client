@@ -61,7 +61,11 @@ const UseGamePendingWebsocket = (gameId) => {
             console.log("Game Joined. Updating contract balance...");
 
             // update the joined players list
-            setJoinedPlayers(prev => [...prev, messageData.player]);
+            // setJoinedPlayers(prev => [...prev, messageData.player]);
+            // do not add the same player multiple times
+            if (!joinedPlayers.includes(messageData.player)) {
+                setJoinedPlayers(prev => [...prev, messageData.player]);
+            }
 
             // Check if the player's address matches any of the joined players
             const hasJoined = joinedPlayers.some(player => player === walletAddress);
