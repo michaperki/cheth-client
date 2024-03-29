@@ -1,12 +1,13 @@
 import React from 'react';
 import { FormControl, FormControlLabel, FormLabel, Typography, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-const SwitchOptions = ({ label, options, defaultValue }) => {
+const SwitchOptions = ({ label, options, defaultValue, setSelectedValue }) => {
   const [value, setValue] = React.useState(defaultValue); // Initial value
   
   const handleChange = (event, newValue) => {
     if (newValue !== null) {
       setValue(newValue);
+      setSelectedValue(newValue); // Update the selected value in the parent component
     }
   };
 

@@ -13,11 +13,13 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
 
     const [gameCount, setGameCount] = useState(0); // Initialize game count state with 0
     const [totalWagered, setTotalWagered] = useState(0); // Initialize total wagered state with 0
+    const [timeControl, setTimeControl] = useState('1'); // Initialize time control state with '1'
+    const [wagerSize, setWagerSize] = useState('5'); // Initialize wager size state with '5'
 
     const timeControlOptions = [
-        { label: '1 minute', value: '1' },
-        { label: '3 minutes', value: '3' },
-        { label: '5 minutes', value: '5' },
+        { label: '1 minute', value: '60' },
+        { label: '3 minutes', value: '180' },
+        { label: '5 minutes', value: '300' },
     ];
 
     const wagerSizeOptions = [
@@ -59,7 +61,11 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userInfo.user_id })
+                body: JSON.stringify({ 
+                    userId: userInfo.user_id,
+                    timeControl,
+                    wagerSize
+                })
             });
 
             if (!response.ok) {
@@ -122,8 +128,8 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         getTotalWagered();
     }, []);
 
-    // Calculate Ethereum amount equivalent to $5
-    const ethereumAmountForFiveDollars = (5 / ethToUsdRate).toFixed(6);
+    // Calculate wager amount in ETH
+    const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
     // convert totalWagered to USD
     const totalWageredInUsd = (totalWagered / 10 ** 18) * ethToUsdRate;
@@ -176,16 +182,27 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         <Container>
                             {/* Render the time control switch */}
                             <Box>
-                                <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="1" />
+                                <SwitchOptions
+                                    label="Time Control"
+                                    options={timeControlOptions}
+                                    defaultValue="1"
+                                    setSelectedValue={setTimeControl}
+                                />
                             </Box>
                             {/* Render the wager size switch */}
                             <Box>
-                                <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" />
+                                <SwitchOptions
+                                    label="Wager Size"
+                                    options={wagerSizeOptions}
+                                    defaultValue="5"
+                                    setSelectedValue={setWagerSize}
+                                />
                             </Box>
                         </Container>
                         <PlayGameButton
                             playGame={playGame}
-                            ethereumAmountForFiveDollars={ethereumAmountForFiveDollars}
+                            amount={wagerSize}
+                            ethereumAmount={wagerAmountInEth}                            
                             theme={theme}
                         />
                     </>

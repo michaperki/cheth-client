@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Typography } from '@mui/material';
 
-const PlayGameButton = ({ playGame, ethereumAmountForFiveDollars, theme }) => {
+const PlayGameButton = ({ playGame, amount, ethereumAmount, theme }) => {
     return (
         <div>
 
@@ -27,7 +27,7 @@ const PlayGameButton = ({ playGame, ethereumAmountForFiveDollars, theme }) => {
                 <Typography variant="h4" sx={{ fontWeight: 
                     'bold',
                      }}>
-                    $5
+                    ${amount}
                 </Typography>
                 <Typography
                     sx={{
@@ -35,7 +35,7 @@ const PlayGameButton = ({ playGame, ethereumAmountForFiveDollars, theme }) => {
                         color: theme.palette.mode === 'dark' ? '#2b8a3e' : '#4caf50',
                     }}
                 >
-                    {ethereumAmountForFiveDollars} ETH
+                    {ethereumAmount} ETH
                 </Typography>
             </Button>
         </div>
