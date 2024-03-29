@@ -16,7 +16,7 @@ const GamePendingPage = ({ userInfo }) => {
     const theme = useTheme(); // Get the current theme
     const web3 = new Web3(provider); // Create 
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
-    const {         
+    const {
         snackbarOpen,
         snackbarMessage,
         setSnackbarOpen,
@@ -38,11 +38,12 @@ const GamePendingPage = ({ userInfo }) => {
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
-    }, [contractAddress, provider, web3.eth.Contract]);
+    }, [contractAddress, provider]);
 
     useEffect(() => {
         getGameInfo();
-    }, []);
+    }, [getGameInfo]);
+
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -96,15 +97,15 @@ const GamePendingPage = ({ userInfo }) => {
             {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
-    
+
                     <Typography sx={{ mb: 2 }}>Contract Balance
                         <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
-    
+
                     </Typography>
-    
+
                     {/* display the players */}
                     <Typography sx={{ mb: 2 }}>Players: {gameInfo.player1_id} vs {gameInfo.player2_id}</Typography>
-    
+
                     {/* Show different content based on whether the player has joined */}
                     {hasPlayerJoined ? (
                         <Typography sx={{ mb: 2 }}>Waiting for opponent to join</Typography>
@@ -118,7 +119,7 @@ const GamePendingPage = ({ userInfo }) => {
                             Join Game
                         </Button>
                     )}
-    
+
                     <Button
                         onClick={cancelGame}
                         variant="contained"
