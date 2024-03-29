@@ -24,7 +24,7 @@ const UseGamePendingWebsocket = (gameId) => {
     const navigate = useNavigate();
     const getGameInfo = async () => {
         try {
-            console.log('Fetching game info...');
+            console.log('Fetching game info inside UseGamePendingWebsocket...');
             // game is available at /game/:gameId
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
             

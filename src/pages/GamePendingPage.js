@@ -41,6 +41,7 @@ const GamePendingPage = ({ userInfo }) => {
     }, [contractAddress, provider]);
 
     useEffect(() => {
+        console.log('Fetching game info inside GamePendingPage...');
         getGameInfo();
     }, []);
 
