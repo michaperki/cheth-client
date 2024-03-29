@@ -131,14 +131,9 @@ const GamePendingPage = ({ userInfo }) => {
                     </Button>
                 </div>
             )}
-            {/* show the joined players, if any */}
+            {/* log the joined players, they have duplicate entries */}
             {joinedPlayers.length > 0 && (
-                <div>
-                    <Typography sx={{ mt: 4, mb: 2 }}>Players Joined:</Typography>
-                    {joinedPlayers.map((player, index) => (
-                        <Typography key={index} sx={{ mb: 2 }}>{player}</Typography>
-                    ))}
-                </div>
+                <Typography sx={{ mt: 4 }}>Joined Players: {joinedPlayers.join(', ')}</Typography>
             )}
             {gameInfo && parseInt(gameInfo.state) === -1 && (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>

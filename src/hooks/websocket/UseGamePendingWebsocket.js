@@ -25,14 +25,14 @@ const UseGamePendingWebsocket = (gameId) => {
             console.log('Fetching game info inside UseGamePendingWebsocket...');
             // game is available at /game/:gameId
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch game information');
             }
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
-    
+
             if (gameData && parseInt(gameData.state) === 2) {
                 console.log('Game is ready. Navigating to game page...');
                 console.log('Game contract address:', gameData.contract_address);
@@ -40,7 +40,7 @@ const UseGamePendingWebsocket = (gameId) => {
                 setOwnerAddress(gameData.game_creator_address);
                 setContractBalance(gameData.reward_pool); // Update contract balance
             }
-    
+
             if (gameData && parseInt(gameData.state) === 3) {
                 setContractAddress(gameData.contract_address);
                 setOwnerAddress(gameData.game_creator_address);
@@ -59,13 +59,14 @@ const UseGamePendingWebsocket = (gameId) => {
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined. Updating contract balance...");
 
-            // update the joined players list
-            // setJoinedPlayers(prev => [...prev, messageData.player]);
-            // do not add the same player multiple times
-            if (!joinedPlayers.includes(messageData.player)) {
-                setJoinedPlayers(prev => [...prev, messageData.player]);
-            }
-
+            // Update the joined players list using functional form of setJoinedPlayers
+            setJoinedPlayers(prevPlayers => {
+                // Check if the player already exists in the list
+                if (!prevPlayers.includes(messageData.player)) {
+                    return [...prevPlayers, messageData.player]; // Add player if not present
+                }
+                return prevPlayers; // Otherwise, return the existing array
+            });
             // Check if the player's address matches any of the joined players
             const hasJoined = joinedPlayers.some(player => player === walletAddress);
             setHasPlayerJoined(hasJoined);
