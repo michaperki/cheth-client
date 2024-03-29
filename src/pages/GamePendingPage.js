@@ -42,7 +42,7 @@ const GamePendingPage = ({ userInfo }) => {
 
     useEffect(() => {
         getGameInfo();
-    }, [getGameInfo]);
+    }, []);
 
 
     // Snackbar close handler
