@@ -14,7 +14,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import getUser from './services/userService';
-import { Snackbar } from '@mui/material'; // Import MUI components
 import './App.css';
 
 function App() {
@@ -22,13 +21,6 @@ function App() {
   const [darkMode, setDarkMode] = useState(prefersDarkMode);
   const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
   const [userInfo, setUserInfo] = useState(null);
-  // Use the useWebSocket hook to establish WebSocket connection
-
-  const { socket,
-    onlineUsersCount,
-    snackbarOpen,
-    snackbarMessage,
-    setSnackbarOpen } = useWebSocket(handleWebSocketMessage);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,19 +53,13 @@ function App() {
     console.log('Received message in App:', message);
   };
 
-
+  // Use the useWebSocket hook to establish WebSocket connection
+  const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage);
 
   const pingWebSocket = () => {
     console.log('Pinging WebSocket...');
     socket.send(JSON.stringify({ type: 'PING' }));
   };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  }
 
   return (
     <Router>
@@ -89,13 +75,6 @@ function App() {
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
-          <Snackbar
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-            message={snackbarMessage}
-          />
         </EthereumPriceProvider>
       </ThemeProvider>
     </Router>
