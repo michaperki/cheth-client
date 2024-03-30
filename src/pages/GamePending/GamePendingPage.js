@@ -8,7 +8,7 @@ import { Button, Typography, Snackbar, Box } from '@mui/material'; // Import MUI
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
 import NumberDisplay from '../../components/game/NumberDisplay';
 import UseGamePendingWebsocket from '../../hooks/websocket/UseGamePendingWebsocket';
-import MatchupPodium from './MatchUpPodium';
+import MatchupPodium from '../../components/game/MatchUpPodium';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -97,19 +97,16 @@ const GamePendingPage = ({ userInfo }) => {
     }
 
     return (
-        <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'} rounded shadow-lg`}>
+        <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'}`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
             {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
                 <div>
                     <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
 
-                    <Typography sx={{ mb: 2 }}>Contract Balance
-                        <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
-
-                    </Typography>
 
                     {/* display the players */}
                     {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />}
+                    <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
 
 
                     {/* Show different content based on whether the player has joined */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NumberDisplay.css'; // Import CSS for styling
+import { Typography } from '@mui/material';
 
 const NumberDisplay = ({ amount }) => {
   const [displayAmount, setDisplayAmount] = useState(0);
@@ -17,8 +18,13 @@ const NumberDisplay = ({ amount }) => {
   }, [amount, displayAmount]);
 
   return (
-    <div className="flex items-center justify-center text-5xl text-green-500 font-semibold">
-      ${displayAmount.toLocaleString()}
+    <div className="number-display">
+      <Typography variant="h4" component="div" display="flex" alignItems="center" gutterBottom>
+        <span style={{ marginRight: '0.5rem' }}>Reward Pool</span>
+        <div className="text-5xl text-green-500 font-semibold">
+          ${displayAmount.toLocaleString()}
+        </div>
+      </Typography>
     </div>
   );
 };
