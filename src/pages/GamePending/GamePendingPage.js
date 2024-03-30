@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Chess from '../abis/Chess.json';
+import Chess from '../../abis/Chess.json';
 import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
-import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
-import NumberDisplay from '../components/game/NumberDisplay';
-import UseGamePendingWebsocket from '../hooks/websocket/UseGamePendingWebsocket';
+import { Button, Typography, Snackbar, Box } from '@mui/material'; // Import MUI components
+import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
+import NumberDisplay from '../../components/game/NumberDisplay';
+import UseGamePendingWebsocket from '../../hooks/websocket/UseGamePendingWebsocket';
+import MatchupPodium from './MatchUpPodium';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -26,7 +27,10 @@ const GamePendingPage = ({ userInfo }) => {
         setGameInfo,
         contractAddress,
         contractBalance,
-        getGameInfo } = UseGamePendingWebsocket(gameId);
+        getGameInfo,
+        player_one,
+        player_two
+    } = UseGamePendingWebsocket(gameId);
 
 
     useEffect(() => {
@@ -105,7 +109,8 @@ const GamePendingPage = ({ userInfo }) => {
                     </Typography>
 
                     {/* display the players */}
-                    <Typography sx={{ mb: 2 }}>Players: {gameInfo.player1_id} vs {gameInfo.player2_id}</Typography>
+                    {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />}
+
 
                     {/* Show different content based on whether the player has joined */}
                     {hasPlayerJoined ? (
@@ -132,9 +137,7 @@ const GamePendingPage = ({ userInfo }) => {
                 </div>
             )}
             {/* log the joined players, they have duplicate entries */}
-            {joinedPlayers.length > 0 && (
-                <Typography sx={{ mt: 4 }}>Joined Players: {joinedPlayers.join(', ')}</Typography>
-            )}
+            
             {gameInfo && parseInt(gameInfo.state) === -1 && (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
             )}

@@ -3,7 +3,6 @@ import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
 import useWallet from '../useWallet';
 
 const UseGamePendingWebsocket = (gameId) => {
@@ -15,8 +14,11 @@ const UseGamePendingWebsocket = (gameId) => {
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
+    const [player_one, setPlayerOne] = useState(null);
+    const [player_two, setPlayerTwo] = useState(null);
 
     const { walletAddress, connectAccount } = useWallet();
+
 
     const ethToUsdRate = useEthereumPrice();
     const navigate = useNavigate();
@@ -32,6 +34,38 @@ const UseGamePendingWebsocket = (gameId) => {
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
+
+            const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
+                method: 'POST', // Send a POST request
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: gameData.player1_id }) // Send user ID in the request body
+            });
+            
+            if (!player1Response.ok) {
+                throw new Error('Failed to fetch game information');
+            }
+
+            const player1Data = await player1Response.json();
+            console.log('Player 1 data:', player1Data);
+            setPlayerOne(player1Data);
+
+            const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`, {
+                method: 'POST', // Send a POST request
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: gameData.player2_id }) // Send user ID in the request body
+            });
+
+            if (!player2Response.ok) {
+                throw new Error('Failed to fetch game information');
+            }
+
+            const player2Data = await player2Response.json();
+            console.log('Player 2 data:', player2Data);
+            setPlayerTwo(player2Data);
 
             if (gameData && parseInt(gameData.state) === 2) {
                 console.log('Game is ready. Navigating to game page...');
@@ -109,7 +143,9 @@ const UseGamePendingWebsocket = (gameId) => {
         contractAddress,
         ownerAddress,
         contractBalance,
-        getGameInfo: memoizedGetGameInfo
+        getGameInfo: memoizedGetGameInfo,
+        player_one,
+        player_two
     };
 };
 

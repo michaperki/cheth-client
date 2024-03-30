@@ -4,7 +4,7 @@ import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
-import GamePendingPage from './pages/GamePendingPage';
+import GamePendingPage from './pages/GamePending/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
 import useWebSocket from './hooks/websocket/useWebsocket';
