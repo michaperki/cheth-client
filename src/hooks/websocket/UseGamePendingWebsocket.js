@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import useWallet from '../useWallet';
 
-const UseGamePendingWebsocket = (gameId) => {
+const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [hasPlayerJoined, setHasPlayerJoined] = useState(false);
@@ -127,7 +127,7 @@ const UseGamePendingWebsocket = (gameId) => {
         }
     };
 
-    const socket = useWebSocket(handleGamePendingPageWebSocketMessage);
+    const socket = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
 
     // Memoize getGameInfo function
     const memoizedGetGameInfo = useMemo(() => getGameInfo, []);

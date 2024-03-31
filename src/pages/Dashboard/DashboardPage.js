@@ -29,6 +29,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     ];
 
 
+
     const {
         searchingForOpponent,
         opponentFound,
@@ -36,7 +37,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         snackbarMessage,
         setSnackbarOpen,
         setSearchingForOpponent
-    } = useDashboardWebsocket({ ethToUsdRate });
+    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {

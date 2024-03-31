@@ -1,12 +1,12 @@
-// hooks/useWebSocket.js
 import { useEffect, useState } from 'react';
 
 const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
-const WEBSOCKET_URL = SERVER_BASE_URL.replace(/^http/, 'ws');
 
-const useWebSocket = (handleWebSocketMessage, messageTypeFilter = []) => {
+const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
+
+  const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userId}`; // Define the WEBSOCKET_URL inside the hook
 
   useEffect(() => {
     const ws = new WebSocket(WEBSOCKET_URL);
@@ -14,6 +14,7 @@ const useWebSocket = (handleWebSocketMessage, messageTypeFilter = []) => {
 
     ws.onopen = () => {
       console.log('Connected to WebSocket');
+      ws.send(JSON.stringify({ type: 'CONNECT', userId })); // Send the userId to the server when connected
     };
 
     ws.onmessage = (event) => {

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Web3 from 'web3';
 
-const useDashboardWebsocket = ({ ethToUsdRate }) => {
+const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
   const [searchingForOpponent, setSearchingForOpponent] = useState(false);
   const [opponentFound, setOpponentFound] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -40,7 +40,7 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
     }
   };
 
-  const socket = useWebSocket(handleDashboardPageWebSocketMessage, ['ONLINE_USERS_COUNT']);
+  const socket = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
 
   useEffect(() => {
     // Add any additional logic specific to the DashboardPage WebSocket here

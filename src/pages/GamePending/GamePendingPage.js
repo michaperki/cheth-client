@@ -30,8 +30,7 @@ const GamePendingPage = ({ userInfo }) => {
         getGameInfo,
         player_one,
         player_two
-    } = UseGamePendingWebsocket(gameId);
-
+    } = UseGamePendingWebsocket(gameId, userInfo);
 
     useEffect(() => {
         // Set up contract instance when contract address is available
