@@ -127,7 +127,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         }
     };
 
-    const socket = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
+    const socket = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
 
     // Memoize getGameInfo function
     const memoizedGetGameInfo = useMemo(() => getGameInfo, []);

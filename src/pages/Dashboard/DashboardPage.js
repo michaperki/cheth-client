@@ -13,7 +13,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
 
     const [gameCount, setGameCount] = useState(0); // Initialize game count state with 0
     const [totalWagered, setTotalWagered] = useState(0); // Initialize total wagered state with 0
-    const [timeControl, setTimeControl] = useState('1'); // Initialize time control state with '1'
+    const [timeControl, setTimeControl] = useState('60'); // Initialize time control state with '1'
     const [wagerSize, setWagerSize] = useState('5'); // Initialize wager size state with '5'
 
     const timeControlOptions = [
@@ -186,7 +186,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                                 <SwitchOptions
                                     label="Time Control"
                                     options={timeControlOptions}
-                                    defaultValue="1"
+                                    defaultValue="60"
                                     setSelectedValue={setTimeControl}
                                 />
                             </Box>
