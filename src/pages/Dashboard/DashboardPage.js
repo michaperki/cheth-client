@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'; // Import the Sidebar component
 import useDashboardWebsocket from '../../hooks/websocket/useDashboardWebsocket';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
+import "./DashboardPage.css";
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const theme = useTheme(); // Get the current theme
@@ -136,42 +137,27 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const totalWageredInUsd = (totalWagered / 10 ** 18) * ethToUsdRate;
 
     return (
-        <Container sx={{
-            display: 'flex', // Make the container a flex container
-            py: 8,
-            justifyContent: 'center',
-            alignItems: 'center',
-        }}>
-            <div className="p-8">
-                <Typography variant="h3" sx={{ mb: 4 }}>Welcome, {userInfo?.username}</Typography>
-                <Box maxWidth={200} sx={{
-                    borderRadius: 8,
-                    border: 1,
-                    p: 2,
-                    borderColor: 'primary.main',
-                    mb: 2,
-                    mt: 2,
-                    display: 'flex',
-                    justifyContent: 'start',
-                    alignItems: 'center'
-                }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>Your Rating</Typography>
-                    <Typography variant="h4" sx={{ ml: 1 }}>{userInfo?.rating}</Typography>
+        <Container className="dashboard-container">
+            <div className="dashboard-content">
+                <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
+                <Box className="rating-box">
+                    <Typography variant="subtitle2" className="rating-label">Your Rating</Typography>
+                    <Typography variant="h4" className="rating-value">{userInfo?.rating}</Typography>
                 </Box>
                 {searchingForOpponent ? (
-                    <div className="flex items-center justify-center">
+                    <div className="searching-container">
                         <CircularProgress />
                         {opponentFound ? (
-                            <Typography sx={{ ml: 2 }}>Opponent found! Setting Up Contract</Typography>
+                            <Typography className="opponent-found-text">Opponent found! Setting Up Contract</Typography>
                         ) : (
-                            <Typography sx={{ ml: 2 }}>Searching for opponent...</Typography>
+                            <Typography className="searching-text">Searching for opponent...</Typography>
                         )}
                         {!opponentFound && (
                             <Button
                                 onClick={cancelSearch}
                                 variant="contained"
                                 color="error"
-                                sx={{ ml: 2 }}
+                                className="cancel-button"
                             >
                                 Cancel
                             </Button>
@@ -180,9 +166,8 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                     </div>
                 ) : (
                     <>
-                        <Container>
-                            {/* Render the time control switch */}
-                            <Box>
+                        <Container className="switch-container">
+                            <Box className="time-control-switch">
                                 <SwitchOptions
                                     label="Time Control"
                                     options={timeControlOptions}
@@ -190,8 +175,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                                     setSelectedValue={setTimeControl}
                                 />
                             </Box>
-                            {/* Render the wager size switch */}
-                            <Box>
+                            <Box className="wager-size-switch">
                                 <SwitchOptions
                                     label="Wager Size"
                                     options={wagerSizeOptions}
@@ -203,7 +187,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         <PlayGameButton
                             playGame={playGame}
                             amount={wagerSize}
-                            ethereumAmount={wagerAmountInEth}                            
+                            ethereumAmount={wagerAmountInEth}
                             theme={theme}
                         />
                     </>
@@ -216,13 +200,15 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
                 message={snackbarMessage}
-                sx={{ background: 'green', color: 'white' }} // Custom styling for green background and white text
+                className="snackbar" // Custom class for styling
             />
-            <Sidebar
-                usersOnline={onlineUsersCount} // Pass the actual value for users online
-                gamesCreated={gameCount} // Pass the actual value for games created
-                transactedAmount={totalWageredInUsd} // Pass the actual value for transacted amount
-            />
+            <div className="sidebar-container">
+                <Sidebar
+                    usersOnline={onlineUsersCount}
+                    gamesCreated={gameCount}
+                    transactedAmount={totalWageredInUsd}
+                />
+            </div>
         </Container>
     );
 };
