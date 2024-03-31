@@ -27,6 +27,6 @@ const NumberDisplay = ({ amount }) => {
       </Typography>
     </div>
   );
-};
+}
 
 export default NumberDisplay;

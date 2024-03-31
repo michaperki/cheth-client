@@ -27,24 +27,6 @@ const AdminPage = () => {
     const socket = useWebSocket(handleWebSocketMessage);
 
     useEffect(() => {
-        const fetchGames = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGames`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch games');
-                }
-                const data = await response.json();
-                console.log('Games:', data);
-                setGames(data);
-            } catch (error) {
-                console.error('Error fetching games:', error);
-            }
-        };
-
-        fetchGames();
-    }, []);
-
-    useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/users`);
@@ -61,6 +43,25 @@ const AdminPage = () => {
 
         fetchUsers();
     }, []);
+    
+    useEffect(() => {
+      const fetchGames = async () => {
+          try {
+              const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getAllGames`);
+              if (!response.ok) {
+                  throw new Error('Failed to fetch games');
+              }
+              const data = await response.json();
+              console.log('Games:', data);
+              setGames(data);
+          } catch (error) {
+              console.error('Error fetching games:', error);
+          }
+
+      };
+
+      fetchGames();
+  }, []);
 
     const cancelGame = async (gameId) => {
         try {
@@ -138,7 +139,7 @@ const AdminPage = () => {
           }
 
           // fetch the games again to get the updated balances
-          const responseGames = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGames`);
+          const responseGames = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getAllGames`);
           if (!responseGames.ok) {
             throw new Error('Failed to fetch games');
           }
