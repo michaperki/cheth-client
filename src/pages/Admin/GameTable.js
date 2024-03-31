@@ -121,7 +121,7 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
 
     // Define columns for the data grid
     const columns = [
-        { field: "game_id", headerName: "ID", flex: 0.5 },
+        { field: "game_id", headerName: "ID", flex: 0.25 },
         { 
             field: "contract_address", 
             headerName: "Address", 
@@ -154,7 +154,7 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         {
             field: "id", // Use an existing field
             headerName: "Actions",
-            flex: 1,
+            flex: 1.5,
             renderCell: (params) => (
                 <React.Fragment>
                     {renderCancelButton(params)}
