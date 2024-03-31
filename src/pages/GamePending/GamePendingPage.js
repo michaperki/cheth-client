@@ -69,7 +69,7 @@ const GamePendingPage = ({ userInfo }) => {
 
             const entryFeeInWei = await contractInstance.methods.getEntryFee().call();
             console.log('Entry fee in wei:', entryFeeInWei);
-            console.log('contract methods:', contractInstance.methods);
+
             const tx = await contractInstance.methods.joinGame().send({
                 from: userInfo.wallet_address,
                 value: entryFeeInWei,
