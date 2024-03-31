@@ -14,7 +14,11 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
 
     ws.onopen = () => {
       console.log('Connected to WebSocket');
-      ws.send(JSON.stringify({ type: 'CONNECT', userId })); // Send the userId to the server when connected
+      if (userId) {
+        console.log('Sending CONNECT message to WebSocket server');
+        console.log('userId:', userId);
+        ws.send(JSON.stringify({ type: 'CONNECT', userId }));
+      }
     };
 
     ws.onmessage = (event) => {
