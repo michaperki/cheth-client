@@ -54,7 +54,7 @@ function App() {
   };
 
   // Use the useWebSocket hook to establish WebSocket connection
-  const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage);
+  const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
 
   const pingWebSocket = () => {
     console.log('Pinging WebSocket...');
