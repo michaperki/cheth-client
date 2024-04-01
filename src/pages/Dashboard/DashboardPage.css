@@ -1,14 +1,15 @@
-/* DashboardPage.css */
 .dashboard-container {
-    display: flex;
-    flex-direction: row;
     align-items: center;
     padding: 8px;
 }
 
 .dashboard-content {
     width: 100%;
+    display: flex;
+    flex-direction: row;
 }
+
+
 
 .welcome-text {
     margin-bottom: 20px;
@@ -63,17 +64,19 @@
     color: white;
 }
 
+
 .sidebar-container {
-    width: 100%;
+    width: 50%; /* Initial width for large screens */
 }
 
-/* Media query for mobile devices */
+/* Media query for small screens */
 @media (max-width: 600px) {
-    .dashboard-container {
+    .dashboard-content {
         flex-direction: column;
     }
 
     .sidebar-container {
+        width: 100%; /* Full width for small screens */
         margin-top: 20px;
     }
 }

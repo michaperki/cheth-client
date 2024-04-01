@@ -63,7 +63,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     userId: userInfo.user_id,
                     timeControl,
                     wagerSize
@@ -139,60 +139,73 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     return (
         <Container className="dashboard-container">
             <div className="dashboard-content">
-                <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
-                <Box className="rating-box">
-                    <Typography variant="subtitle2" className="rating-label">Your Rating</Typography>
-                    <Typography variant="h4" className="rating-value">{userInfo?.rating}</Typography>
-                </Box>
-                {searchingForOpponent ? (
-                    <div className="searching-container">
-                        <CircularProgress />
-                        {opponentFound ? (
-                            <Typography className="opponent-found-text">Opponent found! Setting Up Contract</Typography>
-                        ) : (
-                            <Typography className="searching-text">Searching for opponent...</Typography>
-                        )}
-                        {!opponentFound && (
-                            <Button
-                                onClick={cancelSearch}
-                                variant="contained"
-                                color="error"
-                                className="cancel-button"
-                            >
-                                Cancel
-                            </Button>
-                        )}
+                <div className="main-content">
+                    <div className="create-game-container">
+                        <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
+                        <Box className="rating-box">
+                            <Typography variant="subtitle2" className="rating-label">Your Rating</Typography>
+                            <Typography variant="h4" className="rating-value">{userInfo?.rating}</Typography>
+                        </Box>
+                        <div className="find-opponent-container">
+                            {searchingForOpponent ? (
+                                <div className="searching-container">
+                                    <CircularProgress />
+                                    {opponentFound ? (
+                                        <Typography className="opponent-found-text">Opponent found! Setting Up Contract</Typography>
+                                    ) : (
+                                        <Typography className="searching-text">Searching for opponent...</Typography>
+                                    )}
+                                    {!opponentFound && (
+                                        <Button
+                                            onClick={cancelSearch}
+                                            variant="contained"
+                                            color="error"
+                                            className="cancel-button"
+                                        >
+                                            Cancel
+                                        </Button>
+                                    )}
 
+                                </div>
+                            ) : (
+                                <>
+                                    <Container className="switch-container">
+                                        <Box className="time-control-switch">
+                                            <SwitchOptions
+                                                label="Time Control"
+                                                options={timeControlOptions}
+                                                defaultValue="60"
+                                                setSelectedValue={setTimeControl}
+                                            />
+                                        </Box>
+                                        <Box className="wager-size-switch">
+                                            <SwitchOptions
+                                                label="Wager Size"
+                                                options={wagerSizeOptions}
+                                                defaultValue="5"
+                                                setSelectedValue={setWagerSize}
+                                            />
+                                        </Box>
+                                    </Container>
+                                    <PlayGameButton
+                                        playGame={playGame}
+                                        amount={wagerSize}
+                                        ethereumAmount={wagerAmountInEth}
+                                        theme={theme}
+                                    />
+                                </>
+                            )}
+                        </div>
                     </div>
-                ) : (
-                    <>
-                        <Container className="switch-container">
-                            <Box className="time-control-switch">
-                                <SwitchOptions
-                                    label="Time Control"
-                                    options={timeControlOptions}
-                                    defaultValue="60"
-                                    setSelectedValue={setTimeControl}
-                                />
-                            </Box>
-                            <Box className="wager-size-switch">
-                                <SwitchOptions
-                                    label="Wager Size"
-                                    options={wagerSizeOptions}
-                                    defaultValue="5"
-                                    setSelectedValue={setWagerSize}
-                                />
-                            </Box>
-                        </Container>
-                        <PlayGameButton
-                            playGame={playGame}
-                            amount={wagerSize}
-                            ethereumAmount={wagerAmountInEth}
-                            theme={theme}
-                        />
-                    </>
 
-                )}
+                </div>
+                <div className="sidebar-container">
+                        <Sidebar
+                            usersOnline={onlineUsersCount}
+                            gamesCreated={gameCount}
+                            transactedAmount={totalWageredInUsd}
+                        />
+                    </div>
             </div>
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
@@ -202,15 +215,94 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                 message={snackbarMessage}
                 className="snackbar" // Custom class for styling
             />
-            <div className="sidebar-container">
-                <Sidebar
-                    usersOnline={onlineUsersCount}
-                    gamesCreated={gameCount}
-                    transactedAmount={totalWageredInUsd}
-                />
-            </div>
         </Container>
     );
 };
 
 export default DashboardPage;
+
+
+// /* DashboardPage.css */
+// .dashboard-container {
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     padding: 8px;
+// }
+
+// .dashboard-content {
+//     width: 100%;
+// }
+
+// .welcome-text {
+//     margin-bottom: 20px;
+// }
+
+// .rating-box {
+//     border-radius: 8px;
+//     border: 1px solid #1976d2;
+//     padding: 8px;
+//     display: flex;
+//     justify-content: flex-start;
+//     align-items: center;
+//     margin-bottom: 20px;
+//     max-width: 200px;
+// }
+
+// .rating-label {
+//     margin-bottom: 8px;
+// }
+
+// .searching-container {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     margin-bottom: 20px;
+// }
+
+// .opponent-found-text,
+// .searching-text {
+//     margin-left: 8px;
+// }
+
+// .cancel-button {
+//     margin-left: 16px;
+// }
+
+// .switch-container {
+//     width: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     margin-bottom: 20px;
+// }
+
+// .time-control-switch,
+// .wager-size-switch {
+//     width: 100%;
+// }
+
+// .snackbar {
+//     background: green;
+//     color: white;
+// }
+
+// .sidebar-container {
+//     display: flex;
+//     width: 50%;
+// }
+
+// /* Media query for mobile devices */
+// @media (max-width: 300px) {
+//     .dashboard-container {
+//         flex-direction: column;
+//     }
+
+//     .sidebar-container {
+//         margin-top: 20px;
+//     }
+// }
+
+
+// why is the sidebar not showing up on the right side of the dashboard page?
+// The sidebar is not showing up on the right side of the dashboard page because the CSS for the sidebar-container class is missing the flex property. To fix this issue, add the flex property to the sidebar-container class and set it to 1 to make the sidebar take up the remaining space on the right side of the dashboard page. Here's the updated CSS code for the sidebar-container class:
