@@ -1,7 +1,11 @@
+// SwitchOptions.js
 import React from 'react';
-import { FormControl, FormControlLabel, FormLabel, Typography, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { FormControl, Typography, ToggleButton, ToggleButtonGroup, FormLabel } from '@mui/material';
+import './SwitchOptions.css'; // Import CSS file for SwitchOptions
+import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 const SwitchOptions = ({ label, options, defaultValue, setSelectedValue }) => {
+  const theme = useTheme(); // Get the current theme
   const [value, setValue] = React.useState(defaultValue); // Initial value
   
   const handleChange = (event, newValue) => {
@@ -12,7 +16,7 @@ const SwitchOptions = ({ label, options, defaultValue, setSelectedValue }) => {
   };
 
   return (
-    <FormControl component="fieldset">
+    <FormControl component="fieldset" className="switch-options-container">
       <FormLabel component="legend">
         <Typography variant="subtitle1">{label}</Typography>
       </FormLabel>
@@ -22,9 +26,10 @@ const SwitchOptions = ({ label, options, defaultValue, setSelectedValue }) => {
         onChange={handleChange}
         aria-label={label}
         size="small"
+        className="toggle-button-group"
       >
         {options.map((option) => (
-          <ToggleButton key={option.value} value={option.value}>
+          <ToggleButton key={option.value} value={option.value} className="toggle-button" style={{ color: theme.palette.primary.main }}>
             {option.label}
           </ToggleButton>
         ))}

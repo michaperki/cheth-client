@@ -4,12 +4,12 @@
 
 /* Light mode */
 .light-mode {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #f5f5f5; /* Light gray */
+    color: #333333; /* Dark gray text */
 }
 
 /* Dark mode */
 .dark-mode {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #333333; /* Dark gray */
+    color: #f5f5f5; /* Light gray text */
 }

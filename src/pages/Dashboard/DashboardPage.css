@@ -1,5 +1,8 @@
 .dashboard-container {
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center content horizontally */
     padding: 8px;
 }
 
@@ -7,9 +10,9 @@
     width: 100%;
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
 }
-
-
 
 .welcome-text {
     margin-bottom: 20px;
@@ -24,10 +27,6 @@
     align-items: center;
     margin-bottom: 20px;
     max-width: 200px;
-}
-
-.rating-label {
-    margin-bottom: 8px;
 }
 
 .searching-container {
@@ -67,6 +66,13 @@
 
 .sidebar-container {
     width: 50%; /* Initial width for large screens */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align items to the right */
+    position: sticky;
+    top: 0;
+    height: 100vh; /* Adjust height to fit the viewport */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
 }
 
 /* Media query for small screens */
