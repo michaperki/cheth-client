@@ -12,6 +12,8 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
 
+  let timeoutId;
+
   const handleDashboardPageWebSocketMessage = (message) => {
     console.log('Received message in DashboardPage:', message);
     const messageData = JSON.parse(message);
@@ -42,14 +44,21 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
 
   const socket = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
 
-  useEffect(() => {
-    // Add any additional logic specific to the DashboardPage WebSocket here
-    // For example, subscribing to specific channels or sending initial messages
-    
-    return () => {
-      // Add any cleanup logic if necessary
-    };
-  }, []); // Adjust the dependency array as needed
+  if (searchingForOpponent) {
+    // Set a timeout for 30 seconds
+    timeoutId = setTimeout(() => {
+      // Display error message
+      setSnackbarMessage('Search timed out.');
+      setSnackbarOpen(true);
+      // Cancel search
+      setSearchingForOpponent(false);
+      // send a message to the server to cancel the search
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
+      }
+
+    }, 30000); // 30 seconds
+  }
   
   return {
     searchingForOpponent,
