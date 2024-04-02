@@ -60,12 +60,12 @@ const GamePendingPage = ({ userInfo }) => {
     const joinGame = async () => {
         try {
             if (!connected) {
+                console.error('Not connected to MetaMask');
                 await sdk.requestPermissions({ eth_accounts: {} });
             }
             if (!contractInstance) {
                 throw new Error('Contract instance not available');
             }
-
 
             const entryFeeInWei = await contractInstance.methods.getEntryFee().call();
             console.log('Entry fee in wei:', entryFeeInWei);
