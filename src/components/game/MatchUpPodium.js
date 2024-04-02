@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers }) => {
+const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => { // Set default value for joinedPlayers
     console.log("in the MatchupPodium component");
     console.log("joinedPlayers: ", joinedPlayers);
 
