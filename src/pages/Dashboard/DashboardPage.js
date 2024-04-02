@@ -140,7 +140,6 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         <Container className="dashboard-container">
             <Typography variant="h3" 
                 style={{ 
-                    color: theme.palette.primary.main, 
                     fontWeight: 'bold', 
                     marginTop: '20px', 
                     marginBottom: '20px', 
@@ -158,7 +157,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                     <div className="create-game-container">
                         <Box className="rating-box">
                             <Typography variant="subtitle2" style={{ marginBottom: '8px' }} className="rating-label">Your Rating</Typography>
-                            <Typography variant="h4"  style={{ color: '#1976d2' }} className="rating-value">{userInfo?.rating}</Typography>
+                            <Typography variant="h4"  className="rating-value">{userInfo?.rating}</Typography>
                         </Box>
                         <div className="find-opponent-container">
                             {searchingForOpponent ? (

@@ -29,7 +29,7 @@ const SwitchOptions = ({ label, options, defaultValue, setSelectedValue }) => {
         className="toggle-button-group"
       >
         {options.map((option) => (
-          <ToggleButton key={option.value} value={option.value} className="toggle-button" style={{ color: theme.palette.primary.main }}>
+          <ToggleButton key={option.value} value={option.value} className="toggle-button" >
             {option.label}
           </ToggleButton>
         ))}

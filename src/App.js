@@ -7,6 +7,7 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import GamePendingPage from './pages/GamePending/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
+import AccountPage from './pages/AccountPage';
 import useWebSocket from './hooks/websocket/useWebsocket';
 import useWallet from './hooks/useWallet';
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
@@ -73,6 +74,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} onlineUsersCount={onlineUsersCount} />} />
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
+            <Route path="/account" element={<AccountPage userInfo={userInfo} />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </EthereumPriceProvider>
