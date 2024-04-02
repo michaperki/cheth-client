@@ -11,6 +11,8 @@ const useWallet = () => {
     useEffect(() => {
         if (connected) {
             setWalletAddress(account);
+        } else {
+            connectAccount();         
         }
     }, [connected, provider]);
 
@@ -30,7 +32,7 @@ const useWallet = () => {
         }
     };
 
-    return { walletAddress, connectAccount };
+    return { walletAddress, connectAccount, connected, provider, sdk };
 }
 
 export default useWallet;

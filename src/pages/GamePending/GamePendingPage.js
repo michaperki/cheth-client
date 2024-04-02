@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Chess from '../../abis/Chess.json';
-import { useSDK } from "@metamask/sdk-react"; // Import MetaMask SDK
-import Web3 from 'web3';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar, Box } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
 import NumberDisplay from '../../components/game/NumberDisplay';
 import UseGamePendingWebsocket from '../../hooks/websocket/UseGamePendingWebsocket';
 import MatchupPodium from '../../components/game/MatchUpPodium';
+// import useWallet
+import useWallet from '../../hooks/useWallet';
+import Web3 from 'web3';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
-    const { sdk, connected, provider } = useSDK();
     const [contractInstance, setContractInstance] = useState(null);
     const theme = useTheme(); // Get the current theme
-    const web3 = new Web3(provider); // Create 
+    const { walletAddress, connectAccount, connected, provider, sdk } = useWallet();
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
     const {
         snackbarOpen,
@@ -29,25 +29,27 @@ const GamePendingPage = ({ userInfo }) => {
         contractBalance,
         getGameInfo,
         player_one,
-        player_two
+        player_two,
     } = UseGamePendingWebsocket(gameId, userInfo);
+    console.log('Game info:', gameInfo);
+    console.log('Contract address:', contractAddress);
 
-    useEffect(() => {
-        // Set up contract instance when contract address is available
-        if (contractAddress && provider) {
-            console.log('Setting up contract instance...');
-            console.log('Contract address:', contractAddress);
-            console.log('Provider:', provider);
-            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
-            setContractInstance(contract);
-        }
-    }, [contractAddress, provider]);
+    console.log('Wallet address:', walletAddress);
+    console.log('Connected:', connected);
+    console.log('Provider:', provider);
 
     useEffect(() => {
         console.log('Fetching game info inside GamePendingPage...');
         getGameInfo();
-    }, []);
 
+        if (provider && contractAddress) {
+            console.log('Creating contract instance...');
+            const web3 = new Web3(provider);
+            const contract = new web3.eth.Contract(Chess.abi, contractAddress);
+            setContractInstance(contract);
+        }
+
+    }, [provider, contractAddress]);
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -61,8 +63,10 @@ const GamePendingPage = ({ userInfo }) => {
         try {
             if (!connected) {
                 console.error('Not connected to MetaMask');
-                await sdk.requestPermissions({ eth_accounts: {} });
+                connectAccount();
+                return;
             }
+            
             if (!contractInstance) {
                 throw new Error('Contract instance not available');
             }
@@ -71,7 +75,7 @@ const GamePendingPage = ({ userInfo }) => {
             console.log('Entry fee in wei:', entryFeeInWei);
 
             const tx = await contractInstance.methods.joinGame().send({
-                from: userInfo.wallet_address,
+                from: walletAddress,
                 value: entryFeeInWei,
                 gas: 3000000
             });
@@ -105,7 +109,7 @@ const GamePendingPage = ({ userInfo }) => {
 
                     {/* display the players */}
                     {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />}
-                    <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
+                    <NumberDisplay amount={Web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
 
 
                     {/* Show different content based on whether the player has joined */}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
+
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import useWallet from '../useWallet';
 
@@ -16,9 +17,6 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [player_one, setPlayerOne] = useState(null);
     const [player_two, setPlayerTwo] = useState(null);
-
-    const { walletAddress, connectAccount } = useWallet();
-
 
     const ethToUsdRate = useEthereumPrice();
     const navigate = useNavigate();
@@ -102,7 +100,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 return prevPlayers; // Otherwise, return the existing array
             });
             // Check if the player's address matches any of the joined players
-            const hasJoined = joinedPlayers.some(player => player === walletAddress);
+            const hasJoined = joinedPlayers.some(player => player === userInfo?.wallet_address);
             setHasPlayerJoined(hasJoined);
 
             getGameInfo();
