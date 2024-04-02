@@ -91,7 +91,8 @@ const GamePage = ({ userInfo }) => {
             <Typography variant="h3" sx={{ mb: 4 }}>Game In-Progress</Typography>
             <Typography variant="h4" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
             {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} />}
-            <NumberDisplay amount={web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
+            {gameInfo && ( <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} /> )}
+
             <Button
                 onClick={handleJoinGame}
                 variant="contained"
