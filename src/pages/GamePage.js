@@ -48,6 +48,13 @@ const GamePage = ({ userInfo }) => {
         memoizedGetGameInfo();
     }, []);
 
+    useEffect(() => {
+        if (gameInfo) {
+            setRewardPool(web3.utils.fromWei(gameInfo.reward_pool, 'ether'));
+            setGameUrl(gameInfo.lichess_id);
+        }
+    }, [gameInfo]);
+
     const handleJoinGame = () => {
         // semd them to the lichess url
         window
