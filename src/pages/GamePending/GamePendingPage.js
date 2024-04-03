@@ -81,7 +81,7 @@ const GamePendingPage = ({ userInfo }) => {
                 connectAccount();
                 return;
             }
-            
+
             if (!contractInstance) {
                 throw new Error('Contract instance not available');
             }
@@ -123,7 +123,11 @@ const GamePendingPage = ({ userInfo }) => {
 
 
                     {/* display the players */}
-                    {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />}
+                    {player_one && player_two &&
+                        <div style={{ marginBottom: '20px', minHeight: '110px' }}>
+                            <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />
+                        </div>
+                    }
                     <NumberDisplay amount={Web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
 
 
@@ -152,7 +156,7 @@ const GamePendingPage = ({ userInfo }) => {
                 </div>
             )}
             {/* log the joined players, they have duplicate entries */}
-            
+
             {gameInfo && parseInt(gameInfo.state) === -1 && (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
             )}
