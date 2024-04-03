@@ -146,13 +146,13 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         {
             field: "contract_address",
             headerName: "Address",
-            flex: 0.5,
+            flex: 0.25,
             renderCell: (params) => (
                 <Box display="flex" alignItems="center">
                     <Tooltip title={params.value}>
                         <span>{abbreviateAddress(params.value)}</span>
                     </Tooltip>
-                    <Button
+                    <IconButton
                         variant="contained"
                         color="primary"
                         size="small"
@@ -160,7 +160,7 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
                         sx={{ marginLeft: 'auto', minWidth: 'unset' }}
                     >
                         <ContentCopyOutlinedIcon fontSize="small" />
-                    </Button>
+                    </IconButton>
                 </Box>
             )
         },

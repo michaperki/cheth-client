@@ -29,7 +29,7 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/users`);
+                const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/getUsers`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch users');
                 }
