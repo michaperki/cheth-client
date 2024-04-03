@@ -70,7 +70,7 @@ function App() {
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/account" element={<AccountPage userInfo={userInfo} />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin" element={<AdminPage userInfo={userInfo} />} />
           </Routes>
         </EthereumPriceProvider>
       </ThemeProvider>

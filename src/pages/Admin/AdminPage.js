@@ -9,7 +9,7 @@ import StateBox from './StateBox';
 import GameTable from './GameTable';
 import CommissionBarChart from './CommissionBarChart';
 
-const AdminPage = () => {
+const AdminPage = ({ userInfo }) => {
     const navigate = useNavigate();
     const theme = useTheme();
     const [onlineUsersCount, setOnlineUsersCount] = useState(0);
@@ -27,7 +27,7 @@ const AdminPage = () => {
         }
     };
 
-    const socket = useWebSocket(handleWebSocketMessage);
+    const socket = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
 
     useEffect(() => {
         const fetchUsers = async () => {
