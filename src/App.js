@@ -57,17 +57,12 @@ function App() {
   // Use the useWebSocket hook to establish WebSocket connection
   const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
 
-  const pingWebSocket = () => {
-    console.log('Pinging WebSocket...');
-    socket.send(JSON.stringify({ type: 'PING' }));
-  };
-
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <EthereumPriceProvider>
           <CssBaseline />
-          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} refreshWebSocket={pingWebSocket} />
+          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
           <Routes>
             <Route path="/" element={<LandingPage userInfo={userInfo} />} />
             <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
