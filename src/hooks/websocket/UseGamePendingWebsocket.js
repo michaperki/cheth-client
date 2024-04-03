@@ -90,10 +90,9 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         if (messageData.type === "GAME_JOINED") {
             console.log("Game Joined...");
 
-            const joinedPlayers = messageData.joinedPlayers;
-            console.log("Joined players:", joinedPlayers);
-            const hasJoined = joinedPlayers.includes(userInfo?.wallet_address);
-
+            const newPlayerWallet = messageData.player;
+            const hasJoined = newPlayerWallet === userInfo.wallet_address;
+            
             setHasPlayerJoined(hasJoined);
 
             getGameInfo();

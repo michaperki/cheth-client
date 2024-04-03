@@ -78,11 +78,39 @@
 /* Media query for small screens */
 @media (max-width: 600px) {
     .dashboard-content {
+        width: 100%;
+        display: flex;
         flex-direction: column;
+        align-items: center; /* Center content horizontally */
+    }
+    
+    .find-opponent-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center content horizontally */
+    }
+
+    .rating-box {
+        max-width: 100%;
+    }
+    
+    .play-game-button {
+        margin-top: 20px; /* Add margin to the top of the button */
+        border-radius: 10px; /* Make the button more square */
+        width: 200px; /* Adjust the width of the button */
+        height: 200px; /* Adjust the height of the button to make it more square */
+        padding: 20px; /* Add padding to the button */
+        display: flex; /* Make the button a flex container */
+        flex-direction: column; /* Align items vertically */
+        justify-content: space-between; /* Add space between items */
     }
 
     .sidebar-container {
-        width: 100%; /* Full width for small screens */
-        margin-top: 20px;
+        margin-top: 20px; /* Add margin to the top of the sidebar */
+        width: 100%; /* Adjust width to take full width */
+        align-items: center; /* Align items to the center */
     }
+
+
 }

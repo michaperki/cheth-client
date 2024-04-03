@@ -91,7 +91,7 @@ const GamePendingPage = ({ userInfo }) => {
             const tx = await contractInstance.methods.joinGame().send({
                 from: walletAddress,
                 value: entryFeeInWei,
-                gas: 3000000
+                gas: 3000000,
             });
             setGameInfo(prev => ({ ...prev, transactionHash: tx.transactionHash }));
         } catch (error) {
