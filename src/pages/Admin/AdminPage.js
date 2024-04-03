@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button, Container, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import useWebSocket from '../../hooks/websocket/useWebsocket';
 import StateBox from './StateBox';
 import GameTable from './GameTable';
+import CommissionBarChart from './CommissionBarChart';
 
 const AdminPage = () => {
     const navigate = useNavigate();
@@ -13,6 +15,7 @@ const AdminPage = () => {
     const [onlineUsersCount, setOnlineUsersCount] = useState(0);
     const [games, setGames] = useState([]);
     const [users, setUsers] = useState([]);
+    const ethToUsdRate = useEthereumPrice();
 
     const handleWebSocketMessage = (message) => {
         console.log('Received message in AdminPage:', message);
@@ -160,6 +163,7 @@ const AdminPage = () => {
                 <StateBox title={games.length} subtitle="Total Games" />
                 <StateBox title={users.length} subtitle="Total Users" />
             </div>
+            <CommissionBarChart gameData={games} ethToUsdRate={ethToUsdRate} />
             <GameTable gameData={games} cancelGame={cancelGame} finishGame={finishGame} deleteGame={deleteGame} refreshContractBalance={refreshContractBalance} />
             <Button variant="contained" className="mt-4" onClick={() => navigate('/dashboard')}>Go to Dashboard</Button>
         </div>
