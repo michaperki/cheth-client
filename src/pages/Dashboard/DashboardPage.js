@@ -29,8 +29,6 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         { label: '$20', value: '20' },
     ];
 
-
-
     const {
         searchingForOpponent,
         opponentFound,

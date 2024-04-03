@@ -14,6 +14,7 @@ import Web3 from 'web3';
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
     const [contractInstance, setContractInstance] = useState(null);
+    const [joinedPlayers, setJoinedPlayers] = useState([]); // State variable to store joined players
     const theme = useTheme(); // Get the current theme
     const { walletAddress, connectAccount, connected, provider, sdk } = useWallet();
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
@@ -22,7 +23,6 @@ const GamePendingPage = ({ userInfo }) => {
         snackbarMessage,
         setSnackbarOpen,
         hasPlayerJoined,
-        joinedPlayers,
         gameInfo,
         setGameInfo,
         contractAddress,
@@ -41,6 +41,20 @@ const GamePendingPage = ({ userInfo }) => {
     useEffect(() => {
         console.log('Fetching game info inside GamePendingPage...');
         getGameInfo();
+
+        // check the game info player1_ready and player2_ready
+        if (gameInfo) {
+            if (gameInfo.player1_ready) {
+                if (!joinedPlayers.includes(gameInfo.player1_id)) {
+                    setJoinedPlayers(prev => [...prev, gameInfo.player1_id]);
+                }
+            }
+            if (gameInfo.player2_ready) {
+                if (!joinedPlayers.includes(gameInfo.player2_id)) {
+                    setJoinedPlayers(prev => [...prev, gameInfo.player2_id]);
+                }
+            }
+        }
 
         if (provider && contractAddress) {
             console.log('Creating contract instance...');

@@ -10,7 +10,6 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [hasPlayerJoined, setHasPlayerJoined] = useState(false);
-    const [joinedPlayers, setJoinedPlayers] = useState([]);
     const [gameInfo, setGameInfo] = useState(null);
     const [contractAddress, setContractAddress] = useState(null);
     const [ownerAddress, setOwnerAddress] = useState(null);
@@ -89,18 +88,12 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         console.log('messageData', messageData);
 
         if (messageData.type === "GAME_JOINED") {
-            console.log("Game Joined. Updating contract balance...");
+            console.log("Game Joined...");
 
-            // Update the joined players list using functional form of setJoinedPlayers
-            setJoinedPlayers(prevPlayers => {
-                // Check if the player already exists in the list
-                if (!prevPlayers.includes(messageData.player)) {
-                    return [...prevPlayers, messageData.player]; // Add player if not present
-                }
-                return prevPlayers; // Otherwise, return the existing array
-            });
-            // Check if the player's address matches any of the joined players
-            const hasJoined = joinedPlayers.some(player => player === userInfo?.wallet_address);
+            const joinedPlayers = messageData.joinedPlayers;
+            console.log("Joined players:", joinedPlayers);
+            const hasJoined = joinedPlayers.includes(userInfo?.wallet_address);
+
             setHasPlayerJoined(hasJoined);
 
             getGameInfo();
@@ -135,7 +128,6 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         snackbarMessage,
         setSnackbarOpen,
         hasPlayerJoined,
-        joinedPlayers,
         gameInfo,
         setGameInfo,
         contractAddress,

@@ -6,19 +6,17 @@ const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => { // Set
     console.log("in the MatchupPodium component");
     console.log("joinedPlayers: ", joinedPlayers);
 
-    // Normalize joinedPlayers array
-    const normalizedJoinedPlayers = joinedPlayers.map(player => player.toLowerCase());
+    const playerOneID = playerOne.user_id;
+    const playerTwoID = playerTwo.user_id;
 
-    console.log("normalizedJoinedPlayers: ", normalizedJoinedPlayers);
+    console.log("playerOneID : ", playerOneID);
+    console.log("playerTwoID : ", playerTwoID);
 
-    const playerOneAddress = playerOne.wallet_address.toLowerCase();
-    const playerTwoAddress = playerTwo.wallet_address.toLowerCase();
+    const isPlayerOneJoined = joinedPlayers?.includes(playerOneID);
+    const isPlayerTwoJoined = joinedPlayers?.includes(playerTwoID);
 
-    console.log("playerOneAddress: ", playerOneAddress);
-    console.log("playerTwoAddress: ", playerTwoAddress);
 
-    const isPlayerOneJoined = normalizedJoinedPlayers.includes(playerOneAddress);
-    const isPlayerTwoJoined = normalizedJoinedPlayers.includes(playerTwoAddress);
+
 
     console.log("isPlayerOneJoined: ", isPlayerOneJoined);
     console.log("isPlayerTwoJoined: ", isPlayerTwoJoined);
