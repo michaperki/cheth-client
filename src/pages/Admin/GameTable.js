@@ -5,44 +5,53 @@ import ClearIcon from '@mui/icons-material/Clear';
 import DoneIcon from '@mui/icons-material/Done';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import IconButton from '@mui/material/IconButton';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import GameDetailPopup from "./GameDetailPopup";
 
 const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContractBalance }) => {
     const theme = useTheme();
     const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
+    const [selectedGame, setSelectedGame] = useState(null);
 
-    // Define the mock data for games with truncated fields
     const mockDataGames = gameData.map((game, index) => ({
         id: index + 1,
         ...game,
     }));
-    
+
     const handleCancelGame = (gameId) => {
-        // Handle cancel game button click event
         console.log("Cancel Game clicked for row with ID:", gameId);
         cancelGame(gameId);
     };
 
     const handleFinishGame = (gameId) => {
-        // Handle finish game button click event
         console.log("Finish Game clicked for row with ID:", gameId);
         finishGame(gameId);
     };
 
     const handleDeleteGame = (gameId) => {
-        // Handle delete game button click event
         console.log("Delete Game clicked for row with ID:", gameId);
         deleteGame(gameId);
     };
 
     const handleRefreshContractBalance = (gameId) => {
-        // Handle refresh contract balance button click event
         console.log("Refresh Contract Balance clicked for row with ID:", gameId);
         refreshContractBalance(gameId);
     };
-    
+
+    const handleOpenGameDetails = (gameId) => {
+        console.log("Open Game Details clicked for row with ID:", gameId);
+        // Handle opening game details here
+
+        const game = gameData.find((game) => game.game_id === gameId);
+        console.log("Selected game:", game);
+
+        setSelectedGame(game);
+
+    };
+
     const handleCopyAddress = (address) => {
-        // Copy address to clipboard and show snackbar
         navigator.clipboard.writeText(address);
         setSnackbarOpen(true);
     };
@@ -50,35 +59,33 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
     const abbreviateAddress = (address) => {
         return address ? `${address.substring(0, 2)}...${address.substring(address.length - 3)}` : null;
     };
-    
-    // Render cancel button with Clear icon
+
     const renderCancelButton = (params) => {
         return (
             <Tooltip title="Cancel Game">
-                <Button
+                <IconButton
                     variant="contained"
                     color="primary"
                     size="small"
                     onClick={() => handleCancelGame(params.row.game_id)}
                 >
                     <ClearIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
     };
 
-    // Render finish game button with Done icon
     const renderFinishButton = (params) => {
         return (
             <Tooltip title="Finish Game">
-                <Button
+                <IconButton
                     variant="contained"
                     color="primary"
                     size="small"
                     onClick={() => handleFinishGame(params.row.game_id)}
                 >
                     <DoneIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
     };
@@ -86,14 +93,14 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
     const renderDeleteButton = (params) => {
         return (
             <Tooltip title="Delete Game">
-                <Button
+                <IconButton
                     variant="contained"
                     color="error"
                     size="small"
                     onClick={() => handleDeleteGame(params.row.game_id)}
                 >
                     <DeleteIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
     };
@@ -101,30 +108,44 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
     const renderRefreshButton = (params) => {
         return (
             <Tooltip title="Refresh Contract Balance">
-                <Button
+                <IconButton
                     variant="contained"
                     color="primary"
                     size="small"
                     onClick={() => handleRefreshContractBalance(params.row.game_id)}
                 >
                     <RefreshIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
-    }
+    };
 
-    // Snackbar close handler
+    const renderGameDetailsButton = (params) => {
+        return (
+            <Tooltip title="Game Details">
+                <IconButton
+                    color="primary"
+                    onClick={() => handleOpenGameDetails(params.row.game_id)}
+                >
+                    <InfoOutlinedIcon />
+                </IconButton>
+            </Tooltip>
+        );
+    };
+
+    const handleClosePopup = () => {
+        setSelectedGame(null);
+    };
+
     const handleCloseSnackbar = () => {
         setSnackbarOpen(false);
     };
 
-
-    // Define columns for the data grid
     const columns = [
         { field: "game_id", headerName: "ID", flex: 0.25 },
-        { 
-            field: "contract_address", 
-            headerName: "Address", 
+        {
+            field: "contract_address",
+            headerName: "Address",
             flex: 0.5,
             renderCell: (params) => (
                 <Box display="flex" alignItems="center">
@@ -152,15 +173,16 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         { field: "created_at", headerName: "Created At", flex: 0.25 },
         { field: "updated_at", headerName: "Updated At", flex: 0.25 },
         {
-            field: "id", // Use an existing field
+            field: "id",
             headerName: "Actions",
-            flex: 1.5,
+            flex: .8,
             renderCell: (params) => (
                 <React.Fragment>
                     {renderCancelButton(params)}
                     {renderFinishButton(params)}
                     {renderDeleteButton(params)}
                     {renderRefreshButton(params)}
+                    {renderGameDetailsButton(params)}
                 </React.Fragment>
             ),
             disableClickEventBubbling: true,
@@ -193,6 +215,11 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
                 />
+                <GameDetailPopup
+                    open={selectedGame !== null}
+                    onClose={handleClosePopup}
+                    game={selectedGame}
+                />
             </Box>
             <Snackbar
                 open={snackbarOpen}
@@ -203,6 +230,5 @@ const GameTable = ({ gameData, cancelGame, finishGame, deleteGame, refreshContra
         </Box>
     );
 }
+
 export default GameTable;
-
-
