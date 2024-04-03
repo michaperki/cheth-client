@@ -41,28 +41,29 @@ const GamePendingPage = ({ userInfo }) => {
     useEffect(() => {
         console.log('Fetching game info inside GamePendingPage...');
         getGameInfo();
+    }, []);
 
-        // check the game info player1_ready and player2_ready
+    useEffect(() => {
+        // Update joined players when game info changes
         if (gameInfo) {
+            const updatedJoinedPlayers = [];
             if (gameInfo.player1_ready) {
-                if (!joinedPlayers.includes(gameInfo.player1_id)) {
-                    setJoinedPlayers(prev => [...prev, gameInfo.player1_id]);
-                }
+                updatedJoinedPlayers.push(gameInfo.player1_id);
             }
             if (gameInfo.player2_ready) {
-                if (!joinedPlayers.includes(gameInfo.player2_id)) {
-                    setJoinedPlayers(prev => [...prev, gameInfo.player2_id]);
-                }
+                updatedJoinedPlayers.push(gameInfo.player2_id);
             }
+            setJoinedPlayers(updatedJoinedPlayers);
         }
+    }, [gameInfo]);
 
+    useEffect(() => {
         if (provider && contractAddress) {
             console.log('Creating contract instance...');
             const web3 = new Web3(provider);
             const contract = new web3.eth.Contract(Chess.abi, contractAddress);
             setContractInstance(contract);
         }
-
     }, [provider, contractAddress]);
 
     // Snackbar close handler
