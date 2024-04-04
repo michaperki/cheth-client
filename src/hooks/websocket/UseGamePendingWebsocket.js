@@ -39,7 +39,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 },
                 body: JSON.stringify({ userId: gameData.player1_id }) // Send user ID in the request body
             });
-            
+
             if (!player1Response.ok) {
                 throw new Error('Failed to fetch game information');
             }
@@ -92,10 +92,8 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
 
             const newPlayerWallet = messageData.player;
             const hasJoined = newPlayerWallet === userInfo.wallet_address;
-            
-            setHasPlayerJoined(hasJoined);
 
-            getGameInfo();
+            setHasPlayerJoined(hasJoined);
         }
 
         if (messageData.type === "GAME_PRIMED") {
@@ -105,16 +103,22 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
 
         // Handle FUNDS_TRANSFERRED message
         if (messageData.type === "FUNDS_TRANSFERRED") {
+            console.log('Received FUNDS_TRANSFERRED message:', messageData);
+            console.log('userInfo:', userInfo);
             // Convert transferred amount from wei to USD
             // first convert the amount to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            console.log('Received funds:', transferredInEth, 'ETH');
-            console.log('Received funds:', transferredInUsd, 'USD');
-            // Show Snackbar notification
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
+            if (messageData.userID !== userInfo.user_id) {
+                const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
+                const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+                console.log('Received funds:', transferredInEth, 'ETH');
+                console.log('Received funds:', transferredInUsd, 'USD');
+                // Show Snackbar notification
+                setSnackbarMessage(`You received $${transferredInUsd}.`);
+                setSnackbarOpen(true);
+            }
         }
+
+        getGameInfo();
     };
 
     const socket = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
