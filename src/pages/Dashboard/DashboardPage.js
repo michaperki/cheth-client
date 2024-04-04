@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container, Typography, CircularProgress, Snackbar, Box } from '@mui/material'; // Import MUI components
-import { useTheme } from '@mui/material/styles'; // Import useTheme hook
+import { Button, Container, Typography, CircularProgress, Snackbar, Grid, Box } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import Sidebar from './Sidebar'; // Import the Sidebar component
+import Sidebar from './Sidebar';
 import useDashboardWebsocket from '../../hooks/websocket/useDashboardWebsocket';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
-import "./DashboardPage.css";
+import './DashboardPage.css';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const theme = useTheme(); // Get the current theme
@@ -134,28 +134,28 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     // convert totalWagered to USD
     const totalWageredInUsd = (totalWagered / 10 ** 18) * ethToUsdRate;
 
+    // Style for the rating box based on theme mode
+    const ratingBoxStyle = {
+        backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f5f5f5', // Dark background for dark mode and light for light mode
+        // ...other existing styles for the rating box
+    };
+
+
     return (
         <Container className="dashboard-container">
-            <Typography variant="h3" 
-                style={{ 
-                    fontWeight: 'bold', 
-                    marginTop: '20px', 
-                    marginBottom: '20px', 
-                    textAlign: 'center',
-                    textTransform: 'uppercase',
-                    letterSpacing: '2px',
-                    fontSize: '2rem',
-                }} 
-                className="welcome-text"
-            >
-                Welcome, {userInfo?.username}
-            </Typography>
-            <div className="dashboard-content">
-                <div className="main-content">
+            <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
+
+            {/* Dashboard Content */}
+
+            <Grid container spacing={3} className="dashboard-content">
+
+                {/* Main Content */}
+
+                <Grid item xs={12} md={8} className="main-content">
                     <div className="create-game-container">
-                        <Box className="rating-box">
+                        <Box className="rating-box" style={ratingBoxStyle}>
                             <Typography variant="subtitle2" style={{ marginBottom: '8px' }} className="rating-label">Your Rating</Typography>
-                            <Typography variant="h4"  className="rating-value">{userInfo?.rating}</Typography>
+                            <Typography variant="h4" className="rating-value">{userInfo?.rating}</Typography>
                         </Box>
                         <div className="find-opponent-container">
                             {searchingForOpponent ? (
@@ -208,16 +208,14 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                             )}
                         </div>
                     </div>
+                </Grid>
 
-                </div>
-                <div className="sidebar-container">
-                    <Sidebar
-                        usersOnline={onlineUsersCount}
-                        gamesCreated={gameCount}
-                        transactedAmount={totalWageredInUsd}
-                    />
-                </div>
-            </div>
+                {/* Sidebar Content */}
+
+                <Grid item xs={12} md={4} className="sidebar-container">
+                    <Sidebar usersOnline={onlineUsersCount} gamesCreated={gameCount} transactedAmount={totalWageredInUsd} />
+                </Grid>
+            </Grid>
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 open={snackbarOpen}
@@ -231,3 +229,4 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
 };
 
 export default DashboardPage;
+

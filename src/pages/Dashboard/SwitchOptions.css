@@ -1,9 +1,6 @@
 /* SwitchOptions.css */
 
 /* Container to hold the switch options */
-.switch-options-container {
-  width: 100%; /* Ensure the container takes the full width */
-}
 
 /* Style for the toggle button group */
 .toggle-button-group {

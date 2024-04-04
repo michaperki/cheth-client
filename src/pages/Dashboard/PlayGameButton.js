@@ -18,7 +18,12 @@ const PlayGameButton = ({ playGame, amount, ethereumAmount, theme }) => {
                     display: 'flex', // Make the button a flex container
                     flexDirection: 'column', // Align items vertically
                     justifyContent: 'space-between', // Add space between items
-                    '&:hover': { bgcolor: 'primary.dark' },
+                    '&:hover': { 
+                        transform: 'scale(1.05)',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                        bgcolor: 'primary.dark',
+                    }
                 }}
             >
                 <Typography variant="subtitle1" sx={{ mb: 1 }}>
