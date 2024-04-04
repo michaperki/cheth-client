@@ -59,6 +59,12 @@
     color: #ccc;
 }
 
+.avatar {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+}
+
 /* mobile styles */
 
 @media (max-width: 768px) {

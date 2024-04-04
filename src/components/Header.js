@@ -33,6 +33,8 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
                     )}
                     {walletAddress && userInfo && (
                         <div className="user-info">
+                            {/* display the user's avatar */}
+                            <img src={"/icons/" + userInfo.avatar} alt="User Avatar" className="avatar" />
                             <Link to="/account" className="username">
                                 <strong>{userInfo.username}</strong>
                             </Link>
