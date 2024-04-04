@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWallet from '../hooks/useWallet';
 import Web3 from 'web3';
-import { Button, Typography, Snackbar } from '@mui/material'; // Import MUI components
-import { useTheme } from '@mui/material/styles'; // Import useTheme hook
+import { Button, Typography, Snackbar, Box } from '@mui/material';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'; // Icon for Join Game
+import ReportIcon from '@mui/icons-material/Report'; // Icon for Report Issue
+import ReportProblemIcon from '@mui/icons-material/ReportProblem'; // Icon for Report Game Over
+import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
 import UseGameWebsocket from '../hooks/websocket/UseGameWebsocket';
 import MatchupPodium from '../components/game/MatchUpPodium';
@@ -93,29 +96,48 @@ const GamePage = ({ userInfo }) => {
         setSnackbarOpen(false);
     };
 
+    const handleReportIssue = () => {
+        alert('Issue reported!');
+    };
+
     return (
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
-            <Typography variant="h3" sx={{ mb: 4 }}>Game In-Progress</Typography>
-            <Typography variant="h4" sx={{ mb: 2 }}>Game ID: {gameId}</Typography>
+            <Typography variant="h3" sx={{ mb: 4, fontWeight: 'bold' }}>Game In-Progress</Typography>
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'medium' }}>Game ID: {gameId}</Typography>
             {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} />}
-            {gameInfo && ( <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} /> )}
+            {gameInfo && <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} />}
 
             <Button
                 onClick={handleJoinGame}
                 variant="contained"
                 color="primary"
-                sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
+                startIcon={<PlayCircleOutlineIcon />}
+                sx={{ '&:hover': { bgcolor: 'primary.dark' }, mb: 2, width: '100%' }}
             >
-                Join Game
+                Join Game on Lichess
             </Button>
-            <Button
-                onClick={handleReportGameOver}
-                variant="contained"
-                color="primary"
-                sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
-            >
-                Report Game Over
-            </Button>
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Button
+                    onClick={handleReportGameOver}
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<ReportProblemIcon />}
+                    sx={{ '&:hover': { bgcolor: 'secondary.dark' }, mr: 1, width: '48%' }}
+                >
+                    Report Game Over
+                </Button>
+                <Button
+                    onClick={handleReportIssue}
+                    variant="contained"
+                    color="warning"
+                    startIcon={<ReportIcon />}
+                    sx={{ '&:hover': { bgcolor: 'warning.dark' }, width: '48%' }}
+                >
+                    Report Issue
+                </Button>
+            </Box>
+
             <Snackbar
                 anchorOrigin={{
                     vertical: 'bottom',
@@ -125,8 +147,10 @@ const GamePage = ({ userInfo }) => {
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
                 message={snackbarMessage}
+                ContentProps={{
+                    sx: { fontWeight: 'medium' }
+                }}
             />
-
         </div>
     );
 }
