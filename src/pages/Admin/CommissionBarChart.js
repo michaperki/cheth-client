@@ -81,6 +81,9 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
                     ]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    height: 400,
                     scales: {
                         ethYAxis: { // Define y-axis for reward pool dataset
                             position: 'left',

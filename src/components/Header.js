@@ -7,7 +7,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 import './Header.css';
 
-const Header = ({ userInfo, toggleDarkMode, darkMode }) => {
+const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
     const { walletAddress, connectAccount } = useWallet();
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
 
@@ -18,9 +18,11 @@ const Header = ({ userInfo, toggleDarkMode, darkMode }) => {
                     <li className="menu-item">
                         <Link to="/" className="menu-link">Home</Link>
                     </li>
-                    <li className="menu-item">
-                        <Link to="/admin" className="menu-link">Admin</Link>
-                    </li>
+                    {isAdmin && (
+                        <li className="menu-item">
+                            <Link to="/admin" className="menu-link">Admin</Link>
+                        </li>
+                    )}
                 </ul>
 
                 <div>

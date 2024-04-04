@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
@@ -57,12 +57,14 @@ function App() {
   // Use the useWebSocket hook to establish WebSocket connection
   const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
 
+  const isAdmin = userInfo && userInfo.user_role === 'admin';
+
   return (
     <Router>
       <ThemeProvider theme={theme}>
         <EthereumPriceProvider>
           <CssBaseline />
-          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+          <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} isAdmin={isAdmin} />
           <Routes>
             <Route path="/" element={<LandingPage userInfo={userInfo} />} />
             <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
@@ -70,7 +72,12 @@ function App() {
             <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
             <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
             <Route path="/account" element={<AccountPage userInfo={userInfo} />} />
-            <Route path="/admin" element={<AdminPage userInfo={userInfo} />} />
+            {isAdmin ? (
+              <Route path="/admin" element={<AdminPage userInfo={userInfo} />} />
+            ) : (
+              // Redirect to dashboard if not an admin
+              <Route path="/admin" element={<Navigate to="/dashboard" />} />
+            )}
           </Routes>
         </EthereumPriceProvider>
       </ThemeProvider>
