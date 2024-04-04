@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 import Web3 from 'web3';
 
 const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
     const [chartData, setChartData] = useState({ labels: [], commission: [], rewardPool: [], totalGames: [] });
+    const chartRef = useRef(null);
 
     useEffect(() => {
         // Check if gameData is defined before processing
@@ -46,10 +47,13 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
     }, [gameData, ethToUsdRate]);
 
     useEffect(() => {
-        // Create the bar chart
-        const ctx = document.getElementById('commissionChart');
-        if (ctx && chartData.labels.length > 0) {
-            new Chart(ctx, {
+        // Create or update the bar chart
+        if (chartRef.current && chartData.labels.length > 0) {
+            if (chartRef.current.chart) {
+                // If chart instance exists, destroy it before creating a new one
+                chartRef.current.chart.destroy();
+            }
+            chartRef.current.chart = new Chart(chartRef.current, {
                 type: 'bar',
                 data: {
                     labels: chartData.labels,
@@ -57,7 +61,7 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
                         {
                             label: 'Total Commission Collected (USD)',
                             data: chartData.commission,
-                            yAxisID: 'ethYAxis', // Specify the y-axis for commission dataset
+                            yAxisID: 'ethYAxis',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
@@ -65,7 +69,7 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
                         {
                             label: 'Total Reward Pool (USD)',
                             data: chartData.rewardPool,
-                            yAxisID: 'ethYAxis', // Specify the y-axis for reward pool dataset
+                            yAxisID: 'ethYAxis',
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1
@@ -73,7 +77,7 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
                         {
                             label: 'Total Games Created',
                             data: chartData.totalGames,
-                            yAxisID: 'totalGamesYAxis', // Specify the y-axis for total games dataset
+                            yAxisID: 'totalGamesYAxis',
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderColor: 'rgba(54, 162, 235, 1)',
                             borderWidth: 1
@@ -85,14 +89,14 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
                     maintainAspectRatio: false,
                     height: 400,
                     scales: {
-                        ethYAxis: { // Define y-axis for reward pool dataset
+                        ethYAxis: {
                             position: 'left',
                             title: {
                                 display: true,
                                 text: 'USD'
                             }
                         },
-                        totalGamesYAxis: { // Define y-axis for total games dataset
+                        totalGamesYAxis: {
                             position: 'right',
                             title: {
                                 display: true,
@@ -107,7 +111,7 @@ const CommissionBarChart = ({ gameData, ethToUsdRate }) => {
 
     return (
         <div>
-            <canvas id="commissionChart" width="400" height="200"></canvas>
+            <canvas ref={chartRef} />
         </div>
     );
 };
