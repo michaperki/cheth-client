@@ -45,3 +45,9 @@
 .player-2 {
     margin-left: 10px;
 }
+
+.player-avatar {
+    width: 150px;
+    height: 150px;
+    margin-right: 10px;
+}

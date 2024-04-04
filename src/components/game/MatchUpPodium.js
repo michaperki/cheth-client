@@ -10,7 +10,7 @@ const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => {
     const isPlayerTwoJoined = joinedPlayers?.includes(playerTwoID);
     const theme = useTheme(); // Get the current theme
 
-    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/duck.svg'; // Adjust the path to duck.svg as needed
+    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie.svg'; // Adjust the path to duck.svg as needed
 
     return (
         <Box className='matchup-podium-container'>

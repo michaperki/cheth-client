@@ -10,7 +10,7 @@ import './Header.css';
 const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
     const { walletAddress, connectAccount } = useWallet();
     const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
-    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/duck.svg'; // Adjust the path to duck.svg as needed
+    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
 
     return (
         <header className="header">
