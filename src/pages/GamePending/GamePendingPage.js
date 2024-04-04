@@ -30,6 +30,7 @@ const GamePendingPage = ({ userInfo }) => {
         getGameInfo,
         player_one,
         player_two,
+        gameState,
     } = UseGamePendingWebsocket(gameId, userInfo);
     console.log('Game info:', gameInfo);
     console.log('Contract address:', contractAddress);
@@ -117,7 +118,8 @@ const GamePendingPage = ({ userInfo }) => {
     return (
         <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'}`}>
             <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
-            {gameInfo && (parseInt(gameInfo.state) === 2 || parseInt(gameInfo.state) === 3) && (
+            {console.log('gameState:', gameState)}
+            {gameInfo && (parseInt(gameState) === 2 || parseInt(gameState) === 3) && (
                 <div>
                     <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
 
@@ -157,7 +159,7 @@ const GamePendingPage = ({ userInfo }) => {
             )}
             {/* log the joined players, they have duplicate entries */}
 
-            {gameInfo && parseInt(gameInfo.state) === -1 && (
+            {gameInfo && parseInt(gameState) === -1 && (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
             )}
             <Snackbar

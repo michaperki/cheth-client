@@ -16,6 +16,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [player_one, setPlayerOne] = useState(null);
     const [player_two, setPlayerTwo] = useState(null);
+    const [gameState, setGameState] = useState(null);
 
     const ethToUsdRate = useEthereumPrice();
     const navigate = useNavigate();
@@ -31,6 +32,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
             const gameData = await response.json();
             console.log('Game data:', gameData);
             setGameInfo(gameData);
+            setGameState(gameData.state);
 
             const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
                 method: 'POST', // Send a POST request
@@ -138,7 +140,8 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         contractBalance,
         getGameInfo: memoizedGetGameInfo,
         player_one,
-        player_two
+        player_two,
+        gameState
     };
 };
 
