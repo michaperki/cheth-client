@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import useWallet from '../hooks/useWallet';
-import IconButton from '@mui/material/IconButton';
+import { Link as RouterLink } from 'react-router-dom';
+import { AppBar, Toolbar, IconButton, Button, Typography, Link, Box } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import useWallet from '../hooks/useWallet';
+import { useTheme } from '@mui/material/styles';
 
 import './Header.css';
 
@@ -13,41 +14,49 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
 
     return (
-        <header className="header">
-            <nav className="container mx-auto flex justify-between items-center">
-                <ul className="menu">
-                    <li className="menu-item">
-                        <Link to="/" className="menu-link">Home</Link>
-                    </li>
+        <AppBar position="static" color="primary">
+            <Toolbar>
+                <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                    <Link component={RouterLink} to="/" color="inherit" sx={{ marginRight: 2 }}>
+                        Home
+                    </Link>
                     {isAdmin && (
-                        <li className="menu-item">
-                            <Link to="/admin" className="menu-link">Admin</Link>
-                        </li>
+                        <Link component={RouterLink} to="/admin" color="inherit" sx={{ marginRight: 2 }}>
+                            Admin
+                        </Link>
                     )}
-                </ul>
+                </Box>
 
-                <div>
-                    {!walletAddress && (
-                        <button onClick={connectAccount} className="connect-button">
-                            Connect Wallet
-                        </button>
-                    )}
-                    {walletAddress && userInfo && (
-                        <div className="user-info">
-                            {/* display the user's avatar */}
-                            <img src={getAvatarSrc(userInfo.avatar)} alt="User avatar" className="avatar" />
-                            <Link to="/account" className="username">
-                                <strong>{userInfo.username}</strong>
-                            </Link>
-                            <span className="wallet-address">({abbreviatedWalletAddress})</span>
-                            <IconButton onClick={toggleDarkMode} color="inherit">
-                                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-                            </IconButton>
-                        </div>
-                    )}
-                </div>
-            </nav>
-        </header>
+                {!walletAddress ? (
+                    <Button color="inherit" onClick={connectAccount}>Connect Wallet</Button>
+                ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {/* User Info */}
+                    </Box>
+                )}
+
+                {walletAddress && (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ marginRight: 1 }}>
+                            {abbreviatedWalletAddress}
+                        </Typography>
+                        {/* make the image a link */}
+                        <Link component={RouterLink} to="/account">
+                            <img
+                                src={getAvatarSrc(userInfo?.avatar)}
+                                alt="User Avatar"
+                                className="avatar"
+                            />
+                        </Link>
+
+                    </Box>
+                )}
+
+                <IconButton color="inherit" onClick={toggleDarkMode}>
+                    {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+                </IconButton>
+            </Toolbar>
+        </AppBar>
     );
 };
 
