@@ -22,9 +22,8 @@ const GamePage = ({ userInfo }) => {
     const [winner, setWinner] = useState('');
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
-    const [rewardPool, setRewardPool] = useState(0);
     const web3 = new Web3(window.ethereum);
-    const { 
+    const {
         gameInfo,
         contractAddress,
         ownerAddress,
@@ -36,12 +35,6 @@ const GamePage = ({ userInfo }) => {
         snackbarMessage,
         setSnackbarOpen
     } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner);
-    console.log('Game info:', gameInfo);
-    console.log('Contract address:', contractAddress);
-    console.log('Owner address:', ownerAddress);
-    console.log('Contract balance:', contractBalance);
-    console.log('Player one:', player_one);
-    console.log('Player two:', player_two);
 
     useEffect(() => {
         if (userInfo) {
@@ -55,7 +48,6 @@ const GamePage = ({ userInfo }) => {
 
     useEffect(() => {
         if (gameInfo) {
-            setRewardPool(web3.utils.fromWei(gameInfo.reward_pool, 'ether'));
             setGameUrl(gameInfo.lichess_id);
         }
     }, [gameInfo]);
@@ -133,22 +125,24 @@ const GamePage = ({ userInfo }) => {
                     <Button
                         onClick={handleRematch}
                         variant="contained"
-                        color="secondary"
-                        sx={{ '&:hover': { bgcolor: 'secondary.dark' } }}
+                        color="primary"
+                        sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
                     >
                         Rematch
                     </Button>
                 )}
 
-                <Button
-                    onClick={handleReportGameOver}
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<ReportProblemIcon />}
-                    sx={{ '&:hover': { bgcolor: 'secondary.dark' } }}
-                >
-                    Report Game Over
-                </Button>
+                {!gameOver && (
+                    <Button
+                        onClick={handleReportGameOver}
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<ReportProblemIcon />}
+                        sx={{ '&:hover': { bgcolor: 'secondary.dark' } }}
+                    >
+                        Report Game Over
+                    </Button>
+                )}
 
                 <Button
                     onClick={handleReportIssue}

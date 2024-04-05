@@ -156,7 +156,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} theme={theme} />
                     </Box>
                     {searchingForOpponent && (
-                        <Box className="searching-container" sx={{ mt: 2 }}>
+                        <Box className="searching-container" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <CircularProgress />
                             <Typography className="opponent-found-text">{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                             {!opponentFound && (
