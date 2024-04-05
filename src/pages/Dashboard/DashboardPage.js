@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, Typography, CircularProgress, Snackbar, Grid, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import Sidebar from './Sidebar';
+import Sidebar from '../../components/Sidebar';
 import useDashboardWebsocket from '../../hooks/websocket/useDashboardWebsocket';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
+import RatingsDisplay from './RatingsDisplay';
 import './DashboardPage.css';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
@@ -141,6 +142,8 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     };
 
 
+
+
     return (
         <Container className="dashboard-container">
             <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
@@ -153,10 +156,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
 
                 <Grid item xs={12} md={8} className="main-content">
                     <div className="create-game-container">
-                        <Box className="rating-box" style={ratingBoxStyle}>
-                            <Typography variant="subtitle2" style={{ marginBottom: '8px' }} className="rating-label">Your Rating</Typography>
-                            <Typography variant="h4" className="rating-value">{userInfo?.rating}</Typography>
-                        </Box>
+                        <RatingsDisplay userInfo={userInfo} />
                         <div className="find-opponent-container">
                             {searchingForOpponent ? (
                                 <div className="searching-container">

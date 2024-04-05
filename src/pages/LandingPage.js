@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, TextField, Button, Typography } from '@mui/material'; // Import MUI components
+import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 
 function LandingPage({ userInfo }) {
@@ -47,38 +47,46 @@ function LandingPage({ userInfo }) {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 8 }}>
-      <div className={`min-h-screen flex justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : ''}`}>
-        <div className={`max-w-md w-full p-8 rounded shadow-lg ${theme.palette.mode === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-          <Typography variant="h3" sx={{ mb: 4 }}>Welcome to Cheth</Typography>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <TextField
-              label="Enter your lichess username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              variant="outlined"
-              fullWidth
-              sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'transparent', '& input': { color: theme.palette.mode === 'dark' ? 'white' : 'inherit' } }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
-            >
-              Check Eligibility
-            </Button>
-          </form>
-          {isEligible !== null && (
-            <Typography variant="body2" className="mt-4">
-              {isEligible ? 'You are eligible to join' :
-                `You are not eligible to join because: ${reason}`
-              }
-            </Typography>
-          )}
-        </div>
-      </div>
+    <Container maxWidth="md" sx={{ py: 8, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{
+          maxWidth: 'md',
+          width: '100%',
+          p: 4,
+          borderRadius: 2,
+          boxShadow: theme.shadows[5],
+          bgcolor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          textAlign: 'center'
+        }}
+      >
+        <Typography variant="h3" sx={{ mb: 4 }}>Welcome to Cheth</Typography>
+        <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="Enter your lichess username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            variant="outlined"
+            fullWidth
+            sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', '& input': { color: 'inherit' } }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
+          >
+            Check Eligibility
+          </Button>
+        </form>
+        {isEligible !== null && (
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            {isEligible ? 'You are eligible to join' :
+              `You are not eligible to join because: ${reason}`
+            }
+          </Typography>
+        )}
+      </Box>
     </Container>
   );
 }
