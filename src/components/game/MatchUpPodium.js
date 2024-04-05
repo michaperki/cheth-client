@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports'; // Icon for "Versus"
 import './MatchUpPodium.css'; // Import the CSS file
 
-const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => {
+const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [], timeControl }) => {
     const playerOneID = playerOne.user_id;
     const playerTwoID = playerTwo.user_id;
     const isPlayerOneJoined = joinedPlayers?.includes(playerOneID);
@@ -13,13 +13,31 @@ const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => {
 
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg'; // Adjust the path to duck.svg as needed
 
+    // Function to get the correct rating property name based on time control
+    const getRatingPropertyName = (timeControlValue) => {
+        switch (timeControlValue) {
+            case '60': return 'bullet_rating';
+            case '180': return 'blitz_rating';
+            case '300': return 'blitz_rating';
+            default: return 'blitz_rating'; // default or any other time control
+        }
+    };
+
+    // Get the property name for the current time control
+    const ratingProperty = getRatingPropertyName(timeControl);
+    console.log('ratingProperty:', ratingProperty);
+    console.log('timeControl:', timeControl);
+
+    const playerOneRating = playerOne[ratingProperty] || 'N/A';
+    const playerTwoRating = playerTwo[ratingProperty] || 'N/A';
+
     return (
         <Box className='matchup-podium-container'>
             {/* Player One */}
             <Box className={`player-box ${isPlayerOneJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerOneJoined, theme)}>
                 <img src={getAvatarSrc(playerOne.avatar)} alt={`${playerOne.username}'s avatar`} className="player-avatar" />
                 <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerOne.username}</Typography>
-                <Typography className="rating" variant="body2">Rating: {playerOne.rating}</Typography>
+                <Typography className="rating" variant="body2">Rating: {playerOneRating}</Typography>
                 {isPlayerOneJoined && <Chip label="Ready!" color="success" />}
             </Box>
 
@@ -30,7 +48,7 @@ const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [] }) => {
             <Box className={`player-box ${isPlayerTwoJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerTwoJoined, theme)}>
                 <img src={getAvatarSrc(playerTwo.avatar)} alt={`${playerTwo.username}'s avatar`} className="player-avatar" />
                 <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerTwo.username}</Typography>
-                <Typography className="rating" variant="body2">Rating: {playerTwo.rating}</Typography>
+                <Typography className="rating" variant="body2">Rating: {playerTwoRating}</Typography>
                 {isPlayerTwoJoined && <Chip label="Ready!" color="success" />}
             </Box>
         </Box>

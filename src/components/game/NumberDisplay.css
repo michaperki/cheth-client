@@ -1,6 +1,14 @@
 .number-display {
-    font-size: 3rem;
-    font-weight: 600; /* Adjust font weight as needed */
-    margin-bottom: 1rem;
-  }
-  
+  font-size: 2rem; /* Adjust for better proportion */
+  margin-bottom: 1rem;
+}
+
+/* Add a keyframe for a subtle scaling effect */
+@keyframes pop {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.1); }
+}
+
+.number-display .MuiTypography-root:nth-child(2) {
+animation: pop 0.3s ease;
+}

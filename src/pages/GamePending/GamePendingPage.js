@@ -125,9 +125,9 @@ const GamePendingPage = ({ userInfo }) => {
 
 
                     {/* display the players */}
-                    {player_one && player_two &&
+                    {player_one && player_two && gameInfo.time_control &&
                         <div style={{ marginBottom: '20px', minHeight: '110px' }}>
-                            <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} />
+                            <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} timeControl={gameInfo.time_control} />
                         </div>
                     }
                     <NumberDisplay amount={Web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />

@@ -104,7 +104,7 @@ const GamePage = ({ userInfo }) => {
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
             <Typography variant="h3" sx={{ mb: 4, fontWeight: 'bold' }}>Game In-Progress</Typography>
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 'medium' }}>Game ID: {gameId}</Typography>
-            {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} />}
+            {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} timeControl={gameInfo.time_control} />}
             {gameInfo && <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} />}
 
             <Button

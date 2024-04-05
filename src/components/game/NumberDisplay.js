@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './NumberDisplay.css'; // Import CSS for styling
-import { Typography } from '@mui/material';
+import { Typography, Box, useTheme } from '@mui/material';
+import './NumberDisplay.css';
 
 const NumberDisplay = ({ amount }) => {
   const [displayAmount, setDisplayAmount] = useState(0);
+  const theme = useTheme();
 
   useEffect(() => {
     const incrementAmount = () => {
@@ -12,20 +13,19 @@ const NumberDisplay = ({ amount }) => {
       }
     };
 
-    const interval = setInterval(incrementAmount, 10); // Adjust speed of ticking here
-
+    const interval = setInterval(incrementAmount, 10);
     return () => clearInterval(interval);
   }, [amount, displayAmount]);
 
   return (
-    <div className="number-display">
-      <Typography variant="h4" component="div" display="flex" alignItems="center" gutterBottom>
-        <span style={{ marginRight: '0.5rem' }}>Reward Pool</span>
-        <div className="text-5xl text-green-500 font-semibold">
-          ${displayAmount.toLocaleString()}
-        </div>
+    <Box className="number-display" sx={{ display: 'flex', alignItems: 'center' }}>
+      <Typography variant="h6" color="textSecondary">
+        Reward Pool:
       </Typography>
-    </div>
+      <Typography variant="h4" component="div" sx={{ ml: 2, fontWeight: 'bold', color: theme.palette.success.main }}>
+        ${displayAmount.toLocaleString()}
+      </Typography>
+    </Box>
   );
 }
 
