@@ -147,83 +147,29 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     return (
         <Container className="dashboard-container">
             <Typography variant="h3" className="welcome-text">Welcome, {userInfo?.username}</Typography>
-
-            {/* Dashboard Content */}
-
             <Grid container spacing={3} className="dashboard-content">
-
-                {/* Main Content */}
-
                 <Grid item xs={12} md={8} className="main-content">
-                    <div className="create-game-container">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         <RatingsDisplay userInfo={userInfo} />
-                        <div className="find-opponent-container">
-                            {searchingForOpponent ? (
-                                <div className="searching-container">
-                                    <CircularProgress />
-                                    {opponentFound ? (
-                                        <Typography className="opponent-found-text">Opponent found! Setting Up Contract</Typography>
-                                    ) : (
-                                        <Typography className="searching-text">Searching for opponent...</Typography>
-                                    )}
-                                    {!opponentFound && (
-                                        <Button
-                                            onClick={cancelSearch}
-                                            variant="contained"
-                                            color="error"
-                                            className="cancel-button"
-                                        >
-                                            Cancel
-                                        </Button>
-                                    )}
-
-                                </div>
-                            ) : (
-                                <>
-                                    <Container className="switch-container">
-                                        <Box className="time-control-switch">
-                                            <SwitchOptions
-                                                label="Time Control"
-                                                options={timeControlOptions}
-                                                defaultValue="60"
-                                                setSelectedValue={setTimeControl}
-                                            />
-                                        </Box>
-                                        <Box className="wager-size-switch">
-                                            <SwitchOptions
-                                                label="Wager Size"
-                                                options={wagerSizeOptions}
-                                                defaultValue="5"
-                                                setSelectedValue={setWagerSize}
-                                            />
-                                        </Box>
-                                    </Container>
-                                    <PlayGameButton
-                                        playGame={playGame}
-                                        amount={wagerSize}
-                                        ethereumAmount={wagerAmountInEth}
-                                        theme={theme}
-                                    />
-                                </>
+                        <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
+                        <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
+                        <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} theme={theme} />
+                    </Box>
+                    {searchingForOpponent && (
+                        <Box className="searching-container" sx={{ mt: 2 }}>
+                            <CircularProgress />
+                            <Typography className="opponent-found-text">{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
+                            {!opponentFound && (
+                                <Button onClick={cancelSearch} variant="contained" color="error" className="cancel-button">Cancel</Button>
                             )}
-                        </div>
-                    </div>
+                        </Box>
+                    )}
                 </Grid>
-
-                {/* Sidebar Content */}
-
                 <Grid item xs={12} md={4} className="sidebar-container">
                     <Sidebar usersOnline={onlineUsersCount} gamesCreated={gameCount} transactedAmount={totalWageredInUsd} />
                 </Grid>
             </Grid>
-            <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                message={snackbarMessage}
-                className="snackbar" // Custom class for styling
-            />
+            <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} message={snackbarMessage} className="snackbar" />
         </Container>
     );
 };

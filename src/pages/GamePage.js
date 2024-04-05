@@ -18,6 +18,8 @@ const GamePage = ({ userInfo }) => {
     const { walletAddress } = useWallet();
     const [gameUrl, setGameUrl] = useState('');
     const [currentUser, setCurrentUser] = useState('');
+    const [gameOver, setGameOver] = useState(false);
+    const [winner, setWinner] = useState('');
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
     const [rewardPool, setRewardPool] = useState(0);
@@ -33,7 +35,7 @@ const GamePage = ({ userInfo }) => {
         snackbarOpen,
         snackbarMessage,
         setSnackbarOpen
-    } = UseGameWebsocket(gameId, userInfo);
+    } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner);
     console.log('Game info:', gameInfo);
     console.log('Contract address:', contractAddress);
     console.log('Owner address:', ownerAddress);
@@ -100,39 +102,57 @@ const GamePage = ({ userInfo }) => {
         alert('Issue reported!');
     };
 
+    const handleRematch = () => {
+        // Logic for rematch
+        console.log("Rematch initiated");
+    };
+
+
     return (
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
-            <Typography variant="h3" sx={{ mb: 4, fontWeight: 'bold' }}>Game In-Progress</Typography>
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: 'medium' }}>Game ID: {gameId}</Typography>
-            {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} timeControl={gameInfo.time_control} />}
-            {gameInfo && <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} />}
+            {/* ... existing JSX elements */}
+            {gameOver && <Typography variant="h5">Winner: {winner}</Typography>}
 
-            <Button
-                onClick={handleJoinGame}
-                variant="contained"
-                color="primary"
-                startIcon={<PlayCircleOutlineIcon />}
-                sx={{ '&:hover': { bgcolor: 'primary.dark' }, mb: 2, width: '100%' }}
-            >
-                Join Game on Lichess
-            </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                {!gameOver && (
+                    <Button
+                        onClick={handleJoinGame}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<PlayCircleOutlineIcon />}
+                        sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
+                    >
+                        Join Game on Lichess
+                    </Button>
+                )}
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                {gameOver && (
+                    <Button
+                        onClick={handleRematch}
+                        variant="contained"
+                        color="secondary"
+                        sx={{ '&:hover': { bgcolor: 'secondary.dark' } }}
+                    >
+                        Rematch
+                    </Button>
+                )}
+
                 <Button
                     onClick={handleReportGameOver}
                     variant="contained"
                     color="secondary"
                     startIcon={<ReportProblemIcon />}
-                    sx={{ '&:hover': { bgcolor: 'secondary.dark' }, mr: 1, width: '48%' }}
+                    sx={{ '&:hover': { bgcolor: 'secondary.dark' } }}
                 >
                     Report Game Over
                 </Button>
+
                 <Button
                     onClick={handleReportIssue}
                     variant="contained"
                     color="warning"
                     startIcon={<ReportIcon />}
-                    sx={{ '&:hover': { bgcolor: 'warning.dark' }, width: '48%' }}
+                    sx={{ '&:hover': { bgcolor: 'warning.dark' } }}
                 >
                     Report Issue
                 </Button>

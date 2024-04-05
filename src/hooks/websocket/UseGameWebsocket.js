@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import useWallet from '../useWallet';
 
-const UseGameWebsocket = (gameId, userInfo) => {
+const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [gameInfo, setGameInfo] = useState(null);
@@ -99,6 +99,12 @@ const UseGameWebsocket = (gameId, userInfo) => {
             // Show Snackbar notification
             setSnackbarMessage(`You received $${transferredInUsd}.`);
             setSnackbarOpen(true);
+        }
+        if (messageData.type === "GAME_OVER") {
+            console.log('Game over:', messageData);
+            setGameOver(true);
+            setWinner(messageData.winner);
+            getGameInfo();
         }
     };
 
