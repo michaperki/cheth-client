@@ -11,7 +11,9 @@ import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import E
 import UseGameWebsocket from '../hooks/websocket/UseGameWebsocket';
 import MatchupPodium from '../components/game/MatchUpPodium';
 import NumberDisplay from '../components/game/NumberDisplay';
-
+// import lichess.svg from public/lichess/lichess.svg; 
+import lichessLogo from '../assets/lichess.svg';
+import IconButton from '@mui/material/IconButton';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -96,9 +98,28 @@ const GamePage = ({ userInfo }) => {
     };
 
     const handleRematch = () => {
-        // Logic for rematch
-        console.log("Rematch initiated");
-    };
+        console.log('Rematching...');
+        console.log('gameId', gameId);
+        console.log('userId', userInfo.id);
+        try {
+            const response = fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/requestRematch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userInfo.id, gameId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to rematch');
+            }
+
+            console.log('Rematch successful!');
+        }
+        catch (error) {
+            console.error('Error rematching:', error);
+        }
+    }
 
 
     return (
@@ -112,16 +133,20 @@ const GamePage = ({ userInfo }) => {
                     Winner: {winner} {winnerPaid && "(PAID)"}
                 </Typography>
             )}
-            
+
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 {!gameOver && (
                     <Button
                         onClick={handleJoinGame}
                         variant="contained"
                         color="primary"
-                        startIcon={<PlayCircleOutlineIcon />}
                         sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
                     >
+                        
+                        <img src={lichessLogo} alt="Lichess" style={{ 
+                            marginRight: 8, height: 24, width: 24, borderRadius: 4
+                            }} />
+
                         Join Game on Lichess
                     </Button>
                 )}

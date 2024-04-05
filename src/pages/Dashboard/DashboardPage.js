@@ -153,7 +153,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         <RatingsDisplay userInfo={userInfo} />
                         <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
                         <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
-                        <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} theme={theme} />
+                        {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} theme={theme} />}
                     </Box>
                     {searchingForOpponent && (
                         <Box className="searching-container" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
