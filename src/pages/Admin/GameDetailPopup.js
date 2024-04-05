@@ -26,7 +26,7 @@ const GameDetailPopup = ({ open, onClose, game }) => {
                     <Typography>Commission: {game?.commission}</Typography>
                     <Typography>Time Control: {game?.time_control}</Typography>
                     <Typography>Wager: {game?.wager}</Typography>
-                    <Typography>Rematch: {game?.rematch_requested ? 'Yes' : 'No'}</Typography>
+                    <Typography>Rematch Requested: {game?.rematch_requested ? 'Yes' : 'No'}</Typography>
                     <Typography>Rematch Requested By: {game?.rematch_requested_by ? game?.rematch_requested_by : 'N/A'}</Typography>
                     <Typography>Rematch Accepted: {game?.rematch_accepted ? 'Yes' : 'No'}</Typography>
                     <Typography>Rematch Declined: {game?.rematch_declined ? 'Yes' : 'No'}</Typography>

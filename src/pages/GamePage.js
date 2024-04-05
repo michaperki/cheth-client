@@ -100,7 +100,7 @@ const GamePage = ({ userInfo }) => {
     const handleRematch = () => {
         console.log('Rematching...');
         console.log('gameId', gameId);
-        console.log('userId', userInfo.id);
+        console.log('userId', userInfo.user_id);
         try {
             const response = fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/requestRematch`, {
                 method: 'POST',
