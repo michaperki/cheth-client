@@ -17,13 +17,13 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
         <AppBar position="static" color="primary">
             <Toolbar>
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
-                    <Link component={RouterLink} to="/" color="inherit" sx={{ marginRight: 2 }}>
+                    <Typography variant="h6" component={RouterLink} to="/" color="inherit" sx={{ marginRight: 2, textDecoration: 'none' }} className="menu-link">
                         Home
-                    </Link>
+                    </Typography>
                     {isAdmin && (
-                        <Link component={RouterLink} to="/admin" color="inherit" sx={{ marginRight: 2 }}>
+                        <Typography variant="h6" component={RouterLink} to="/admin" color="inherit" sx={{ marginRight: 2, textDecoration: 'none' }} className="menu-link">
                             Admin
-                        </Link>
+                        </Typography>
                     )}
                 </Box>
 
@@ -41,7 +41,7 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
                             {abbreviatedWalletAddress}
                         </Typography>
                         {/* make the image a link */}
-                        <Link component={RouterLink} to="/account">
+                        <Link component={RouterLink} to="/account" sx={{ display: 'flex', alignItems: 'center' }} className="menu-link">
                             <img
                                 src={getAvatarSrc(userInfo?.avatar)}
                                 alt="User Avatar"
