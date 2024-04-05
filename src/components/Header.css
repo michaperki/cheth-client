@@ -39,6 +39,10 @@
     background-color: #0056b3;
 }
 
+.avatar:hover {
+    filter: brightness(85%);
+}
+
 /* user info styles */
 .user-info {
     display: flex;
