@@ -107,7 +107,7 @@ const GamePage = ({ userInfo }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ userId: userInfo.id, gameId })
+                body: JSON.stringify({ userId: userInfo.user_id, gameId })
             });
 
             if (!response.ok) {

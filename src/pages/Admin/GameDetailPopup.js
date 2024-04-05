@@ -24,6 +24,12 @@ const GameDetailPopup = ({ open, onClose, game }) => {
                     <Typography>Player 1 Payout: {game?.player1_payout}</Typography>
                     <Typography>Player 2 Payout: {game?.player2_payout}</Typography>
                     <Typography>Commission: {game?.commission}</Typography>
+                    <Typography>Time Control: {game?.time_control}</Typography>
+                    <Typography>Wager: {game?.wager}</Typography>
+                    <Typography>Rematch: {game?.rematch_requested ? 'Yes' : 'No'}</Typography>
+                    <Typography>Rematch Requested By: {game?.rematch_requested_by ? game?.rematch_requested_by : 'N/A'}</Typography>
+                    <Typography>Rematch Accepted: {game?.rematch_accepted ? 'Yes' : 'No'}</Typography>
+                    <Typography>Rematch Declined: {game?.rematch_declined ? 'Yes' : 'No'}</Typography>
                     <Typography>Created At: {game?.created_at}</Typography>
                     <Typography>Updated At: {game?.updated_at}</Typography>
                     {/* Add more Typography components for other game details */}
