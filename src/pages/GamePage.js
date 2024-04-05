@@ -20,6 +20,7 @@ const GamePage = ({ userInfo }) => {
     const [currentUser, setCurrentUser] = useState('');
     const [gameOver, setGameOver] = useState(false);
     const [winner, setWinner] = useState('');
+    const [winnerPaid, setWinnerPaid] = useState(false);
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
     const web3 = new Web3(window.ethereum);
@@ -34,7 +35,7 @@ const GamePage = ({ userInfo }) => {
         snackbarOpen,
         snackbarMessage,
         setSnackbarOpen
-    } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner);
+    } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner, setWinnerPaid);
 
     useEffect(() => {
         if (userInfo) {
@@ -106,8 +107,12 @@ const GamePage = ({ userInfo }) => {
             <Typography variant="h4" sx={{ mb: 2, fontWeight: 'medium' }}>Game ID: {gameId}</Typography>
             {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} timeControl={gameInfo.time_control} />}
             {gameInfo && <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} />}
-            {gameOver && <Typography variant="h5">Winner: {winner}</Typography>}
-
+            {gameOver && (
+                <Typography variant="h5">
+                    Winner: {winner} {winnerPaid && "(PAID)"}
+                </Typography>
+            )}
+            
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 {!gameOver && (
                     <Button
