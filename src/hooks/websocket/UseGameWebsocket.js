@@ -14,6 +14,8 @@ const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPai
     const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
     const [player_one, setPlayerOne] = useState(null);
     const [player_two, setPlayerTwo] = useState(null);
+    const [rematchRequested, setRematchRequested] = useState(false);
+    const [isCurrentUserRequestingRematch, setIsCurrentUserRequestingRematch] = useState(false);
 
     const { walletAddress, connectAccount } = useWallet();
 
@@ -106,6 +108,13 @@ const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPai
             setGameOver(true);
             setWinner(messageData.winner);
         }
+        if (messageData.type === "REMATCH_REQUESTED") {
+            console.log('Rematch requested:', messageData);
+            if (messageData.from === userInfo.user_id) {
+                setIsCurrentUserRequestingRematch(true);
+            }
+            setRematchRequested(true);
+        }
     };
 
     const socket = useWebSocket(handleGamePageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
@@ -123,7 +132,11 @@ const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPai
         memoizedGetGameInfo,
         snackbarOpen,
         snackbarMessage,
-        setSnackbarOpen
+        setSnackbarOpen,
+        rematchRequested,
+        setRematchRequested,
+        isCurrentUserRequestingRematch,
+        setIsCurrentUserRequestingRematch
     };
 };
 

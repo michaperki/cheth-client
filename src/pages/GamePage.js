@@ -14,6 +14,7 @@ import NumberDisplay from '../components/game/NumberDisplay';
 // import lichess.svg from public/lichess/lichess.svg; 
 import lichessLogo from '../assets/lichess.svg';
 import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -36,7 +37,11 @@ const GamePage = ({ userInfo }) => {
         memoizedGetGameInfo,
         snackbarOpen,
         snackbarMessage,
-        setSnackbarOpen
+        setSnackbarOpen,
+        rematchRequested,
+        setRematchRequested,
+        isCurrentUserRequestingRematch,
+        setIsCurrentUserRequestingRematch
     } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner, setWinnerPaid);
 
     useEffect(() => {
@@ -121,6 +126,18 @@ const GamePage = ({ userInfo }) => {
         }
     }
 
+    const handleAcceptRematch = () => {
+        console.log('Accepting rematch...');
+    }
+
+    const handleDeclineRematch = () => {
+        console.log('Declining rematch...');
+    }
+
+    const handleCancelRematch = () => {
+        console.log('Canceling rematch...');
+    }
+
 
     return (
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
@@ -142,16 +159,39 @@ const GamePage = ({ userInfo }) => {
                         color="primary"
                         sx={{ '&:hover': { bgcolor: 'primary.dark' } }}
                     >
-                        
-                        <img src={lichessLogo} alt="Lichess" style={{ 
+
+                        <img src={lichessLogo} alt="Lichess" style={{
                             marginRight: 8, height: 24, width: 24, borderRadius: 4
-                            }} />
+                        }} />
 
                         Join Game on Lichess
                     </Button>
                 )}
 
-                {gameOver && (
+                {/* Conditionally render rematch buttons based on rematchRequested and who is requesting */}
+                {gameOver && rematchRequested && !isCurrentUserRequestingRematch && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                        <Button variant="contained" color="success" onClick={handleAcceptRematch}>
+                            Accept Rematch
+                        </Button>
+                        <Button variant="contained" color="error" onClick={handleDeclineRematch}>
+                            Decline Rematch
+                        </Button>
+                    </Box>
+                )}
+
+                {gameOver && rematchRequested && isCurrentUserRequestingRematch && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                        <CircularProgress /* optional size and color props */ />
+                        <Typography variant="subtitle1">Waiting for Opponent</Typography>
+                        <Button variant="contained" color="secondary" onClick={handleCancelRematch}>
+                            Cancel Rematch
+                        </Button>
+                    </Box>
+                )}
+
+
+                {gameOver && !rematchRequested && (
                     <Button
                         onClick={handleRematch}
                         variant="contained"
