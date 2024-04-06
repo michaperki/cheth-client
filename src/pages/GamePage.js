@@ -128,6 +128,25 @@ const GamePage = ({ userInfo }) => {
 
     const handleAcceptRematch = () => {
         console.log('Accepting rematch...');
+
+        try {
+            const response = fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/acceptRematch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userInfo.user_id, gameId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to accept rematch');
+            }
+
+            console.log('Rematch accepted!');
+        }
+        catch (error) {
+            console.error('Error accepting rematch:', error);
+        }
     }
 
     const handleDeclineRematch = () => {
