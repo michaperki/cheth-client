@@ -165,7 +165,7 @@ const GamePage = ({ userInfo }) => {
             {player_one && player_two && <MatchupPodium playerOne={player_one} playerTwo={player_two} timeControl={gameInfo.time_control} />}
             {gameInfo && <NumberDisplay amount={web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate} />}
             {gameOver && (
-                <Typography variant="h5">
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 'medium' }}>
                     Winner: {winner} {winnerPaid && "(PAID)"}
                 </Typography>
             )}
