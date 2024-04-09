@@ -18,6 +18,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     console.log('Received message in DashboardPage:', message);
     const messageData = JSON.parse(message);
     console.log('messageData', messageData);
+    console.log('messageData.type', messageData.type);
 
     if (messageData.type === "START_GAME") {
       console.log('Game started:', messageData);
