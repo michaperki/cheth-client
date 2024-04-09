@@ -16,6 +16,8 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
 
   const handleDashboardPageWebSocketMessage = (message) => {
     console.log('Received message in DashboardPage:', message);
+    // remove any backslashes from the message
+    message = message.replace(/\\/g, '');
     const messageData = JSON.parse(message);
     console.log('messageData', messageData);
     console.log('messageData.type', messageData.type);
