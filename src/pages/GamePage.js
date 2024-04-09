@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import useWallet from '../hooks/useWallet';
+import { useWallet, useGameWebsocket } from '../hooks';
 import Web3 from 'web3';
 import { Button, Typography, Snackbar, Box } from '@mui/material';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'; // Icon for Join Game
 import ReportIcon from '@mui/icons-material/Report'; // Icon for Report Issue
 import ReportProblemIcon from '@mui/icons-material/ReportProblem'; // Icon for Report Game Over
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext'; // Import Ethereum price context
-import UseGameWebsocket from '../hooks/websocket/UseGameWebsocket';
 import MatchupPodium from '../components/game/MatchUpPodium';
 import NumberDisplay from '../components/game/NumberDisplay';
-// import lichess.svg from public/lichess/lichess.svg; 
 import lichessLogo from '../assets/lichess.svg';
-import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const GamePage = ({ userInfo }) => {
@@ -42,7 +38,7 @@ const GamePage = ({ userInfo }) => {
         setRematchRequested,
         isCurrentUserRequestingRematch,
         setIsCurrentUserRequestingRematch
-    } = UseGameWebsocket(gameId, userInfo, setGameOver, setWinner, setWinnerPaid);
+    } = useGameWebsocket(gameId, userInfo, setGameOver, setWinner, setWinnerPaid);
 
     useEffect(() => {
         if (userInfo) {

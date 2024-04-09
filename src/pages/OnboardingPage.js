@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import useWallet from '../hooks/useWallet'; // Changed import statement
+import { useWallet } from '../hooks';
 import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material'; // Import MUI components
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 

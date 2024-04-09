@@ -3,7 +3,7 @@ import { Button, Container, Typography, CircularProgress, Snackbar, Grid, Box } 
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import Sidebar from '../../components/Sidebar';
-import useDashboardWebsocket from '../../hooks/websocket/useDashboardWebsocket';
+import { useDashboardWebsocket } from '../../hooks';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';

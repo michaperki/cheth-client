@@ -5,10 +5,11 @@ import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Button, Typography, Snackbar, Box } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
 import NumberDisplay from '../../components/game/NumberDisplay';
-import UseGamePendingWebsocket from '../../hooks/websocket/UseGamePendingWebsocket';
+// import UseGamePendingWebsocket from '../../hooks/websocket/useGamePendingWebsocket';
 import MatchupPodium from '../../components/game/MatchUpPodium';
 // import useWallet
-import useWallet from '../../hooks/useWallet';
+// import useWallet from '../../hooks/useWallet';
+import {useWallet, useGamePendingWebsocket} from '../../hooks';
 import Web3 from 'web3';
 
 const GamePendingPage = ({ userInfo }) => {
@@ -31,7 +32,7 @@ const GamePendingPage = ({ userInfo }) => {
         player_one,
         player_two,
         gameState,
-    } = UseGamePendingWebsocket(gameId, userInfo);
+    } = useGamePendingWebsocket(gameId, userInfo);
     console.log('Game info:', gameInfo);
     console.log('Contract address:', contractAddress);
 

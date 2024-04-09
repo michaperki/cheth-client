@@ -8,8 +8,9 @@ import GamePendingPage from './pages/GamePending/GamePendingPage';
 import GamePage from './pages/GamePage';
 import AdminPage from './pages/Admin/AdminPage';
 import AccountPage from './pages/AccountPage';
-import useWebSocket from './hooks/websocket/useWebsocket';
-import useWallet from './hooks/useWallet';
+// import useWebSocket from './hooks/websocket/useWebsocket';
+// import useWallet from './hooks/useWallet';
+import { useWebSocket, useWallet } from './hooks'; // Import the useWebSocket and useWallet hooks
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
