@@ -115,6 +115,11 @@ const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPai
             }
             setRematchRequested(true);
         }
+        if (messageData.type === "CONTRACT_READY") {
+            console.log('Game contract ready:', messageData);
+            // Implement logic to navigate to game page
+            navigate(`/game-pending/${messageData.gameId}`);
+          }
     };
 
     const socket = useWebSocket(handleGamePageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
