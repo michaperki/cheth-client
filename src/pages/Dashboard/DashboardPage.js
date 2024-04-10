@@ -10,7 +10,6 @@ import RatingsDisplay from './RatingsDisplay';
 import './DashboardPage.css';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
-    const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice();
     const {
         gameCount,

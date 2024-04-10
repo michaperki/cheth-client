@@ -40,7 +40,7 @@ const useGameStats = (ethToUsdRate) => {
             }
 
             const data = await response.json();
-
+            
             const convertedWagered = convertWageredToUsd(data.totalWagered, ethToUsdRate);
             setTotalWageredInUsd(convertedWagered);
         } catch (error) {
