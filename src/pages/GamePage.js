@@ -26,7 +26,7 @@ const GamePage = ({ userInfo }) => {
         handleAcceptRematch,
         handleDeclineRematch,
         handleCancelRematch
-    } = useGameActions(gameId, userInfo, handleFetchGameInfo, gameInfo.lichess_id);
+    } = useGameActions(gameId, userInfo, handleFetchGameInfo, gameInfo?.lichess_id);
 
     useEffect(() => {
         handleFetchGameInfo();
