@@ -5,11 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Web3 from 'web3';
 
-const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
+const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSnackbarMessage }) => {
   const [searchingForOpponent, setSearchingForOpponent] = useState(false);
   const [opponentFound, setOpponentFound] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const navigate = useNavigate();
 
   let timeoutId;
@@ -63,9 +61,6 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
   return {
     searchingForOpponent,
     opponentFound,
-    snackbarOpen,
-    snackbarMessage,
-    setSnackbarOpen,
     setSearchingForOpponent
   };
 };
