@@ -1,66 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { useWallet } from '../hooks';
-import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material'; // Import MUI components
-import { useTheme } from '@mui/material/styles'; // Import useTheme hook
+import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material';
+import { useWallet, useSubmitUserInfo } from '../hooks';
 
 const Onboarding = () => {
-    const { lichessUsername } = useParams(); // Get the username from URL parameters
+    const { lichessUsername } = useParams();
     const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const theme = useTheme(); // Get the current theme
-
     const { walletAddress, connectAccount } = useWallet();
+    const { submit, submitted } = useSubmitUserInfo(lichessUsername, walletAddress);
 
-    const submitUserInfo = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/addUser`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    lichessHandle: lichessUsername, // Use the lichessUsername from URL parameters
-                    walletAddress,
-                }),
-            });
-            const data = await response.json();
-            console.log(data);
-        } catch (err) {
-            console.warn('Failed to submit user info:', err);
-        }
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
-        setSubmitted(true);
-        submitUserInfo();
-    };
+        submit();
+    }, [submit]);
 
     return (
-        <div className={`min-h-screen flex justify-center items-center ${theme.palette.mode === 'dark' ? 'dark-mode' : ''}`}>
-            <div>
-                <Typography variant="h3" gutterBottom>Welcome {lichessUsername}</Typography>
-                {!walletAddress && (
-                    <Button variant="contained" onClick={connectAccount} disabled={submitted}>Connect Wallet</Button>
-                )}
-                {walletAddress && (
-                    <Typography variant="body1" gutterBottom>
-                        Connected Wallet Address: <strong>{walletAddress}</strong>
-                    </Typography>
-                )}
-                {walletAddress && (
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <FormControlLabel
-                            control={<Checkbox checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />}
-                            label="I accept the terms and conditions"
-                        />
-                        <Button type="submit" variant="contained" disabled={!acceptedTerms || submitted}>Submit</Button>
-                    </form>
-                )}
-            </div>
-        </div>
+        <OnboardingLayout>
+            <Typography variant="h3" gutterBottom>Welcome {lichessUsername}</Typography>
+            <WalletConnectionSection walletAddress={walletAddress} connectAccount={connectAccount} submitted={submitted} />
+            <TermsAndSubmitSection acceptedTerms={acceptedTerms} setAcceptedTerms={setAcceptedTerms} handleSubmit={handleSubmit} submitted={submitted} />
+        </OnboardingLayout>
     );
 };
+
+const OnboardingLayout = ({ children }) => (
+    <div className="min-h-screen flex justify-center items-center">
+        <div>{children}</div>
+    </div>
+);
+
+const WalletConnectionSection = ({ walletAddress, connectAccount, submitted }) => (
+    <>
+        {!walletAddress && (
+            <Button variant="contained" onClick={connectAccount} disabled={submitted}>Connect Wallet</Button>
+        )}
+        {walletAddress && (
+            <Typography variant="body1" gutterBottom>
+                Connected Wallet Address: <strong>{walletAddress}</strong>
+            </Typography>
+        )}
+    </>
+);
+
+const TermsAndSubmitSection = ({ acceptedTerms, setAcceptedTerms, handleSubmit, submitted }) => (
+    <form onSubmit={handleSubmit} className="space-y-4">
+        <FormControlLabel
+            control={<Checkbox checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />}
+            label="I accept the terms and conditions"
+        />
+        <Button type="submit" variant="contained" disabled={!acceptedTerms || submitted}>Submit</Button>
+    </form>
+);
 
 export default Onboarding;
