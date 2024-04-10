@@ -6,7 +6,7 @@ import { Typography, Snackbar } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
 import { useWallet, useGamePendingWebsocket } from '../../hooks';
 import Web3 from 'web3';
-import GamePendingContent from '../../components/GamePending/GamePendingContent';
+import GamePendingContent from '../../components/GamePending';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();

@@ -1,0 +1,36 @@
+/* GamePendingContent.css */
+
+/* General styling for the content container */
+.game-pending-content {
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Style for the main title */
+.game-pending-title {
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Style for the game ID display */
+.game-id {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.2rem; /* Adjust size as needed */
+    color: #333; /* Adjust color as needed */
+}
+
+/* Style for the buttons */
+.game-pending-button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+/* Style for the 'Waiting for opponent' message */
+.waiting-message {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #666; /* Adjust color as needed */
+}
