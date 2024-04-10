@@ -7,6 +7,7 @@ import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Impor
 import { useWallet, useGamePendingWebsocket } from '../../hooks';
 import Web3 from 'web3';
 import GamePendingContent from '../../components/GamePending';
+import './GamePendingPage.css';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
