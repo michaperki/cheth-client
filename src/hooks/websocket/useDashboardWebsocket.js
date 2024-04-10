@@ -40,7 +40,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSna
     }
   };
 
-  const socket = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
+  const socket = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT'], setSnackbarOpen, setSnackbarMessage);
 
   if (searchingForOpponent) {
     // Set a timeout for 30 seconds
