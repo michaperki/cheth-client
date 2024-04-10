@@ -1,0 +1,40 @@
+/* GameInterface.css */
+
+.game-interface-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.game-id {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.winner-announcement {
+    font-size: 1.25rem;
+    color: green;
+    margin-bottom: 20px;
+}
+
+.join-game-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.join-game-button:hover {
+    background-color: #388e3c;
+}

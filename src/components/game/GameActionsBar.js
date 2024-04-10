@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Box } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import "./GameActionsBar.css";
 
 const GameActionsBar = ({
     gameOver,
@@ -13,9 +14,9 @@ const GameActionsBar = ({
     onCancelRematch
 }) => {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <Box className="game-actions-bar">
             {!gameOver && (
-                <Button onClick={onReportGameOver} startIcon={<ReportProblemIcon />}>
+                <Button onClick={onReportGameOver} startIcon={<ReportProblemIcon />} >
                     Report Game Over
                 </Button>
             )}

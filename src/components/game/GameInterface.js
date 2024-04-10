@@ -3,12 +3,13 @@ import { Typography, Box, Button } from '@mui/material';
 import MatchupPodium from './MatchUpPodium';
 import NumberDisplay from './NumberDisplay';
 import Web3 from 'web3';
+import "./GameInterface.css";
 
 const GameInterface = ({ gameInfo, playerOne, playerTwo, gameOver, winner, winnerPaid, onJoinGame }) => {
     return (
-        <Box>
-            <Typography variant="h3" sx={{ mb: 4 }}>Game In-Progress</Typography>
-            <Typography variant="h4" sx={{ mb: 2 }}>Game ID: {gameInfo?.game_id}</Typography>
+        <Box className="game-interface-container">
+            <Typography variant="h3" className="game-title" >Game In-Progress</Typography>
+            <Typography variant="h4" className="game-id" >Game ID: {gameInfo?.game_id}</Typography>
             {gameInfo && (
                 <>
                     <MatchupPodium 
@@ -21,12 +22,12 @@ const GameInterface = ({ gameInfo, playerOne, playerTwo, gameOver, winner, winne
                         amount={Web3.utils.fromWei(gameInfo.reward_pool, 'ether')}
                     />
                     {gameOver && (
-                        <Typography variant="h5" sx={{ mb: 2 }}>
+                        <Typography variant="h5" className="winner-announcement">
                             Winner: {winner} {winnerPaid && "(PAID)"}
                         </Typography>
                     )}
                     {!gameOver && (
-                        <Button onClick={onJoinGame}>Join Game on Lichess</Button>
+                        <Button onClick={onJoinGame} className="join-game-button" variant="contained" color="primary">Join Game on Lichess</Button>
                     )}
                 </>
             )}
