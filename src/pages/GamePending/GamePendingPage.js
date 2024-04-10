@@ -4,7 +4,7 @@ import Chess from '../../abis/Chess.json';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
 import { Typography, Snackbar } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
-import { useWallet, useGamePendingWebsocket } from '../../hooks';
+import { useWallet, useGamePendingWebsocket, useSnackbar } from '../../hooks';
 import Web3 from 'web3';
 import GamePendingContent from '../../components/GamePending';
 import './GamePendingPage.css';
@@ -20,6 +20,11 @@ const GamePendingPage = ({ userInfo }) => {
         snackbarOpen,
         snackbarMessage,
         setSnackbarOpen,
+        setSnackbarMessage,
+        handleSnackbarClose
+    } = useSnackbar();
+
+    const {
         hasPlayerJoined,
         gameInfo,
         setGameInfo,
@@ -29,7 +34,7 @@ const GamePendingPage = ({ userInfo }) => {
         player_one,
         player_two,
         gameState,
-    } = useGamePendingWebsocket(gameId, userInfo);
+    } = useGamePendingWebsocket(gameId, userInfo, setSnackbarOpen, setSnackbarMessage);
 
     useEffect(() => {
         getGameInfo();
@@ -57,14 +62,6 @@ const GamePendingPage = ({ userInfo }) => {
             setContractInstance(contract);
         }
     }, [provider, contractAddress]);
-
-    // Snackbar close handler
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setSnackbarOpen(false);
-    };
 
     const joinGame = async () => {
         try {
