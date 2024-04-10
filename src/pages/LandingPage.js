@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { useCheckEligibility } from '../hooks'; // Custom hook for eligibility check
@@ -9,8 +9,8 @@ function LandingPage({ userInfo }) {
   const { isEligible, reason, checkEligibility } = useCheckEligibility(); // Use custom hook
 
   // Redirect to dashboard if user info is present
-  useCallback(() => {
-    if (userInfo?.wallet_address && userInfo?.username) {
+  useEffect(() => {
+    if (userInfo) {
       navigate('/dashboard');
     }
   }, [userInfo, navigate]);

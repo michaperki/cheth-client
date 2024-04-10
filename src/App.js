@@ -1,21 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from './components';
-import LandingPage from './pages/LandingPage';
-import OnboardingPage from './pages/OnboardingPage';
-import DashboardPage from './pages/Dashboard/DashboardPage';
-import GamePendingPage from './pages/GamePending/GamePendingPage';
-import GamePage from './pages/GamePage';
-import AdminPage from './pages/Admin/AdminPage';
-import AccountPage from './pages/AccountPage';
-// import useWebSocket from './hooks/websocket/useWebsocket';
-// import useWallet from './hooks/useWallet';
 import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import getUser from './services/userService';
 import createAppTheme from './theme/createAppTheme'; // Moved theme creation logic
 import './App.css';
 

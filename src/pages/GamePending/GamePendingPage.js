@@ -17,7 +17,7 @@ const GamePendingPage = ({ userInfo }) => {
     const [contractInstance, setContractInstance] = useState(null);
     const [joinedPlayers, setJoinedPlayers] = useState([]); // State variable to store joined players
     const theme = useTheme(); // Get the current theme
-    const { walletAddress, connectAccount, connected, provider, sdk } = useWallet();
+    const { walletAddress, connectAccount, connected, provider } = useWallet();
     const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
     const {
         snackbarOpen,
@@ -33,15 +33,8 @@ const GamePendingPage = ({ userInfo }) => {
         player_two,
         gameState,
     } = useGamePendingWebsocket(gameId, userInfo);
-    console.log('Game info:', gameInfo);
-    console.log('Contract address:', contractAddress);
-
-    console.log('Wallet address:', walletAddress);
-    console.log('Connected:', connected);
-    console.log('Provider:', provider);
 
     useEffect(() => {
-        console.log('Fetching game info inside GamePendingPage...');
         getGameInfo();
     }, []);
 
