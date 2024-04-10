@@ -25,9 +25,6 @@ const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [], timeControl }
 
     // Get the property name for the current time control
     const ratingProperty = getRatingPropertyName(timeControl);
-    console.log('ratingProperty:', ratingProperty);
-    console.log('timeControl:', timeControl);
-
     const playerOneRating = playerOne[ratingProperty] || 'N/A';
     const playerTwoRating = playerTwo[ratingProperty] || 'N/A';
 
