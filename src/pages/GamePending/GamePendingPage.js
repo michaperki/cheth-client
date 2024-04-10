@@ -2,15 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Chess from '../../abis/Chess.json';
 import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import { Button, Typography, Snackbar, Box } from '@mui/material'; // Import MUI components
+import { Typography, Snackbar } from '@mui/material'; // Import MUI components
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
-import NumberDisplay from '../../components/game/NumberDisplay';
-// import UseGamePendingWebsocket from '../../hooks/websocket/useGamePendingWebsocket';
-import MatchupPodium from '../../components/game/MatchUpPodium';
-// import useWallet
-// import useWallet from '../../hooks/useWallet';
-import {useWallet, useGamePendingWebsocket} from '../../hooks';
+import { useWallet, useGamePendingWebsocket } from '../../hooks';
 import Web3 from 'web3';
+import GamePendingContent from '../../components/GamePending/GamePendingContent';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
@@ -110,61 +106,36 @@ const GamePendingPage = ({ userInfo }) => {
     }
 
     return (
-        <div className={`max-w-md w-full p-8 bg-${theme.palette.mode === 'dark' ? 'black' : 'white'}`}>
-            <Typography variant="h3" sx={{ mb: 4 }}>Game Pending</Typography>
-            {console.log('gameState:', gameState)}
-            {gameInfo && (parseInt(gameState) === 2 || parseInt(gameState) === 3) && (
-                <div>
-                    <Typography sx={{ mb: 2 }}>Game ID: {gameInfo.game_id}</Typography>
-
-
-                    {/* display the players */}
-                    {player_one && player_two && gameInfo.time_control &&
-                        <div style={{ marginBottom: '20px', minHeight: '110px' }}>
-                            <MatchupPodium playerOne={player_one} playerTwo={player_two} joinedPlayers={joinedPlayers} timeControl={gameInfo.time_control} />
-                        </div>
-                    }
-                    <NumberDisplay amount={Web3.utils.fromWei(contractBalance, 'ether') * ethToUsdRate} />
-
-
-                    {/* Show different content based on whether the player has joined */}
-                    {hasPlayerJoined ? (
-                        <Typography sx={{ mb: 2 }}>Waiting for opponent to join</Typography>
-                    ) : (
-                        <Button
-                            onClick={joinGame}
-                            variant="contained"
-                            color="primary"
-                            sx={{ '&:hover': { bgcolor: 'primary.dark' }, mr: 2 }}
-                        >
-                            Join Game
-                        </Button>
-                    )}
-
-                    <Button
-                        onClick={cancelGame}
-                        variant="contained"
-                        color="error"
-                        sx={{ '&:hover': { bgcolor: 'error.dark' } }}
-                    >
-                        Cancel Game
-                    </Button>
-                </div>
-            )}
-            {/* log the joined players, they have duplicate entries */}
-
-            {gameInfo && parseInt(gameState) === -1 && (
+        <div className={`game-pending-container bg-${theme.palette.mode}`}>
+            {gameInfo && parseInt(gameState) !== -1 ? (
+                <GamePendingContent
+                    gameInfo={gameInfo}
+                    gameState={gameState}
+                    player_one={player_one}
+                    player_two={player_two}
+                    contractBalance={contractBalance}
+                    ethToUsdRate={ethToUsdRate}
+                    hasPlayerJoined={hasPlayerJoined}
+                    joinGame={joinGame}
+                    cancelGame={cancelGame}
+                />
+            ) : (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
             )}
-            <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                message={snackbarMessage}
-            />
+            <CustomSnackbar open={snackbarOpen} message={snackbarMessage} onClose={handleSnackbarClose} />
         </div>
     );
-}
+};
+
+const CustomSnackbar = ({ open, message, onClose }) => (
+    <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        open={open}
+        autoHideDuration={1000}
+        onClose={onClose}
+        message={message}
+        className="snackbar"
+    />
+);
 
 export default GamePendingPage;

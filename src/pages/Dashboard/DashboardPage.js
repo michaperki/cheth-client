@@ -19,6 +19,8 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const {
         snackbarOpen,
         snackbarMessage,
+        setSnackbarOpen,
+        setSnackbarMessage,
         handleSnackbarClose
     } = useSnackbar();
 
@@ -30,7 +32,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     return (
         <Container className="dashboard-container">
             <Grid container spacing={3} className="dashboard-content">
-                <DashboardContent userInfo={userInfo} ethToUsdRate={ethToUsdRate} />
+                <DashboardContent userInfo={userInfo} ethToUsdRate={ethToUsdRate} setSnackbarOpen={setSnackbarOpen} setSnackbarMessage={setSnackbarMessage} />
                 <SidebarContainer isLoading={isLoading} onlineUsersCount={onlineUsersCount} gameCount={gameCount} totalWageredInUsd={totalWageredInUsd} />
             </Grid>
             <CustomSnackbar open={snackbarOpen} message={snackbarMessage} onClose={handleSnackbarClose} />
