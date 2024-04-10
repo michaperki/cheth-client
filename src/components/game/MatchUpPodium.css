@@ -3,6 +3,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 .player-container {
     width: 200px;
@@ -14,12 +15,19 @@
     border-radius: 4px;
     padding: 10px;
     margin-right: 10px;
+    margin-bottom: 30px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    opacity: 0.9; /* Slightly transparent when not ready */
+    transform: scale(1); /* Default scale */
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s, opacity 0.3s; /* Include all transitioning properties */
 }
 
 .player-box.ready {
     background-color: #4caf50; /* Green */
     border-color: #4caf50; /* Green */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Stronger shadow when ready */
+    transform: scale(1.05); /* Slightly larger when ready */
+    opacity: 1; /* Fully opaque when ready */
 }
 
 .player-box .username {

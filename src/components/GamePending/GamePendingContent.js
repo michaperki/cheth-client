@@ -26,7 +26,7 @@ const GamePendingContent = ({
                     <MatchupPodium 
                         playerOne={player_one} 
                         playerTwo={player_two} 
-                        joinedPlayers={[player_one.id, player_two.id]} 
+                        gameInfo={gameInfo}
                         timeControl={gameInfo.time_control} 
                     />
                 </Box>

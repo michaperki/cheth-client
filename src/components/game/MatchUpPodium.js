@@ -4,11 +4,9 @@ import { useTheme } from '@mui/material/styles';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports'; // Icon for "Versus"
 import './MatchUpPodium.css'; // Import the CSS file
 
-const MatchupPodium = ({ playerOne, playerTwo, joinedPlayers = [], timeControl }) => {
-    const playerOneID = playerOne.user_id;
-    const playerTwoID = playerTwo.user_id;
-    const isPlayerOneJoined = joinedPlayers?.includes(playerOneID);
-    const isPlayerTwoJoined = joinedPlayers?.includes(playerTwoID);
+const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl }) => {
+    const isPlayerOneJoined = gameInfo?.player1_ready;
+    const isPlayerTwoJoined = gameInfo?.player2_ready;
     const theme = useTheme(); // Get the current theme
 
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg'; // Adjust the path to duck.svg as needed
