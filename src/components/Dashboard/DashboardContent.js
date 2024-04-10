@@ -76,7 +76,7 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
 
     return (
         <Box className="dashboard-content">
-            <RatingsDisplay userInfo={userInfo} />
+            <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
             <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
             <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
             {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} />}
