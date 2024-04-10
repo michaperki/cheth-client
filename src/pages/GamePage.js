@@ -14,7 +14,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
-    const { walletAddress } = useWallet();
     const [gameUrl, setGameUrl] = useState('');
     const [currentUser, setCurrentUser] = useState('');
     const [gameOver, setGameOver] = useState(false);
@@ -147,12 +146,47 @@ const GamePage = ({ userInfo }) => {
 
     const handleDeclineRematch = () => {
         console.log('Declining rematch...');
+        try {
+            const response = fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/declineRematch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userInfo.user_id, gameId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to decline rematch');
+            }
+
+            console.log('Rematch declined!');
+        }
+        catch (error) {
+            console.error('Error declining rematch:', error);
+        }
     }
 
     const handleCancelRematch = () => {
         console.log('Canceling rematch...');
-    }
+        try {
+            const response = fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/cancelRematch`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: userInfo.user_id, gameId })
+            });
 
+            if (!response.ok) {
+                throw new Error('Failed to cancel rematch');
+            }
+
+            console.log('Rematch canceled!');
+        }
+        catch (error) {
+            console.error('Error canceling rematch:', error);
+        }
+    }
 
     return (
         <div className={`max-w-md w-full p-8 ${theme.palette.mode === 'dark' ? 'dark-bg' : 'bg-white'} rounded shadow-lg`}>
