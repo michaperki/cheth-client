@@ -38,7 +38,7 @@ const GamePendingPage = ({ userInfo }) => {
 
     useEffect(() => {
         getGameInfo();
-    }, []);
+    }, [getGameInfo]);
 
     useEffect(() => {
         // Update joined players when game info changes
