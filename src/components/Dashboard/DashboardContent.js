@@ -4,6 +4,7 @@ import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
 import { useDashboardWebsocket } from '../../hooks';
+import "./DashboardContent.css";
 
 const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
     const [timeControl, setTimeControl] = useState('60');
@@ -74,7 +75,7 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <Box className="dashboard-content">
             <RatingsDisplay userInfo={userInfo} />
             <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
             <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />

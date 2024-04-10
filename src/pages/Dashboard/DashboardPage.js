@@ -31,9 +31,24 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
 
     return (
         <Container className="dashboard-container">
-            <Grid container spacing={3} className="dashboard-content">
-                <DashboardContent userInfo={userInfo} ethToUsdRate={ethToUsdRate} setSnackbarOpen={setSnackbarOpen} setSnackbarMessage={setSnackbarMessage} />
-                <SidebarContainer isLoading={isLoading} onlineUsersCount={onlineUsersCount} gameCount={gameCount} totalWageredInUsd={totalWageredInUsd} />
+            <Grid container spacing={3}>
+                {/* Main content taking up the remaining space on large screens, full width on small screens */}
+                <Grid item xs={12} md={8} className="dashboard-content">
+                    <DashboardContent 
+                        userInfo={userInfo} 
+                        ethToUsdRate={ethToUsdRate} 
+                        setSnackbarOpen={setSnackbarOpen} 
+                        setSnackbarMessage={setSnackbarMessage} 
+                    />
+                </Grid>
+                
+                {/* Sidebar taking up 4 columns on large screens, full width on small screens */}
+                <SidebarContainer 
+                    isLoading={isLoading} 
+                    onlineUsersCount={onlineUsersCount} 
+                    gameCount={gameCount} 
+                    totalWageredInUsd={totalWageredInUsd} 
+                />
             </Grid>
             <CustomSnackbar open={snackbarOpen} message={snackbarMessage} onClose={handleSnackbarClose} />
         </Container>

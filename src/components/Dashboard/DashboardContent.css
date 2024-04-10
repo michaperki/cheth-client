@@ -1,5 +1,5 @@
-/* MainContent.css */
-.main-content {
+/* DashboardContent.css */
+.dashboard-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,17 +7,6 @@
     padding: 10px;
 }
 
-.play-game-button {
-    /* Styles for the Play Game Button */
-}
-
-.switch-options {
-    /* Styles for the Switch Options component */
-}
-
-.ratings-display {
-    /* Styles for the Ratings Display component */
-}
 
 .searching-container {
     display: flex;
@@ -26,6 +15,3 @@
     /* Add more styles as needed */
 }
 
-.opponent-found-text {
-    /* Styles for the text displayed when an opponent is found */
-}
