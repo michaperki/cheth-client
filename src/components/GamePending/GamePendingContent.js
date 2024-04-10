@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Typography, Box } from '@mui/material';
-import NumberDisplay from '../../components/game/NumberDisplay';
-import MatchupPodium from '../../components/game/MatchUpPodium';
+import { NumberDisplay, MatchUpPodium } from '../game';
 import Web3 from 'web3';
 import './GamePendingContent.css'; // Import your CSS file
 
@@ -23,7 +22,7 @@ const GamePendingContent = ({
 
             {player_one && player_two && gameInfo.time_control && (
                 <Box sx={{ marginBottom: 3 }}>
-                    <MatchupPodium 
+                    <MatchUpPodium 
                         playerOne={player_one} 
                         playerTwo={player_two} 
                         gameInfo={gameInfo}
