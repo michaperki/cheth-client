@@ -23,15 +23,15 @@ const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl }) => {
 
     // Get the property name for the current time control
     const ratingProperty = getRatingPropertyName(timeControl);
-    const playerOneRating = playerOne[ratingProperty] || 'N/A';
-    const playerTwoRating = playerTwo[ratingProperty] || 'N/A';
+    const playerOneRating = playerOne?.[ratingProperty] || 'N/A';
+    const playerTwoRating = playerTwo?.[ratingProperty] || 'N/A';
 
     return (
         <Box className='matchup-podium-container'>
             {/* Player One */}
             <Box className={`player-box ${isPlayerOneJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerOneJoined, theme)}>
-                <img src={getAvatarSrc(playerOne.avatar)} alt={`${playerOne.username}'s avatar`} className="player-avatar" />
-                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerOne.username}</Typography>
+                <img src={getAvatarSrc(playerOne?.avatar)} alt={`${playerOne?.username}'s avatar`} className="player-avatar" />
+                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerOne?.username}</Typography>
                 <Typography className="rating" variant="body2">Rating: {playerOneRating}</Typography>
                 {isPlayerOneJoined && <Chip label="Ready!" color="success" />}
             </Box>
@@ -41,8 +41,8 @@ const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl }) => {
 
             {/* Player Two */}
             <Box className={`player-box ${isPlayerTwoJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerTwoJoined, theme)}>
-                <img src={getAvatarSrc(playerTwo.avatar)} alt={`${playerTwo.username}'s avatar`} className="player-avatar" />
-                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerTwo.username}</Typography>
+                <img src={getAvatarSrc(playerTwo?.avatar)} alt={`${playerTwo?.username}'s avatar`} className="player-avatar" />
+                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerTwo?.username}</Typography>
                 <Typography className="rating" variant="body2">Rating: {playerTwoRating}</Typography>
                 {isPlayerTwoJoined && <Chip label="Ready!" color="success" />}
             </Box>
