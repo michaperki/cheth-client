@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Header from './components/Header';
+import { Header, NavigationRoutes } from './components';
 import LandingPage from './pages/LandingPage';
 import OnboardingPage from './pages/OnboardingPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
@@ -10,55 +10,33 @@ import AdminPage from './pages/Admin/AdminPage';
 import AccountPage from './pages/AccountPage';
 // import useWebSocket from './hooks/websocket/useWebsocket';
 // import useWallet from './hooks/useWallet';
-import { useWebSocket, useWallet } from './hooks'; // Import the useWebSocket and useWallet hooks
+import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import getUser from './services/userService';
+import createAppTheme from './theme/createAppTheme'; // Moved theme creation logic
 import './App.css';
 
 function App() {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [darkMode, setDarkMode] = useState(prefersDarkMode);
+  const { darkMode, toggleDarkMode } = useDarkMode(); // Use the useDarkMode hook
   const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
   const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = await getUser(walletAddress);
-        setUserInfo(userData);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+  useFetchUser(walletAddress, connectAccount, setUserInfo);
 
-    if (walletAddress) {
-      fetchData();
-    } else {
-      connectAccount();
-    }
-  }, [walletAddress]);
-
-  const toggleDarkMode = () => {
-    setDarkMode(prevMode => !prevMode);
-  };
-
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light',
-    },
-  });
-
-  const handleWebSocketMessage = (message) => {
-    console.log('Received message in App:', message);
-  };
-
-  // Use the useWebSocket hook to establish WebSocket connection
-  const { socket, onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
+  // Create a theme object
+  const theme = createAppTheme(darkMode);
 
   const isAdmin = userInfo && userInfo.user_role === 'admin';
+
+  const handleWebSocketMessage = useCallback((message) => {
+    console.log('Received message in App:', message);
+  }, []);
+
+  // Use the useWebSocket hook to establish WebSocket connection
+  const { onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
 
   return (
     <Router>
@@ -66,20 +44,7 @@ function App() {
         <EthereumPriceProvider>
           <CssBaseline />
           <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} isAdmin={isAdmin} />
-          <Routes>
-            <Route path="/" element={<LandingPage userInfo={userInfo} />} />
-            <Route path="/onboarding/:lichessUsername" element={<OnboardingPage />} />
-            <Route path="/dashboard" element={<DashboardPage userInfo={userInfo} onlineUsersCount={onlineUsersCount} />} />
-            <Route path="/game-pending/:gameId" element={<GamePendingPage userInfo={userInfo} />} />
-            <Route path="/game/:gameId" element={<GamePage userInfo={userInfo} />} />
-            <Route path="/account" element={<AccountPage userInfo={userInfo} />} />
-            {isAdmin ? (
-              <Route path="/admin" element={<AdminPage userInfo={userInfo} />} />
-            ) : (
-              // Redirect to dashboard if not an admin
-              <Route path="/admin" element={<Navigate to="/dashboard" />} />
-            )}
-          </Routes>
+          <NavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
         </EthereumPriceProvider>
       </ThemeProvider>
     </Router>
