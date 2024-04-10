@@ -3,7 +3,7 @@ import { Button, Container, Typography, CircularProgress, Snackbar, Grid, Box } 
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import Sidebar from '../../components/Sidebar';
-import { useDashboardWebsocket } from '../../hooks';
+import { useDashboardWebsocket, useGameStats } from '../../hooks';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
@@ -12,9 +12,13 @@ import './DashboardPage.css';
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     const theme = useTheme(); // Get the current theme
     const ethToUsdRate = useEthereumPrice();
+    const {
+        gameCount,
+        totalWageredInUsd,
+        fetchGameStats,
+        isLoading
+    } = useGameStats(ethToUsdRate); // Use custom hook for fetching game stats
 
-    const [gameCount, setGameCount] = useState(0); // Initialize game count state with 0
-    const [totalWagered, setTotalWagered] = useState(0); // Initialize total wagered state with 0
     const [timeControl, setTimeControl] = useState('60'); // Initialize time control state with '1'
     const [wagerSize, setWagerSize] = useState('5'); // Initialize wager size state with '5'
 
@@ -38,6 +42,11 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         setSnackbarOpen,
         setSearchingForOpponent
     } = useDashboardWebsocket({ ethToUsdRate, userInfo });
+
+    // Fetch game stats on component mount
+    useEffect(() => {
+        fetchGameStats();
+    }, [fetchGameStats]);
 
     // Snackbar close handler
     const handleSnackbarClose = (event, reason) => {
@@ -90,59 +99,8 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
         }
     }
 
-    const getGameCount = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGameCount`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch game count');
-            }
-
-            const data = await response.json();
-            console.log('Game count:', data);
-            setGameCount(data.count); // Use the state updater function
-            return data;
-        } catch (error) {
-            console.error('Error fetching game count:', error);
-            throw error;
-        }
-    };
-
-    const getTotalWagered = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getTotalWagered`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch total wagered amount');
-            }
-
-            const data = await response.json();
-            console.log('Total wagered:', data);
-            setTotalWagered(data.totalWagered); // Use the state updater function
-            return data;
-        } catch (error) {
-            console.error('Error fetching total wagered amount:', error);
-            throw error;
-        }
-    };
-
-    useEffect(() => {
-        getGameCount();
-        getTotalWagered();
-    }, []);
-
     // Calculate wager amount in ETH
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
-
-    // convert totalWagered to USD
-    const totalWageredInUsd = (totalWagered / 10 ** 18) * ethToUsdRate;
-
-    // Style for the rating box based on theme mode
-    const ratingBoxStyle = {
-        backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f5f5f5', // Dark background for dark mode and light for light mode
-        // ...other existing styles for the rating box
-    };
-
-
-
 
     return (
         <Container className="dashboard-container">
@@ -153,7 +111,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         <RatingsDisplay userInfo={userInfo} />
                         <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
                         <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
-                        {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} theme={theme} />}
+                        {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} />}
                     </Box>
                     {searchingForOpponent && (
                         <Box className="searching-container" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -165,9 +123,12 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                         </Box>
                     )}
                 </Grid>
-                <Grid item xs={12} md={4} className="sidebar-container">
-                    <Sidebar usersOnline={onlineUsersCount} gamesCreated={gameCount} transactedAmount={totalWageredInUsd} />
-                </Grid>
+                {console.log(onlineUsersCount, gameCount, totalWageredInUsd)}
+                {!isLoading && (
+                    <Grid item xs={12} md={4} className="sidebar-container">
+                        <Sidebar usersOnline={onlineUsersCount || 0} gamesCreated={gameCount || 0} transactedAmount={totalWageredInUsd || 0} />
+                    </Grid>
+                )}
             </Grid>
             <Snackbar anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} message={snackbarMessage} className="snackbar" />
         </Container>

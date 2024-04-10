@@ -13,6 +13,7 @@ export { default as useDarkMode } from './useDarkMode';
 export { default as useFetchUser } from './useFetchUser';
 export { default as useCheckEligibility } from './useCheckEligibility';
 export { default as useSubmitUserInfo } from './useSubmitUserInfo';
+export { default as useGameStats } from './useGameStats';
 
 // Re-exporting websocket hooks
 export { 
