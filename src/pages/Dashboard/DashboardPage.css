@@ -5,62 +5,21 @@
     padding: 20px;
 }
 
-.welcome-text {
-    font-weight: bold;
-    padding-bottom: 40px; /* Increased bottom margin */
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 2rem;
-    letter-spacing: 2px;
-}
-
-/* Ensure there's no negative margin in .dashboard-content */
 .dashboard-content {
     width: 100%;
 }
-.main-content, .sidebar-container {
+
+.sidebar-container {
     padding: 10px;
 }
 
-.rating-box {
-    border-radius: 8px; /* Rounded corners */
-    border: 2px solid #1976d2; /* Solid border with a distinct color */
-    padding: 16px; /* Generous padding for better spacing */
+.snackbar {
     display: flex;
-    justify-content: center; /* Center items horizontally */
-    align-items: center; /* Center items vertically */
-    margin-bottom: 20px; /* Space below the box */
-    background-color: #f5f5f5; /* Light background for the box */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
-
-    /* Styling for the label */
-    .rating-label {
-        color: #1976d2; /* Color that matches the border */
-        font-weight: bold; /* Bold font for the label */
-        margin-right: 8px; /* Spacing between label and value */
-    }
-
-    /* Styling for the value */
-    .rating-value {
-        font-size: 1.5rem; /* Larger font size for emphasis */
-        font-weight: bold; /* Bold font for the value */
-    }
-}
-
-/* Hover effect */
-.rating-box:hover {
-    border-color: #0d47a1; /* Darken the border on hover */
-    background-color: #e3f2fd; /* Lighter background on hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    .welcome-text {
-        font-size: 1.5rem;
-    }
-    .main-content, .sidebar-container {
-        padding: 5px;
-    }
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
 }

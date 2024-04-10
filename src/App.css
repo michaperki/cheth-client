@@ -1,0 +1,11 @@
+/* App.css */
+.app-container {
+    padding-top: 64px; /* Height of AppBar, adjust as needed */
+}
+
+/* For smaller screens, adjust the padding-top if the AppBar height changes */
+@media (max-width: 768px) {
+    .app-container {
+        padding-top: 56px; /* Adjust for mobile AppBar height */
+    }
+}

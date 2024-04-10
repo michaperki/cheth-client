@@ -44,7 +44,9 @@ function App() {
         <EthereumPriceProvider>
           <CssBaseline />
           <Header userInfo={userInfo} toggleDarkMode={toggleDarkMode} darkMode={darkMode} isAdmin={isAdmin} />
-          <NavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
+          <div className="app-container">
+            <NavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
+          </div>
         </EthereumPriceProvider>
       </ThemeProvider>
     </Router>

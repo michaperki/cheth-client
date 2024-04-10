@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
-import PlayGameButton from '../pages/Dashboard/PlayGameButton';
-import SwitchOptions from '../pages/Dashboard/SwitchOptions';
-import RatingsDisplay from '../pages/Dashboard/RatingsDisplay';
-import { useDashboardWebsocket } from '../hooks';
+import PlayGameButton from './PlayGameButton';
+import SwitchOptions from './SwitchOptions';
+import RatingsDisplay from './RatingsDisplay';
+import { useDashboardWebsocket } from '../../hooks';
 
-const MainContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
+const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
     const [timeControl, setTimeControl] = useState('60');
     const [wagerSize, setWagerSize] = useState('5');
 
@@ -92,4 +92,4 @@ const MainContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessa
     );
 };
 
-export default MainContent;
+export default DashboardContent;

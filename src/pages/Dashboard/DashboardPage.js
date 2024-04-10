@@ -4,7 +4,7 @@ import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import Sidebar from '../../components/Sidebar';
 import { useGameStats, useSnackbar } from '../../hooks';
 
-import MainContent from '../../components/DashboardContent';
+import DashboardContent from '../../components/Dashboard/DashboardContent';
 import './DashboardPage.css';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
@@ -30,7 +30,7 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     return (
         <Container className="dashboard-container">
             <Grid container spacing={3} className="dashboard-content">
-                <MainContent userInfo={userInfo} ethToUsdRate={ethToUsdRate} />
+                <DashboardContent userInfo={userInfo} ethToUsdRate={ethToUsdRate} />
                 <SidebarContainer isLoading={isLoading} onlineUsersCount={onlineUsersCount} gameCount={gameCount} totalWageredInUsd={totalWageredInUsd} />
             </Grid>
             <CustomSnackbar open={snackbarOpen} message={snackbarMessage} onClose={handleSnackbarClose} />
