@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   // Use the useWebSocket hook to establish WebSocket connection
-  const { onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, []);
+  const { onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, ['ONLINE_USERS_COUNT']);
 
   return (
     <Router>
