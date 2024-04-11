@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import Web3 from 'web3';
 
 const useGameDetails = (gameId, userInfo) => {
     const [gameInfo, setGameInfo] = useState(null);

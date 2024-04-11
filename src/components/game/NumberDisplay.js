@@ -5,6 +5,7 @@ import './NumberDisplay.css';
 const NumberDisplay = ({ amount }) => {
   const [displayAmount, setDisplayAmount] = useState(0);
   const theme = useTheme();
+  console.log("amount:", amount);
 
   useEffect(() => {
     const incrementAmount = () => {

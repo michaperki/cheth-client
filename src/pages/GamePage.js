@@ -3,10 +3,13 @@ import { useParams } from 'react-router-dom';
 import { useGameDetails, useGameActions } from '../hooks';
 import { GameInterface, GameActionsBar, GameSnackbar } from '../components/game';
 import { useTheme } from '@mui/material/styles';
+import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
     const theme = useTheme();
+    const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
+
     const {
         gameInfo,
         playerOne,
@@ -42,6 +45,7 @@ const GamePage = ({ userInfo }) => {
                 winner={winner}
                 winnerPaid={winnerPaid}
                 onJoinGame={handleJoinGame}
+                ethToUsdRate={ethToUsdRate}
             />
             <GameActionsBar
                 gameOver={gameOver}
