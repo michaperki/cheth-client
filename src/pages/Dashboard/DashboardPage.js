@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Container, Snackbar, Grid } from '@mui/material';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import Sidebar from '../../components/Sidebar';
+import { Sidebar } from '../../components';
 import { useGameStats, useSnackbar } from '../../hooks';
 
 import DashboardContent from '../../components/Dashboard/DashboardContent';

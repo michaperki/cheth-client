@@ -1,5 +1,4 @@
 // hooks/useDashboardPageWebSocket.js
-import { useEffect } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';

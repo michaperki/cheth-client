@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import useWallet from '../useWallet';
 
 const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPaid) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -16,9 +15,6 @@ const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPai
     const [player_two, setPlayerTwo] = useState(null);
     const [rematchRequested, setRematchRequested] = useState(false);
     const [isCurrentUserRequestingRematch, setIsCurrentUserRequestingRematch] = useState(false);
-
-    const { walletAddress, connectAccount } = useWallet();
-
 
     const ethToUsdRate = useEthereumPrice();
     const navigate = useNavigate();

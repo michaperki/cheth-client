@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
-import Web3 from 'web3';
-
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 
 const UseGamePendingWebsocket = (gameId, userInfo, setSnackbarOpen, setSnackbarMessage) => {
     const [hasPlayerJoined, setHasPlayerJoined] = useState(false);
@@ -15,7 +12,6 @@ const UseGamePendingWebsocket = (gameId, userInfo, setSnackbarOpen, setSnackbarM
     const [player_two, setPlayerTwo] = useState(null);
     const [gameState, setGameState] = useState(null);
 
-    const ethToUsdRate = useEthereumPrice();
     const navigate = useNavigate();
     const getGameInfo = async () => {
         try {
@@ -99,23 +95,6 @@ const UseGamePendingWebsocket = (gameId, userInfo, setSnackbarOpen, setSnackbarM
             console.log("Game is primed. Navigating to game page...");
             navigate(`/game/${gameId}`);
         }
-
-        // Handle FUNDS_TRANSFERRED message
-        // if (messageData.type === "FUNDS_TRANSFERRED") {
-        //     console.log('Received FUNDS_TRANSFERRED message:', messageData);
-        //     console.log('userInfo:', userInfo);
-        //     // Convert transferred amount from wei to USD
-        //     // first convert the amount to ether
-        //     if (messageData.userID !== userInfo.user_id) {
-        //         const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-        //         const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-        //         console.log('Received funds:', transferredInEth, 'ETH');
-        //         console.log('Received funds:', transferredInUsd, 'USD');
-        //         // Show Snackbar notification
-        //         setSnackbarMessage(`You received $${transferredInUsd}.`);
-        //         setSnackbarOpen(true);
-        //     }
-        // }
 
         getGameInfo();
     };

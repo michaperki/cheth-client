@@ -38,7 +38,7 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = [], se
         console.log('userId: ', userId);
         // Convert transferred amount from wei to USD
         // first convert the amount to ether
-        if (data.userID == userId) {
+        if (data.userID === userId) {
           const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
           const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
           console.log('Received funds:', transferredInEth, 'ETH');
