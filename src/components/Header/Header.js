@@ -4,7 +4,6 @@ import { AppBar, Toolbar, IconButton, Button, Typography, Link, Box } from '@mui
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import useWallet from '../../hooks/useWallet';
-import { useTheme } from '@mui/material/styles';
 
 import './Header.css';
 
