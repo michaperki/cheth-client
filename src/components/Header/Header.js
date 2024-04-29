@@ -51,10 +51,14 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
                     </Box>
                 )}
 
-                <IconButton color="inherit" onClick={toggleDarkMode}>
-                    {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-            </Toolbar>
+		    <IconButton
+			color="inherit"
+			onClick={toggleDarkMode}
+			data-testid="dark-mode-toggle" // Adding a testId for easier selection
+		    >
+			{darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+		    </IconButton>
+	    </Toolbar>
         </AppBar>
     );
 };
