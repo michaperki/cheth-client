@@ -8,6 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import createAppTheme from './theme/createAppTheme'; // Moved theme creation logic
 import './App.css';
 
+
 function App() {
   const { darkMode, toggleDarkMode } = useDarkMode(); // Use the useDarkMode hook
   const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
