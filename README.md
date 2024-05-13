@@ -1,5 +1,5 @@
-# Cheth
+# Cheth Client
 
-### a unique crypto chess experience
+## Commands
 
-### create secure wagers using Ethereum
+```npm start``` starts the frontend react app locally
