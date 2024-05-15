@@ -1,7 +1,6 @@
-// hooks/useDashboardPageWebSocket.js
+import { useRef, useState } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import Web3 from 'web3';
 
 const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSnackbarMessage }) => {
@@ -9,7 +8,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSna
   const [opponentFound, setOpponentFound] = useState(false);
   const navigate = useNavigate();
 
-  let timeoutId;
+  const timeoutIdRef = useRef(null);
 
   const handleDashboardPageWebSocketMessage = (message) => {
     console.log('Received message in DashboardPage:', message);
@@ -43,25 +42,43 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSna
 
   if (searchingForOpponent) {
     // Set a timeout for 30 seconds
-    timeoutId = setTimeout(() => {
+    timeoutIdRef.current = setTimeout(() => {
       // Display error message
       setSnackbarMessage('Search timed out.');
       setSnackbarOpen(true);
       // Cancel search
       setSearchingForOpponent(false);
-      // send a message to the server to cancel the search
+      // Send a message to the server to cancel the search
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
       }
-
     }, 30000); // 30 seconds
   }
   
+  const cancelSearch = () => {
+    // Clear the timeout
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
+    }
+
+    // Implement additional cancellation logic here if needed
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
+    }
+
+    setSearchingForOpponent(false);
+    setSnackbarMessage('Search cancelled.');
+    setSnackbarOpen(true);
+  };
+
   return {
     searchingForOpponent,
     opponentFound,
-    setSearchingForOpponent
+    setSearchingForOpponent,
+    cancelSearch // Return the cancelSearch function
   };
 };
 
 export default useDashboardWebsocket;
+

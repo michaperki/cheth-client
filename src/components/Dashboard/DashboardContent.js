@@ -52,25 +52,14 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
         } catch (error) {
             console.error('Error:', error);
         }
-    }
-
-    const cancelSearch = async () => {
-        try {
-            // Implement cancellation logic here
-            console.log('Cancelling search...');
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setSearchingForOpponent(false); // Use the state updater function
-        }
-    }
+    };
 
     const {
         searchingForOpponent,
         opponentFound,
-        setSearchingForOpponent
+        setSearchingForOpponent,
+        cancelSearch // Destructure the cancelSearch function from the custom hook
     } = useDashboardWebsocket({ ethToUsdRate, userInfo, setSnackbarOpen, setSnackbarMessage });
-
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
@@ -94,3 +83,4 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
 };
 
 export default DashboardContent;
+
