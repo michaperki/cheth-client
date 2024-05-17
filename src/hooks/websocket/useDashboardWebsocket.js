@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 import Web3 from 'web3';
@@ -22,49 +22,49 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSna
 
     if (messageData.type === "CONTRACT_READY") {
       console.log('Game contract ready:', messageData);
-      // Implement logic to navigate to game page
       navigate(`/game-pending/${messageData.gameId}`);
     }
 
-    // Inside the handleWebSocketMessage function
     if (messageData.type === "FUNDS_TRANSFERRED") {
-      // Convert transferred funds from wei to ether
       const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-      // Convert transferred funds from ether to USD using the conversion rate
       const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-      // Show Snackbar notification with transferred funds in USD
       setSnackbarMessage(`You received $${transferredInUsd}.`);
       setSnackbarOpen(true);
     }
   };
 
-  const socket = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT'], setSnackbarOpen, setSnackbarMessage);
+  const { socket, onlineUsersCount } = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT'], setSnackbarOpen, setSnackbarMessage);
 
-  if (searchingForOpponent) {
-    // Set a timeout for 30 seconds
-    timeoutIdRef.current = setTimeout(() => {
-      // Display error message
-      setSnackbarMessage('Search timed out.');
-      setSnackbarOpen(true);
-      // Cancel search
-      setSearchingForOpponent(false);
-      // Send a message to the server to cancel the search
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
-      }
-    }, 30000); // 30 seconds
-  }
-  
+  useEffect(() => {
+    if (searchingForOpponent && socket) {
+      console.log('Setting timeout for search timeout');
+      timeoutIdRef.current = setTimeout(() => {
+        console.log('Search timed out');
+        setSnackbarMessage('Search timed out.');
+        setSnackbarOpen(true);
+        setSearchingForOpponent(false);
+        if (socket.readyState === WebSocket.OPEN) {
+          console.log('Sending CANCEL_SEARCH due to timeout');
+          socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
+        } else {
+          console.log('Socket is not open. Cannot send CANCEL_SEARCH');
+        }
+      }, 30000); // 30 seconds
+    }
+  }, [searchingForOpponent, socket]);
+
   const cancelSearch = () => {
-    // Clear the timeout
+    console.log('Cancel search initiated');
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
     }
 
-    // Implement additional cancellation logic here if needed
     if (socket && socket.readyState === WebSocket.OPEN) {
+      console.log('Sending CANCEL_SEARCH message');
       socket.send(JSON.stringify({ type: 'CANCEL_SEARCH', userId: userInfo?.user_id }));
+    } else {
+      console.log('Socket is not open or undefined. Cannot send CANCEL_SEARCH');
     }
 
     setSearchingForOpponent(false);
@@ -76,7 +76,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo, setSnackbarOpen, setSna
     searchingForOpponent,
     opponentFound,
     setSearchingForOpponent,
-    cancelSearch // Return the cancelSearch function
+    cancelSearch
   };
 };
 
