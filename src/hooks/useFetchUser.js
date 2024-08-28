@@ -23,7 +23,7 @@ export const useFetchUser = (walletAddress, connectAccount, setUserInfo) => {
     } else {
       connectAccount();
     }
-  }, [walletAddress, setUserInfo, connectAccount, handleError]);
+  }, [walletAddress, setUserInfo, handleError]);
 };
 
 export default useFetchUser;
