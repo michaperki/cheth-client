@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from './components';
 import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks
@@ -14,18 +14,12 @@ function App() {
   const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
   const [userInfo, setUserInfo] = useState(null);
 
-  const setUserInfoCallback = useCallback((userInfo) => {
-    setUserInfo(userInfo);
-  }, []);
-
-  const isAdmin = useMemo(() => {
-    return userInfo && userInfo.user_role === 'admin';
-  }, [userInfo]);
-
   useFetchUser(walletAddress, connectAccount, setUserInfo);
 
   // Create a theme object
   const theme = createAppTheme(darkMode);
+
+  const isAdmin = userInfo && userInfo.user_role === 'admin';
 
   const handleWebSocketMessage = useCallback((message) => {
     console.log('Received message in App:', message);
