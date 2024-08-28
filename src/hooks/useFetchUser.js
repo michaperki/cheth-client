@@ -20,7 +20,7 @@ export const useFetchUser = (walletAddress, connectAccount, setUserInfo) => {
       handleError(error, 'Error fetching user data');
       setUserInfo(null);
     }
-  }, [walletAddress, connectAccount, setUserInfo, handleError]);
+  }, [walletAddress, setUserInfo ]);
 
   useEffect(() => {
     fetchData();
