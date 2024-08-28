@@ -37,7 +37,7 @@ const GamePage = ({ userInfo }) => {
     }, [handleFetchGameInfo]);
 
     // Check if the game is complete (state 5)
-    const isGameComplete = gameInfo && gameInfo.state === "5";
+    const isGameComplete = gameInfo && gameInfo.state === 5;
 
     return (
         <div className={`game-page-container bg-${theme.palette.mode}`}>

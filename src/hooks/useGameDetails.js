@@ -27,7 +27,7 @@ const useGameDetails = (gameId, userInfo) => {
             }
 
             // Check if the game is over
-            if (data.state === "5") {
+            if (data.state === 5) {
                 setGameOver(true);
                 setWinner(data.winner ? await getWinnerUsername(data.winner) : 'Draw');
                 setWinnerPaid(true);
