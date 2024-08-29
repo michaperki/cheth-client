@@ -45,10 +45,12 @@ const GamePage = ({ userInfo }) => {
     return (
         <div className={`game-page-container bg-${theme.palette.mode}`}>
             {isGameComplete ? (
-                <GameCompleteScreen 
-                    winner={winner} 
-                    userInfo={userInfo}
-                    onRematchRequest={handleRematch}
+                <GameCompleteScreen
+                  playerOne={playerOne}
+                  playerTwo={playerTwo}
+                  winner={winner}
+                  userInfo={userInfo}
+                  onRematch={handleRematch}
                 />
             ) : (
                 <>
