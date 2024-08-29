@@ -5,6 +5,7 @@ import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
 import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
+import { toast } from 'react-toastify';
 
 const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
     const [timeControl, setTimeControl] = useState('60');
