@@ -18,6 +18,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     if (messageData.type === "START_GAME") {
       console.log('Game started:', messageData);
       setOpponentFound(true);
+      clearSearchTimeout();
     }
 
     if (messageData.type === "CONTRACT_READY") {
@@ -34,6 +35,13 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
 
   const { socket, onlineUsersCount } = useWebSocket(handleDashboardPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
 
+  const clearSearchTimeout = () => {
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+      timeoutIdRef.current = null;
+    }
+  };
+
   useEffect(() => {
     if (searchingForOpponent && socket) {
       console.log('Setting timeout for search timeout');
@@ -49,14 +57,13 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
         }
       }, 30000); // 30 seconds
     }
+
+    return () => clearSearchTimeout();
   }, [searchingForOpponent, socket, userInfo]);
 
   const cancelSearch = () => {
     console.log('Cancel search initiated');
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-      timeoutIdRef.current = null;
-    }
+    clearSearchTimeout();
 
     if (socket && socket.readyState === WebSocket.OPEN) {
       console.log('Sending CANCEL_SEARCH message');
