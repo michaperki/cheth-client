@@ -26,8 +26,11 @@ const useGameDetails = (gameId, userInfo) => {
                 handleFetchPlayerInfo(data.player2_id, setPlayerTwo);
             }
 
+            console.log("data in useGameDetails hook");
+            console.log(data);
+
             // Check if the game is over
-            if (data.state === 5) {
+            if (data.state === "5") {
                 setGameOver(true);
                 setWinner(data.winner ? await getWinnerUsername(data.winner) : 'Draw');
                 setWinnerPaid(true);
