@@ -15,6 +15,10 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log('connectedPlayers updated:', connectedPlayers);
+    }, [connectedPlayers]);
+
     const getGameInfo = async () => {
         try {
             console.log('Fetching game info inside UseGamePendingWebsocket...');
@@ -107,7 +111,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         getGameInfo();
     };
 
-    const { socket } = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT', 'FUNDS_TRANSFERRED']);
+    const { socket } = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
 
     // Memoize getGameInfo function
     const memoizedGetGameInfo = useMemo(() => getGameInfo, [gameId]);
