@@ -45,8 +45,6 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 fetchPlayerData(gameData.player2_id)
             ]);
 
-            console.log('Player 1 data:', player1Data);
-            console.log('Player 2 data:', player2Data);
             setPlayerOne(player1Data);
             setPlayerTwo(player2Data);
 

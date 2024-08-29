@@ -30,12 +30,12 @@ const GamePendingPage = ({ userInfo }) => {
         setGameInfo,
         contractAddress,
         contractBalance,
+        getGameInfo,
         player_one,
         player_two,
-        getGameInfo,
         gameState,
-        connectedPlayers
-    } = UseGamePendingWebsocket(gameId, userInfo);
+        connectedPlayers,
+    } = useGamePendingWebsocket(gameId, userInfo);
 
     useEffect(() => {
         getGameInfo();
@@ -117,6 +117,7 @@ const GamePendingPage = ({ userInfo }) => {
                     hasPlayerJoined={hasPlayerJoined}
                     joinGame={joinGame}
                     cancelGame={cancelGame}
+                    connectedPlayers={connectedPlayers}
                 />
             ) : (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
