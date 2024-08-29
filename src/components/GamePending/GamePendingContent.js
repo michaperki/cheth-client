@@ -13,6 +13,7 @@ const GamePendingContent = ({
   hasPlayerJoined,
   joinGame,
   cancelGame,
+  connectedPlayers,
 }) => {
   return (
     <Box className="game-pending-content">
@@ -28,6 +29,7 @@ const GamePendingContent = ({
             playerTwo={player_two}
             gameInfo={gameInfo}
             timeControl={gameInfo.time_control}
+            connectedPlayers={connectedPlayers}
           />
         </Box>
       )}
