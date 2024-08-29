@@ -70,24 +70,37 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
 
         switch (messageData.type) {
             case "GAME_JOINED":
-                console.log("Game Joined...");
+                console.log("Switch case: GAME_JOINED");
                 const newPlayerWallet = messageData.player;
                 const hasJoined = newPlayerWallet === userInfo.wallet_address;
                 setHasPlayerJoined(hasJoined);
                 break;
             case "GAME_PRIMED":
-                console.log("Game is primed. Navigating to game page...");
+                console.log("Switch case: GAME_PRIMED");
                 navigate(`/game/${gameId}`);
                 break;
             case "PLAYER_CONNECTED":
-                console.log("Player connected...");
-                setConnectedPlayers(prev => [...prev, messageData.userId]);
+                console.log("Switch case: PLAYER_CONNECTED");
+                console.log("Current connectedPlayers:", connectedPlayers);
+                setConnectedPlayers(prev => {
+                    console.log("Updating connectedPlayers, previous state:", prev);
+                    const newState = [...prev, messageData.userId];
+                    console.log("New connectedPlayers state:", newState);
+                    return newState;
+                });
                 break;
             case "PLAYER_DISCONNECTED":
-                console.log("Player disconnected...");
-                setConnectedPlayers(prev => prev.filter(id => id !== messageData.userId));
+                console.log("Switch case: PLAYER_DISCONNECTED");
+                console.log("Current connectedPlayers:", connectedPlayers);
+                setConnectedPlayers(prev => {
+                    console.log("Updating connectedPlayers, previous state:", prev);
+                    const newState = prev.filter(id => id !== messageData.userId);
+                    console.log("New connectedPlayers state:", newState);
+                    return newState;
+                });
                 break;
             default:
+                console.log("Switch case: default");
                 break;
         }
 
