@@ -36,6 +36,9 @@ const GamePage = ({ userInfo }) => {
         handleFetchGameInfo();
     }, [handleFetchGameInfo]);
 
+    console.log("game info");
+    console.log(gameInfo);
+
     // Check if the game is complete (state 5)
     const isGameComplete = gameInfo && gameInfo.state === 5;
 
