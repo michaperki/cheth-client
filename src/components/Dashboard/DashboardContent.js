@@ -32,6 +32,8 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
             console.log('Playing game for user:', userInfo.user_id);
             setSearchingForOpponent(true); // Use the state updater function
 
+            toast.info("Searching for an opponent...", { autoClose: 3000 });
+
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
                 method: 'POST',
                 headers: {
