@@ -5,9 +5,7 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import './MatchUpPodium.css';
 
-const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedPlayers, readyPlayers }) => {
-    const isPlayerOneJoined = gameInfo?.player1_ready;
-    const isPlayerTwoJoined = gameInfo?.player2_ready;
+const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedPlayers }) => {
     const theme = useTheme();
 
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
@@ -22,9 +20,8 @@ const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedP
 
     const ratingProperty = getRatingPropertyName(timeControl);
 
-    const PlayerCard = ({ player, rating }) => {
+    const PlayerCard = ({ player, isReady, rating }) => {
         const isConnected = connectedPlayers.includes(player?.user_id);
-        const isReady = readyPlayers.includes(player?.user_id);
         console.log(`Player ${player?.user_id} connected:`, isConnected, 'ready:', isReady);
 
         return (
@@ -44,9 +41,17 @@ const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedP
 
     return (
         <Box className='matchup-podium-container'>
-            <PlayerCard player={playerOne} isJoined={isPlayerOneJoined} rating={playerOne?.[ratingProperty]} />
+            <PlayerCard 
+                player={playerOne} 
+                isReady={gameInfo?.player1_ready} 
+                rating={playerOne?.[ratingProperty]} 
+            />
             <SportsEsportsIcon sx={{ fontSize: 40, mx: 2, color: theme.palette.secondary.main }} />
-            <PlayerCard player={playerTwo} isJoined={isPlayerTwoJoined} rating={playerTwo?.[ratingProperty]} />
+            <PlayerCard 
+                player={playerTwo} 
+                isReady={gameInfo?.player2_ready} 
+                rating={playerTwo?.[ratingProperty]} 
+            />
         </Box>
     );
 }

@@ -12,17 +12,12 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [player_two, setPlayerTwo] = useState(null);
     const [gameState, setGameState] = useState(null);
     const [connectedPlayers, setConnectedPlayers] = useState([]);
-    const [readyPlayers, setReadyPlayers] = useState([]);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         console.log('connectedPlayers updated:', connectedPlayers);
     }, [connectedPlayers]);
-
-    useEffect(() => {
-        console.log('readyPlayers updated:', readyPlayers);
-    }, [readyPlayers]);
 
     const getGameInfo = async () => {
         try {
@@ -80,16 +75,9 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         switch (messageData.type) {
             case "GAME_JOINED":
                 console.log("Switch case: GAME_JOINED");
-                console.log("messageData: ", messageData);
-                console.log("readyPlayers: ", readyPlayers);
                 const newPlayerWallet = messageData.player;
                 const hasJoined = newPlayerWallet === userInfo.wallet_address;
                 setHasPlayerJoined(hasJoined);
-                setReadyPlayers(prev => {
-                    const newReadyPlayers = [...prev, messageData.userId];
-                    console.log("newReadyPlayers: ", newReadyPlayers);
-                    return newReadyPlayers;
-                });
                 break;
             case "GAME_PRIMED":
                 console.log("Switch case: GAME_PRIMED");
@@ -144,8 +132,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         player_one,
         player_two,
         gameState,
-        connectedPlayers,
-        readyPlayers
+        connectedPlayers
     };
 };
 
