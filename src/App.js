@@ -1,11 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from './components';
-import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks
-import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
+import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
+import { EthereumPriceProvider } from './contexts/EthereumPriceContext';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import createAppTheme from './theme/createAppTheme'; // Moved theme creation logic
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 
@@ -37,6 +39,7 @@ function App() {
           <div className="app-container">
             <NavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
           </div>
+          <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
         </EthereumPriceProvider>
       </ThemeProvider>
     </Router>
