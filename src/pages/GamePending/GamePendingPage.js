@@ -30,11 +30,12 @@ const GamePendingPage = ({ userInfo }) => {
         setGameInfo,
         contractAddress,
         contractBalance,
-        getGameInfo,
         player_one,
         player_two,
+        getGameInfo,
         gameState,
-    } = useGamePendingWebsocket(gameId, userInfo, setSnackbarOpen, setSnackbarMessage);
+        connectedPlayers
+    } = UseGamePendingWebsocket(gameId, userInfo);
 
     useEffect(() => {
         getGameInfo();
