@@ -5,7 +5,7 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import './MatchUpPodium.css';
 
-const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedPlayers }) => {
+const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedPlayers, readyPlayers }) => {
     const isPlayerOneJoined = gameInfo?.player1_ready;
     const isPlayerTwoJoined = gameInfo?.player2_ready;
     const theme = useTheme();
@@ -22,9 +22,10 @@ const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedP
 
     const ratingProperty = getRatingPropertyName(timeControl);
 
-    const PlayerCard = ({ player, isReady, rating }) => {
+    const PlayerCard = ({ player, rating }) => {
         const isConnected = connectedPlayers.includes(player?.user_id);
-        console.log(`Player ${player?.user_id} connected:`, isConnected); // Add this log
+        const isReady = readyPlayers.includes(player?.user_id);
+        console.log(`Player ${player?.user_id} connected:`, isConnected, 'ready:', isReady);
 
         return (
             <Box className="player-card" sx={playerCardStyle(theme)}>

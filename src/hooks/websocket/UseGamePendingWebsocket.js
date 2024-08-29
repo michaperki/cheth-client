@@ -12,6 +12,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [player_two, setPlayerTwo] = useState(null);
     const [gameState, setGameState] = useState(null);
     const [connectedPlayers, setConnectedPlayers] = useState([]);
+    const [readyPlayers, setReadyPlayers] = useState([]);
 
     const navigate = useNavigate();
 
@@ -78,6 +79,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 const newPlayerWallet = messageData.player;
                 const hasJoined = newPlayerWallet === userInfo.wallet_address;
                 setHasPlayerJoined(hasJoined);
+                setReadyPlayers(prev => [...prev, messageData.userId]);
                 break;
             case "GAME_PRIMED":
                 console.log("Switch case: GAME_PRIMED");
@@ -132,7 +134,8 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         player_one,
         player_two,
         gameState,
-        connectedPlayers
+        connectedPlayers,
+        readyPlayers
     };
 };
 
