@@ -39,6 +39,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
+      setSearchingForOpponent(false);
     }
   };
 
