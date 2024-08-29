@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
+import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
 import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
-import { toast } from 'react-toastify';
 
 const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
     const [timeControl, setTimeControl] = useState('60');
@@ -54,6 +54,8 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
             // Handle success response
         } catch (error) {
             console.error('Error:', error);
+            toast.error('Failed to start the game. Please try again.'); // Error toast notification
+            setSearchingForOpponent(false);
         }
     };
 
