@@ -1,76 +1,61 @@
 import React from 'react';
-import { Box, Typography, Chip } from '@mui/material';
+import { Box, Typography, Chip, Avatar } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports'; // Icon for "Versus"
-import './MatchUpPodium.css'; // Import the CSS file
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import './MatchUpPodium.css';
 
 const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl }) => {
     const isPlayerOneJoined = gameInfo?.player1_ready;
     const isPlayerTwoJoined = gameInfo?.player2_ready;
-    const theme = useTheme(); // Get the current theme
+    const theme = useTheme();
 
-    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg'; // Adjust the path to duck.svg as needed
+    const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
 
-    // Function to get the correct rating property name based on time control
     const getRatingPropertyName = (timeControlValue) => {
         switch (timeControlValue) {
             case '60': return 'bullet_rating';
-            case '180': return 'blitz_rating';
-            case '300': return 'blitz_rating';
-            default: return 'blitz_rating'; // default or any other time control
+            case '180': case '300': return 'blitz_rating';
+            default: return 'blitz_rating';
         }
     };
 
-    // Get the property name for the current time control
     const ratingProperty = getRatingPropertyName(timeControl);
-    const playerOneRating = playerOne?.[ratingProperty] || 'N/A';
-    const playerTwoRating = playerTwo?.[ratingProperty] || 'N/A';
+
+    const PlayerCard = ({ player, isJoined, rating }) => (
+        <Box className="player-card" sx={playerCardStyle(theme)}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', mb: 1 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{player?.username}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <FiberManualRecordIcon sx={{ color: isJoined ? 'green' : 'grey', mr: 1, fontSize: 'small' }} />
+                    {isJoined && <Chip label="Ready" color="success" size="small" />}
+                </Box>
+            </Box>
+            <Avatar src={getAvatarSrc(player?.avatar)} alt={`${player?.username}'s avatar`} sx={{ width: 100, height: 100, mb: 1 }} />
+            <Typography variant="body2">Rating: {rating}</Typography>
+        </Box>
+    );
 
     return (
         <Box className='matchup-podium-container'>
-            {/* Player One */}
-            <Box className={`player-box ${isPlayerOneJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerOneJoined, theme)}>
-                <img src={getAvatarSrc(playerOne?.avatar)} alt={`${playerOne?.username}'s avatar`} className="player-avatar" />
-                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerOne?.username}</Typography>
-                <Typography className="rating" variant="body2">Rating: {playerOneRating}</Typography>
-                {isPlayerOneJoined && <Chip label="Ready!" color="success" />}
-            </Box>
-
-            {/* Versus Icon */}
+            <PlayerCard player={playerOne} isJoined={isPlayerOneJoined} rating={playerOne?.[ratingProperty]} />
             <SportsEsportsIcon sx={{ fontSize: 40, mx: 2, color: theme.palette.secondary.main }} />
-
-            {/* Player Two */}
-            <Box className={`player-box ${isPlayerTwoJoined ? 'ready' : ''}`} sx={playerBoxStyle(isPlayerTwoJoined, theme)}>
-                <img src={getAvatarSrc(playerTwo?.avatar)} alt={`${playerTwo?.username}'s avatar`} className="player-avatar" />
-                <Typography className="username" variant="subtitle1" sx={{ color: theme.palette.text.primary }}>{playerTwo?.username}</Typography>
-                <Typography className="rating" variant="body2">Rating: {playerTwoRating}</Typography>
-                {isPlayerTwoJoined && <Chip label="Ready!" color="success" />}
-            </Box>
+            <PlayerCard player={playerTwo} isJoined={isPlayerTwoJoined} rating={playerTwo?.[ratingProperty]} />
         </Box>
     );
 }
 
-// Helper function for styling player boxes
-const playerBoxStyle = (isJoined, theme) => ({
-    boxShadow: theme.palette.mode === 'dark' ? '0px 2px 5px rgba(255, 255, 255, 0.2)' : '0px 2px 5px rgba(0, 0, 0, 0.2)',
-    borderRadius: theme.shape.borderRadius,
-    padding: theme.spacing(2),
-    background: isJoined ? theme.palette.success.main : theme.palette.background.paper,
-    color: isJoined ? theme.palette.common.white : theme.palette.text.primary,
+const playerCardStyle = (theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    mx: 1,
+    padding: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[3],
+    backgroundColor: theme.palette.background.paper,
     width: 200,
-    '& .player-avatar': {
-        width: 150,
-        height: 150,
-        mb: 1,
-        borderRadius: '50%',
-        border: `3px solid ${theme.palette.primary.main}`,
-        backgroundColor: theme.palette.mode === 'dark' ? '#f5f5f5' : '#424242', // Light gray for dark mode, dark for light mode
-    }
+    height: 220,
+    position: 'relative',
 });
 
 export default MatchupPodium;
