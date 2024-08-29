@@ -1,4 +1,3 @@
-/* Matchup Podium Container */
 .matchup-podium-container {
     display: flex;
     align-items: center;
@@ -7,61 +6,11 @@
     margin-top: 20px;
 }
 
-/* Player Container */
-.player-container {
-    width: 210px; /* Adjust width to accommodate the scale */
-    display: flex;
-    justify-content: center;
-    margin-right: 10px;
+.player-card {
+    transition: all 0.3s ease;
 }
 
-/* Player Box */
-.player-box {
-    border: 1px solid;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    opacity: 0.9; /* Slightly transparent when not ready */
-    transform: scale(1); /* Default scale */
-    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.3s, opacity 0.3s; /* Include all transitioning properties */
-}
-
-/* Player Box when Ready */
-.player-box.ready {
-    background-color: #4caf50; /* Green */
-    border-color: #4caf50; /* Green */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Stronger shadow when ready */
-    transform: scale(1.05); /* Slightly larger when ready */
-    opacity: 1; /* Fully opaque when ready */
-}
-
-.player-box .username {
-    font-size: 1.1rem;
-    font-weight: bold;
-}
-
-.player-box.light .username {
-    color: #000; /* Black */
-}
-
-.player-box.dark .username {
-    color: #fff; /* White */
-}
-
-.player-box .rating {
-    font-size: 0.9rem;
-}
-
-.versus-text {
-    margin: 10px;
-}
-
-.player-2 {
-    margin-left: 10px;
-}
-
-.player-avatar {
-    width: 150px;
-    height: 150px;
-    margin-right: 10px;
+.player-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
