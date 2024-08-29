@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGameDetails, useGameActions } from '../hooks';
 import { GameInterface, GameActionsBar, GameSnackbar } from '../components/game';
-import GameCompleteScreen from '../components/GameCompleteScreen';
+import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 
