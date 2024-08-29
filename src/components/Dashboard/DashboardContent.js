@@ -7,7 +7,7 @@ import RatingsDisplay from './RatingsDisplay';
 import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
 
-const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbarMessage }) => {
+const DashboardContent = ({ userInfo, ethToUsdRate }) => {
     const [timeControl, setTimeControl] = useState('60');
     const [wagerSize, setWagerSize] = useState('5');
 
@@ -23,6 +23,13 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
         { label: '$20', value: '20' },
     ];
 
+    const {
+        searchingForOpponent,
+        opponentFound,
+        setSearchingForOpponent,
+        cancelSearch
+    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
+
     const playGame = async () => {
         try {
             if (!userInfo) {
@@ -31,8 +38,7 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
             }
 
             console.log('Playing game for user:', userInfo.user_id);
-            setSearchingForOpponent(true); // Use the state updater function
-            toast.info("Searching for an opponent...", { autoClose: 3000 });
+            setSearchingForOpponent(true);
 
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
                 method: 'POST',
@@ -53,17 +59,10 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
             // Handle success response
         } catch (error) {
             console.error('Error:', error);
-            toast.error('Failed to start the game. Please try again.'); // Error toast notification
+            toast.error('Failed to start the game. Please try again.');
             setSearchingForOpponent(false);
         }
     };
-
-    const {
-        searchingForOpponent,
-        opponentFound,
-        setSearchingForOpponent,
-        cancelSearch // Destructure the cancelSearch function from the custom hook
-    } = useDashboardWebsocket({ ethToUsdRate, userInfo, setSnackbarOpen, setSnackbarMessage });
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
@@ -87,4 +86,3 @@ const DashboardContent = ({ userInfo, ethToUsdRate, setSnackbarOpen, setSnackbar
 };
 
 export default DashboardContent;
-
