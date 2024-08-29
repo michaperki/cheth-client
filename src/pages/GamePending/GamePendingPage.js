@@ -37,6 +37,9 @@ const GamePendingPage = ({ userInfo }) => {
         connectedPlayers,
     } = useGamePendingWebsocket(gameId, userInfo);
 
+    console.log("connectedPlayers");
+    console.log(connectedPlayers);
+
     useEffect(() => {
         getGameInfo();
     }, [getGameInfo]);

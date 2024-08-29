@@ -80,9 +80,11 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 navigate(`/game/${gameId}`);
                 break;
             case "PLAYER_CONNECTED":
+                console.log("Player connected...");
                 setConnectedPlayers(prev => [...prev, messageData.userId]);
                 break;
             case "PLAYER_DISCONNECTED":
+                console.log("Player disconnected...");
                 setConnectedPlayers(prev => prev.filter(id => id !== messageData.userId));
                 break;
             default:
