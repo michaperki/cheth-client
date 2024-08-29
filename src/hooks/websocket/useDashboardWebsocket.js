@@ -23,6 +23,8 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
 
     if (messageData.type === "CONTRACT_READY") {
       console.log('Game contract ready:', messageData);
+      clearSearchTimeout();
+      setSearchingForOpponent(false);
       navigate(`/game-pending/${messageData.gameId}`);
     }
 
@@ -39,7 +41,6 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
-      setSearchingForOpponent(false);
     }
   };
 
@@ -74,7 +75,7 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     }
 
     setSearchingForOpponent(false);
-    toast.info('Search cancelled.');
+    // Removed the toast notification for cancelling search
   };
 
   return {
