@@ -29,10 +29,6 @@ const useGameWebsocket = (gameId, userInfo) => {
             case "GAME_UPDATED":
                 handleFetchGameInfo();
                 break;
-            case "GAME_STATE_UPDATED":
-                console.log('GAME_STATE_UPDATED:', data);
-                handleFetchGameInfo();
-                break;
             case "REMATCH_REQUESTED":
                 setRematchRequested(true);
                 setRematchRequestedBy(data.from);
