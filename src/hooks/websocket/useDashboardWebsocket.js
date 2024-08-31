@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import useWebSocket from "./useWebsocket";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
@@ -10,45 +10,43 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
   const navigate = useNavigate();
   const timeoutIdRef = useRef(null);
 
-  const handleDashboardPageWebSocketMessage = useCallback((message) => {
+  const handleDashboardPageWebSocketMessage = (message) => {
     console.log("Received message in DashboardPage:", message);
     const messageData = JSON.parse(message);
     console.log("messageData", messageData);
 
-    switch (messageData.type) {
-      case "START_GAME":
-        console.log("Game started:", messageData);
-        setOpponentFound(true);
-        clearSearchTimeout();
-        break;
-      case "CONTRACT_READY":
-        console.log("Game contract ready:", messageData);
-        clearSearchTimeout();
-        setSearchingForOpponent(false);
-        navigate(`/game-pending/${messageData.gameId}`);
-        break;
-      case "FUNDS_TRANSFERRED":
-        const transferredInEth = Web3.utils.fromWei(messageData.amount, "ether");
-        const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-        toast.success(`You received $${transferredInUsd}.`);
-        break;
-      default:
-        break;
+    if (messageData.type === "START_GAME") {
+      console.log("Game started:", messageData);
+      setOpponentFound(true);
+      clearSearchTimeout();
     }
-  }, [ethToUsdRate, navigate]);
 
-  const { socket, onlineUsersCount, connectedPlayers } = useWebSocket(
+    if (messageData.type === "CONTRACT_READY") {
+      console.log("Game contract ready:", messageData);
+      clearSearchTimeout();
+      setSearchingForOpponent(false);
+      navigate(`/game-pending/${messageData.gameId}`);
+    }
+
+    if (messageData.type === "FUNDS_TRANSFERRED") {
+      const transferredInEth = Web3.utils.fromWei(messageData.amount, "ether");
+      const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+      toast.success(`You received $${transferredInUsd}.`);
+    }
+  };
+
+  const { socket, onlineUsersCount } = useWebSocket(
     handleDashboardPageWebSocketMessage,
     userInfo?.user_id,
-    ["ONLINE_USERS_COUNT", "CONNECTED_PLAYERS", "PLAYER_STATUS_UPDATE"],
+    ["ONLINE_USERS_COUNT"],
   );
 
-  const clearSearchTimeout = useCallback(() => {
+  const clearSearchTimeout = () => {
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (searchingForOpponent && socket) {
@@ -72,9 +70,9 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     }
 
     return () => clearSearchTimeout();
-  }, [searchingForOpponent, socket, userInfo, clearSearchTimeout]);
+  }, [searchingForOpponent, socket, userInfo]);
 
-  const cancelSearch = useCallback(() => {
+  const cancelSearch = () => {
     console.log("Cancel search initiated");
     clearSearchTimeout();
 
@@ -88,15 +86,14 @@ const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
     }
 
     setSearchingForOpponent(false);
-  }, [socket, userInfo, clearSearchTimeout]);
+    // Removed the toast notification for cancelling search
+  };
 
   return {
     searchingForOpponent,
     opponentFound,
     setSearchingForOpponent,
     cancelSearch,
-    onlineUsersCount,
-    connectedPlayers,
   };
 };
 
