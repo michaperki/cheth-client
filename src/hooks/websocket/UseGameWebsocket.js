@@ -9,6 +9,10 @@ const useGameWebsocket = (gameId, userInfo) => {
     const [winner, setWinner] = useState('');
     const [winnerPaid, setWinnerPaid] = useState(false);
     const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '' });
+    const [rematchRequested, setRematchRequested] = useState(false);
+    const [rematchRequestedBy, setRematchRequestedBy] = useState(null);
+    const [rematchWagerSize, setRematchWagerSize] = useState(null);
+    const [rematchTimeControl, setRematchTimeControl] = useState(null);
 
     const handleWebSocketMessage = useCallback((message) => {
         const data = JSON.parse(message);
@@ -27,10 +31,20 @@ const useGameWebsocket = (gameId, userInfo) => {
                 // Trigger a re-fetch of game info when the game state is updated
                 handleFetchGameInfo();
                 break;
+            case "REMATCH_REQUESTED":
+                setRematchRequested(true);
+                setRematchRequestedBy(data.from);
+                setRematchWagerSize(data.wagerSize);
+                setRematchTimeControl(data.timeControl);
+                setSnackbarInfo({
+                    open: true,
+                    message: `Rematch requested by ${data.from === userInfo.user_id ? 'you' : 'opponent'}`
+                });
+                break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, []);
+    }, [userInfo.user_id]);
 
     const { socket, connectedPlayers } = useWebSocket(
         handleWebSocketMessage,
@@ -133,7 +147,17 @@ const useGameWebsocket = (gameId, userInfo) => {
         snackbarInfo,
         setSnackbarInfo: (message) => setSnackbarInfo({ open: true, message }),
         handleCloseSnackbar,
-        connectedPlayers
+        connectedPlayers,
+        rematchRequested,
+        rematchRequestedBy,
+        rematchWagerSize,
+        rematchTimeControl,
+        resetRematchState: () => {
+            setRematchRequested(false);
+            setRematchRequestedBy(null);
+            setRematchWagerSize(null);
+            setRematchTimeControl(null);
+        }
     };
 };
 
