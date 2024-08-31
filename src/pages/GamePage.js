@@ -41,14 +41,18 @@ const GamePage = ({ userInfo }) => {
     } = useGameActions(gameId, userInfo, handleFetchGameInfo, gameInfo?.lichess_id);
 
     useEffect(() => {
-        handleFetchGameInfo();
-    }, [handleFetchGameInfo]);
+        if (gameId) {
+            handleFetchGameInfo();
+        }
+    }, [gameId, handleFetchGameInfo]);
 
     console.log("game info", gameInfo);
 
     const isGameComplete = gameInfo && gameInfo.state === "5";
 
     const renderRematchUI = () => {
+        if (!userInfo) return null;
+
         if (rematchRequested && rematchRequestedBy !== userInfo.user_id) {
             return (
                 <Box mt={2}>
@@ -74,6 +78,10 @@ const GamePage = ({ userInfo }) => {
         }
         return null;
     };
+
+    if (!userInfo) {
+        return <Typography>Loading user information...</Typography>;
+    }
 
     return (
         <div className={`game-page-container bg-${theme.palette.mode}`}>

@@ -24,11 +24,9 @@ const useGameWebsocket = (gameId, userInfo) => {
                 break;
             case "PLAYER_CONNECTED":
             case "PLAYER_DISCONNECTED":
-                // Trigger a re-fetch of game info when players connect/disconnect
                 handleFetchGameInfo();
                 break;
             case "GAME_UPDATED":
-                // Trigger a re-fetch of game info when the game state is updated
                 handleFetchGameInfo();
                 break;
             case "REMATCH_REQUESTED":
@@ -38,13 +36,13 @@ const useGameWebsocket = (gameId, userInfo) => {
                 setRematchTimeControl(data.timeControl);
                 setSnackbarInfo({
                     open: true,
-                    message: `Rematch requested by ${data.from === userInfo.user_id ? 'you' : 'opponent'}`
+                    message: `Rematch requested by ${data.from === userInfo?.user_id ? 'you' : 'opponent'}`
                 });
                 break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, [userInfo.user_id]);
+    }, [userInfo]);
 
     const { socket, connectedPlayers } = useWebSocket(
         handleWebSocketMessage,
@@ -69,9 +67,6 @@ const useGameWebsocket = (gameId, userInfo) => {
                 handleFetchPlayerInfo(data.player2_id, setPlayerTwo);
             }
 
-            console.log("Game data in useGameWebsocket hook:", data);
-
-            // Check if the game is over
             if (data.state === "5") {
                 setGameOver(true);
                 setWinner(data.winner ? await getWinnerUsername(data.winner) : 'Draw');
@@ -127,14 +122,12 @@ const useGameWebsocket = (gameId, userInfo) => {
     };
 
     useEffect(() => {
-        handleFetchGameInfo();
-
-        // Set up an interval to fetch game info every 30 seconds
-        const intervalId = setInterval(handleFetchGameInfo, 30000);
-
-        // Clear the interval when the component unmounts
-        return () => clearInterval(intervalId);
-    }, [handleFetchGameInfo]);
+        if (gameId) {
+            handleFetchGameInfo();
+            const intervalId = setInterval(handleFetchGameInfo, 30000);
+            return () => clearInterval(intervalId);
+        }
+    }, [gameId, handleFetchGameInfo]);
 
     return {
         gameInfo,
@@ -146,7 +139,7 @@ const useGameWebsocket = (gameId, userInfo) => {
         handleFetchGameInfo,
         snackbarInfo,
         setSnackbarInfo: (message) => setSnackbarInfo({ open: true, message }),
-        handleCloseSnackbar,
+        handleCloseSnackbar: () => setSnackbarInfo({ ...snackbarInfo, open: false }),
         connectedPlayers,
         rematchRequested,
         rematchRequestedBy,
