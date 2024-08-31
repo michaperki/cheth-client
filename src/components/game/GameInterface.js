@@ -5,7 +5,7 @@ import NumberDisplay from './NumberDisplay';
 import Web3 from 'web3';
 import "./GameInterface.css";
 
-const GameInterface = ({ gameInfo, playerOne, playerTwo, gameOver, winner, winnerPaid, onJoinGame, ethToUsdRate }) => {
+const GameInterface = ({ gameInfo, playerOne, playerTwo, gameOver, winner, winnerPaid, onJoinGame, ethToUsdRate, connectedPlayers }) => {
     return (
         <Box className="game-interface-container">
             <Typography variant="h3" className="game-title" >Game In-Progress</Typography>
@@ -17,6 +17,7 @@ const GameInterface = ({ gameInfo, playerOne, playerTwo, gameOver, winner, winne
                         playerTwo={playerTwo}
                         gameInfo={gameInfo}
                         timeControl={gameInfo.time_control} 
+                        connectedPlayers={connectedPlayers}
                     />
                     <NumberDisplay 
                         amount={Web3.utils.fromWei(gameInfo.reward_pool, 'ether') * ethToUsdRate}

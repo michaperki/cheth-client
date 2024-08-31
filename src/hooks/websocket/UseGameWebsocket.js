@@ -1,144 +1,110 @@
-import { useMemo, useState } from 'react';
-import useWebSocket from './useWebsocket';
-import { useNavigate } from 'react-router-dom';
-import Web3 from 'web3';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
+import { useState, useCallback, useEffect } from 'react';
 
-const UseGameWebsocket = (gameId, userInfo, setGameOver, setWinner, setWinnerPaid) => {
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
+const useGameWebsocket = (gameId, userInfo) => {
     const [gameInfo, setGameInfo] = useState(null);
-    const [contractAddress, setContractAddress] = useState(null);
-    const [ownerAddress, setOwnerAddress] = useState(null);
-    const [contractBalance, setContractBalance] = useState(0); // State variable for contract balance
-    const [player_one, setPlayerOne] = useState(null);
-    const [player_two, setPlayerTwo] = useState(null);
-    const [rematchRequested, setRematchRequested] = useState(false);
-    const [isCurrentUserRequestingRematch, setIsCurrentUserRequestingRematch] = useState(false);
+    const [playerOne, setPlayerOne] = useState(null);
+    const [playerTwo, setPlayerTwo] = useState(null);
+    const [gameOver, setGameOver] = useState(false);
+    const [winner, setWinner] = useState('');
+    const [winnerPaid, setWinnerPaid] = useState(false);
+    const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '' });
 
-    const ethToUsdRate = useEthereumPrice();
-    const navigate = useNavigate();
-    const getGameInfo = async () => {
+    const handleFetchGameInfo = useCallback(async () => {
         try {
-            console.log('Fetching game info inside UseGamePendingWebsocket...');
-            // game is available at /game/:gameId
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
-
             if (!response.ok) {
                 throw new Error('Failed to fetch game information');
             }
-            const gameData = await response.json();
-            console.log('Game data:', gameData);
-            setGameInfo(gameData);
+            const data = await response.json();
+            setGameInfo(data);
 
-            const player1Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player1_id}`, {
-                method: 'POST', // Send a POST request
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId: gameData.player1_id }) // Send user ID in the request body
-            });
-            
-            if (!player1Response.ok) {
-                throw new Error('Failed to fetch game information');
+            if (data.player1_id) {
+                handleFetchPlayerInfo(data.player1_id, setPlayerOne);
             }
 
-            const player1Data = await player1Response.json();
-            console.log('Player 1 data:', player1Data);
-            setPlayerOne(player1Data);
-
-            const player2Response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${gameData.player2_id}`, {
-                method: 'POST', // Send a POST request
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId: gameData.player2_id }) // Send user ID in the request body
-            });
-
-            if (!player2Response.ok) {
-                throw new Error('Failed to fetch game information');
+            if (data.player2_id) {
+                handleFetchPlayerInfo(data.player2_id, setPlayerTwo);
             }
 
-            const player2Data = await player2Response.json();
-            console.log('Player 2 data:', player2Data);
-            setPlayerTwo(player2Data);
+            console.log("data in useGameDetails hook");
+            console.log(data);
 
-            if (gameData && parseInt(gameData.state) === 2) {
-                console.log('Game is ready. Navigating to game page...');
-                console.log('Game contract address:', gameData.contract_address);
-                setContractAddress(gameData.contract_address);
-                setOwnerAddress(gameData.game_creator_address);
-                setContractBalance(gameData.reward_pool); // Update contract balance
+            // Check if the game is over
+            if (data.state === "5") {
+                setGameOver(true);
+                setWinner(data.winner ? await getWinnerUsername(data.winner) : 'Draw');
+                setWinnerPaid(true);
             }
 
-            if (gameData && parseInt(gameData.state) === 3) {
-                setContractAddress(gameData.contract_address);
-                setOwnerAddress(gameData.game_creator_address);
-                setContractBalance(gameData.reward_pool); // Update contract balance
-            }
         } catch (error) {
-            console.error('Error fetching game status:', error);
+            console.error('Error fetching game information:', error);
         }
-    };
+    }, [gameId]);
 
-    const handleGamePageWebSocketMessage = (message) => {
-        console.log('Received message in Game Websocket:', message);
-        const messageData = JSON.parse(message);
-        console.log('messageData', messageData);
-
-        // Handle FUNDS_TRANSFERRED message
-        if (messageData.type === "FUNDS_TRANSFERRED") {
-            // Convert transferred amount from wei to USD
-            // first convert the amount to ether
-            const transferredInEth = Web3.utils.fromWei(messageData.amount, 'ether');
-            const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-            console.log('Received funds:', transferredInEth, 'ETH');
-            console.log('Received funds:', transferredInUsd, 'USD');
-            // Show Snackbar notification
-            setSnackbarMessage(`You received $${transferredInUsd}.`);
-            setSnackbarOpen(true);
-            setWinnerPaid(true);
-        }
-        if (messageData.type === "GAME_OVER") {
-            console.log('Game over:', messageData);
-            setGameOver(true);
-            setWinner(messageData.winner);
-        }
-        if (messageData.type === "REMATCH_REQUESTED") {
-            console.log('Rematch requested:', messageData);
-            if (messageData.from === userInfo.user_id) {
-                setIsCurrentUserRequestingRematch(true);
+    const handleFetchPlayerInfo = useCallback(async (playerId, setPlayerInfo) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${playerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: playerId })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch player information');
             }
-            setRematchRequested(true);
+            const data = await response.json();
+            setPlayerInfo(data);
+        } catch (error) {
+            console.error('Error fetching player information:', error);
         }
-        if (messageData.type === "CONTRACT_READY") {
-            console.log('Game contract ready:', messageData);
-            // Implement logic to navigate to game page
-            navigate(`/game-pending/${messageData.gameId}`);
-          }
+    }, []);
+
+    const getWinnerUsername = async (winnerId) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${winnerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId: winnerId })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch winner information');
+            }
+            const data = await response.json();
+            return data.username;
+        } catch (error) {
+            console.error('Error fetching winner information:', error);
+            return 'Unknown';
+        }
     };
 
-    const socket = useWebSocket(handleGamePageWebSocketMessage, userInfo?.user_id, ['ONLINE_USERS_COUNT']);
+    const handleCloseSnackbar = () => {
+        setSnackbarInfo({ ...snackbarInfo, open: false });
+    };
 
-    // Memoize getGameInfo function
-    const memoizedGetGameInfo = useMemo(() => getGameInfo, []);
+    useEffect(() => {
+        handleFetchGameInfo();
+        // Set up an interval to fetch game info every 10 seconds
+        const intervalId = setInterval(handleFetchGameInfo, 10000);
+
+        // Clear the interval when the component unmounts
+        return () => clearInterval(intervalId);
+    }, [handleFetchGameInfo]);
 
     return {
         gameInfo,
-        contractAddress,
-        ownerAddress,
-        contractBalance,
-        player_one,
-        player_two,
-        memoizedGetGameInfo,
-        snackbarOpen,
-        snackbarMessage,
-        setSnackbarOpen,
-        rematchRequested,
-        setRematchRequested,
-        isCurrentUserRequestingRematch,
-        setIsCurrentUserRequestingRematch
+        playerOne,
+        playerTwo,
+        gameOver,
+        winner,
+        winnerPaid,
+        handleFetchGameInfo,
+        snackbarInfo,
+        setSnackbarInfo: (message) => setSnackbarInfo({ open: true, message }),
+        handleCloseSnackbar
     };
 };
 
-export default UseGameWebsocket;
+export default useGameWebsocket;

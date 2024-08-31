@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGameDetails, useGameActions } from '../hooks';
+import { useGameActions } from '../hooks';
+import { useGameWebsocket } from '../hooks/websocket';
 import { GameInterface, GameActionsBar, GameSnackbar } from '../components/game';
 import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
 import { useTheme } from '@mui/material/styles';
@@ -20,7 +21,8 @@ const GamePage = ({ userInfo }) => {
         winnerPaid,
         handleFetchGameInfo,
         snackbarInfo,
-    } = useGameDetails(gameId, userInfo);
+        connectedPlayers,
+    } = useGameWebsocket(gameId, userInfo);
 
     const {
         handleJoinGame,
@@ -63,6 +65,7 @@ const GamePage = ({ userInfo }) => {
                         winnerPaid={winnerPaid}
                         onJoinGame={handleJoinGame}
                         ethToUsdRate={ethToUsdRate}
+                        connectedPlayers={connectedPlayers}
                     />
                     <GameActionsBar
                         gameOver={gameOver}
