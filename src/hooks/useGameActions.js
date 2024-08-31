@@ -51,12 +51,12 @@ const useGameActions = (gameId, userInfo, handleFetchGameInfo, gameUrl) => {
     }
   };
 
-  const handleRematch = () => {
-    console.log("Rematching...");
+  const handleRematch = async () => {
+    console.log("Requesting rematch...");
     console.log("gameId", gameId);
     console.log("userId", userInfo.user_id);
     try {
-      const response = fetch(
+      const response = await fetch(
         `${process.env.REACT_APP_SERVER_BASE_URL}/game/requestRematch`,
         {
           method: "POST",
@@ -68,12 +68,15 @@ const useGameActions = (gameId, userInfo, handleFetchGameInfo, gameUrl) => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to rematch");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log("Rematch successful!");
+      const data = await response.json();
+      console.log("Rematch request successful:", data);
+      // You might want to update some state here to reflect that a rematch has been requested
     } catch (error) {
-      console.error("Error rematching:", error);
+      console.error("Error requesting rematch:", error);
+      // You might want to show an error message to the user here
     }
   };
 
