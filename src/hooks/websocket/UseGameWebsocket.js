@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import useWebSocket from './useWebsocket';
 
 const useGameWebsocket = (gameId, userInfo) => {
     const [gameInfo, setGameInfo] = useState(null);
@@ -8,6 +9,34 @@ const useGameWebsocket = (gameId, userInfo) => {
     const [winner, setWinner] = useState('');
     const [winnerPaid, setWinnerPaid] = useState(false);
     const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '' });
+
+    const handleWebSocketMessage = useCallback((message) => {
+        const data = JSON.parse(message);
+        console.log('Received WebSocket message:', data);
+        switch (data.type) {
+            case "GAME_OVER":
+                setGameOver(true);
+                setWinner(data.winner);
+                break;
+            case "PLAYER_CONNECTED":
+            case "PLAYER_DISCONNECTED":
+                // Trigger a re-fetch of game info when players connect/disconnect
+                handleFetchGameInfo();
+                break;
+            case "GAME_UPDATED":
+                // Trigger a re-fetch of game info when the game state is updated
+                handleFetchGameInfo();
+                break;
+            default:
+                console.log('Unhandled message type:', data.type);
+        }
+    }, []);
+
+    const { socket, connectedPlayers } = useWebSocket(
+        handleWebSocketMessage,
+        userInfo?.user_id,
+        ['ONLINE_USERS_COUNT']
+    );
 
     const handleFetchGameInfo = useCallback(async () => {
         try {
@@ -26,8 +55,7 @@ const useGameWebsocket = (gameId, userInfo) => {
                 handleFetchPlayerInfo(data.player2_id, setPlayerTwo);
             }
 
-            console.log("data in useGameDetails hook");
-            console.log(data);
+            console.log("Game data in useGameWebsocket hook:", data);
 
             // Check if the game is over
             if (data.state === "5") {
@@ -86,8 +114,9 @@ const useGameWebsocket = (gameId, userInfo) => {
 
     useEffect(() => {
         handleFetchGameInfo();
-        // Set up an interval to fetch game info every 10 seconds
-        const intervalId = setInterval(handleFetchGameInfo, 10000);
+
+        // Set up an interval to fetch game info every 30 seconds
+        const intervalId = setInterval(handleFetchGameInfo, 30000);
 
         // Clear the interval when the component unmounts
         return () => clearInterval(intervalId);
@@ -103,7 +132,8 @@ const useGameWebsocket = (gameId, userInfo) => {
         handleFetchGameInfo,
         snackbarInfo,
         setSnackbarInfo: (message) => setSnackbarInfo({ open: true, message }),
-        handleCloseSnackbar
+        handleCloseSnackbar,
+        connectedPlayers
     };
 };
 
