@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import useWebSocket from './useWebsocket';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,15 +11,9 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
     const [player_one, setPlayerOne] = useState(null);
     const [player_two, setPlayerTwo] = useState(null);
     const [gameState, setGameState] = useState(null);
-    const [connectedPlayers, setConnectedPlayers] = useState([]);
-
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log('connectedPlayers updated:', connectedPlayers);
-    }, [connectedPlayers]);
-
-    const getGameInfo = async () => {
+    const getGameInfo = useCallback(async () => {
         try {
             console.log('Fetching game info inside UseGamePendingWebsocket...');
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
@@ -65,9 +59,9 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         } catch (error) {
             console.error('Error fetching game status:', error);
         }
-    };
+    }, [gameId, navigate]);
 
-    const handleGamePendingPageWebSocketMessage = (message) => {
+    const handleGamePendingPageWebSocketMessage = useCallback((message) => {
         console.log('Received message in GamePendingWebsocket:', message);
         const messageData = JSON.parse(message);
         console.log('messageData', messageData);
@@ -83,43 +77,24 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 console.log("Switch case: GAME_PRIMED");
                 navigate(`/game/${gameId}`);
                 break;
-            case "PLAYER_CONNECTED":
-                console.log("Switch case: PLAYER_CONNECTED");
-                console.log("Current connectedPlayers:", connectedPlayers);
-                setConnectedPlayers(prev => {
-                    console.log("Updating connectedPlayers, previous state:", prev);
-                    const newState = [...prev, messageData.userId];
-                    console.log("New connectedPlayers state:", newState);
-                    return newState;
-                });
-                break;
-            case "PLAYER_DISCONNECTED":
-                console.log("Switch case: PLAYER_DISCONNECTED");
-                console.log("Current connectedPlayers:", connectedPlayers);
-                setConnectedPlayers(prev => {
-                    console.log("Updating connectedPlayers, previous state:", prev);
-                    const newState = prev.filter(id => id !== messageData.userId);
-                    console.log("New connectedPlayers state:", newState);
-                    return newState;
-                });
-                break;
             default:
                 console.log("Switch case: default");
                 break;
         }
 
         getGameInfo();
-    };
+    }, [gameId, userInfo, navigate, getGameInfo]);
 
-    const { socket } = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
-
-    // Memoize getGameInfo function
-    const memoizedGetGameInfo = useMemo(() => getGameInfo, [gameId]);
+    const { socket, connectedPlayers } = useWebSocket(
+        handleGamePendingPageWebSocketMessage, 
+        userInfo?.user_id, 
+        ['ONLINE_USERS_COUNT']
+    );
 
     // Initial fetch of game info
     useEffect(() => {
-        memoizedGetGameInfo();
-    }, [memoizedGetGameInfo]);
+        getGameInfo();
+    }, [getGameInfo]);
 
     return {
         hasPlayerJoined,
@@ -128,7 +103,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
         contractAddress,
         ownerAddress,
         contractBalance,
-        getGameInfo: memoizedGetGameInfo,
+        getGameInfo,
         player_one,
         player_two,
         gameState,
