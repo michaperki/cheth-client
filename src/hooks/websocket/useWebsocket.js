@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import Web3 from 'web3';
+import { toast } from 'react-toastify';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 
 const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 
-const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = [], setSnackbarOpen, setSnackbarMessage) => {
+const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsersCount, setOnlineUsersCount] = useState(0);
   const ethToUsdRate = useEthereumPrice();
 
-  const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userId}`; // Define the WEBSOCKET_URL inside the hook
+  const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userId}`;
 
   useEffect(() => {
     const ws = new WebSocket(WEBSOCKET_URL);
@@ -36,16 +37,13 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = [], se
       if (data.type === "FUNDS_TRANSFERRED") {
         console.log('Received FUNDS_TRANSFERRED message:', data);
         console.log('userId: ', userId);
-        // Convert transferred amount from wei to USD
-        // first convert the amount to ether
         if (data.userID === userId) {
           const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
           const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
           console.log('Received funds:', transferredInEth, 'ETH');
           console.log('Received funds:', transferredInUsd, 'USD');
-          // Show Snackbar notification
-          setSnackbarMessage(`You received $${transferredInUsd}.`);
-          setSnackbarOpen(true);
+          // Show toast notification
+          toast.success(`You received $${transferredInUsd}.`);
         }
       }
 
@@ -55,8 +53,6 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = [], se
       }
     };
 
-
-
     ws.onclose = () => {
       console.log('Disconnected from WebSocket');
     };
@@ -64,7 +60,7 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = [], se
     return () => {
       ws.close();
     };
-  }, [WEBSOCKET_URL]);
+  }, [WEBSOCKET_URL, userId, ethToUsdRate, handleWebSocketMessage, messageTypeFilter]);
 
   return {
     socket,

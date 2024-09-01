@@ -15,7 +15,6 @@ export { default as useCheckEligibility } from './useCheckEligibility';
 export { default as useSubmitUserInfo } from './useSubmitUserInfo';
 export { default as useGameStats } from './useGameStats';
 export { default as useSnackbar } from './useSnackbar';
-export { default as useGameDetails } from './useGameDetails'; 
 export { default as useGameActions } from './useGameActions';
 export { default as useToast } from './useToast';
 

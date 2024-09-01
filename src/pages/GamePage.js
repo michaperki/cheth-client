@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGameActions } from '../hooks';
 import { useGameWebsocket } from '../hooks/websocket';
-import { GameInterface, GameActionsBar, GameSnackbar } from '../components/game';
+import { GameInterface, GameActionsBar } from '../components/game';
 import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
@@ -21,7 +21,6 @@ const GamePage = ({ userInfo }) => {
         winner,
         winnerPaid,
         handleFetchGameInfo,
-        snackbarInfo,
         connectedPlayers,
         rematchRequested,
         rematchRequestedBy,
@@ -125,11 +124,6 @@ const GamePage = ({ userInfo }) => {
                     {renderRematchUI()}
                 </>
             )}
-            <GameSnackbar
-                open={snackbarInfo.open}
-                message={snackbarInfo.message}
-                onClose={snackbarInfo.handleClose}
-            />
         </div>
     );
 };

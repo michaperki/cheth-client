@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Chess from '../../abis/Chess.json';
-import { useTheme } from '@mui/material/styles'; // Import useTheme hook
-import { Typography, Snackbar } from '@mui/material'; // Import MUI components
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext'; // Import Ethereum price context
-import { useWallet, useGamePendingWebsocket, useSnackbar } from '../../hooks';
+import { useTheme } from '@mui/material/styles';
+import { Typography } from '@mui/material';
+import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
+import { useWallet, useGamePendingWebsocket } from '../../hooks';
 import Web3 from 'web3';
 import GamePendingContent from '../../components/GamePending';
 import './GamePendingPage.css';
+import { toast } from 'react-toastify';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
     const [contractInstance, setContractInstance] = useState(null);
-    const [joinedPlayers, setJoinedPlayers] = useState([]); // State variable to store joined players
-    const theme = useTheme(); // Get the current theme
+    const [joinedPlayers, setJoinedPlayers] = useState([]);
+    const theme = useTheme();
     const { walletAddress, connectAccount, connected, provider } = useWallet();
-    const ethToUsdRate = useEthereumPrice(); // Fetch Ethereum to USD exchange rate
-    const {
-        snackbarOpen,
-        snackbarMessage,
-        setSnackbarOpen,
-        setSnackbarMessage,
-        handleSnackbarClose
-    } = useSnackbar();
+    const ethToUsdRate = useEthereumPrice();
 
     const {
         hasPlayerJoined,
@@ -37,17 +31,13 @@ const GamePendingPage = ({ userInfo }) => {
         connectedPlayers,
     } = useGamePendingWebsocket(gameId, userInfo);
 
-    console.log("connectedPlayers");
-    console.log(connectedPlayers);
-
-    
+    console.log("connectedPlayers", connectedPlayers);
 
     useEffect(() => {
         getGameInfo();
     }, [getGameInfo]);
 
     useEffect(() => {
-        // Update joined players when game info changes
         if (gameInfo) {
             const updatedJoinedPlayers = [];
             if (gameInfo.player1_ready) {
@@ -90,8 +80,10 @@ const GamePendingPage = ({ userInfo }) => {
                 gas: 3000000,
             });
             setGameInfo(prev => ({ ...prev, transactionHash: tx.transactionHash }));
+            toast.success('Successfully joined the game!');
         } catch (error) {
             console.error('Error:', error);
+            toast.error('Failed to join the game. Please try again.');
         }
     }
 
@@ -104,8 +96,10 @@ const GamePendingPage = ({ userInfo }) => {
                 },
                 body: JSON.stringify({ gameId })
             });
+            toast.info('Game has been cancelled.');
         } catch (error) {
             console.error('Error:', error);
+            toast.error('Failed to cancel the game. Please try again.');
         }
     }
 
@@ -127,20 +121,8 @@ const GamePendingPage = ({ userInfo }) => {
             ) : (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>
             )}
-            <CustomSnackbar open={snackbarOpen} message={snackbarMessage} onClose={handleSnackbarClose} />
         </div>
     );
 };
-
-const CustomSnackbar = ({ open, message, onClose }) => (
-    <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        open={open}
-        autoHideDuration={1000}
-        onClose={onClose}
-        message={message}
-        className="snackbar"
-    />
-);
 
 export default GamePendingPage;

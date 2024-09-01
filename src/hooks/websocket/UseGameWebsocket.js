@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import useWebSocket from './useWebsocket';
 
 const useGameWebsocket = (gameId, userInfo) => {
@@ -8,7 +9,6 @@ const useGameWebsocket = (gameId, userInfo) => {
     const [gameOver, setGameOver] = useState(false);
     const [winner, setWinner] = useState('');
     const [winnerPaid, setWinnerPaid] = useState(false);
-    const [snackbarInfo, setSnackbarInfo] = useState({ open: false, message: '' });
     const [rematchRequested, setRematchRequested] = useState(false);
     const [rematchRequestedBy, setRematchRequestedBy] = useState(null);
     const [rematchWagerSize, setRematchWagerSize] = useState(null);
@@ -24,8 +24,6 @@ const useGameWebsocket = (gameId, userInfo) => {
                 break;
             case "PLAYER_CONNECTED":
             case "PLAYER_DISCONNECTED":
-                handleFetchGameInfo();
-                break;
             case "GAME_UPDATED":
                 handleFetchGameInfo();
                 break;
@@ -34,10 +32,7 @@ const useGameWebsocket = (gameId, userInfo) => {
                 setRematchRequestedBy(data.from);
                 setRematchWagerSize(data.wagerSize);
                 setRematchTimeControl(data.timeControl);
-                setSnackbarInfo({
-                    open: true,
-                    message: `Rematch requested by ${data.from === userInfo?.user_id ? 'you' : 'opponent'}`
-                });
+                toast.info(`Rematch requested by ${data.from === userInfo?.user_id ? 'you' : 'opponent'}`);
                 break;
             default:
                 console.log('Unhandled message type:', data.type);
@@ -75,6 +70,7 @@ const useGameWebsocket = (gameId, userInfo) => {
 
         } catch (error) {
             console.error('Error fetching game information:', error);
+            toast.error('Error fetching game information');
         }
     }, [gameId]);
 
@@ -94,6 +90,7 @@ const useGameWebsocket = (gameId, userInfo) => {
             setPlayerInfo(data);
         } catch (error) {
             console.error('Error fetching player information:', error);
+            toast.error('Error fetching player information');
         }
     }, []);
 
@@ -113,12 +110,9 @@ const useGameWebsocket = (gameId, userInfo) => {
             return data.username;
         } catch (error) {
             console.error('Error fetching winner information:', error);
+            toast.error('Error fetching winner information');
             return 'Unknown';
         }
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbarInfo({ ...snackbarInfo, open: false });
     };
 
     useEffect(() => {
@@ -137,9 +131,6 @@ const useGameWebsocket = (gameId, userInfo) => {
         winner,
         winnerPaid,
         handleFetchGameInfo,
-        snackbarInfo,
-        setSnackbarInfo: (message) => setSnackbarInfo({ open: true, message }),
-        handleCloseSnackbar: () => setSnackbarInfo({ ...snackbarInfo, open: false }),
         connectedPlayers,
         rematchRequested,
         rematchRequestedBy,

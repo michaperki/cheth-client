@@ -1,11 +1,9 @@
 import { useEffect, useCallback } from 'react';
 import getUser from '../services/userService';
 import { createErrorHandler } from '../utils/errorHandler';
-import useSnackbar from './useSnackbar';
 
 export const useFetchUser = (walletAddress, connectAccount, setUserInfo) => {
-  const { setSnackbarOpen, setSnackbarMessage } = useSnackbar();
-  const handleError = createErrorHandler(setSnackbarOpen, setSnackbarMessage);
+  const handleError = createErrorHandler();
 
   const fetchData = useCallback(async () => {
     if (!walletAddress) {
