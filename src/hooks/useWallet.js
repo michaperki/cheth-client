@@ -1,39 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSDK } from "@metamask/sdk-react";
+import { setWalletAddress } from '../store/slices/userSlice';
 
 const useWallet = () => {
-    const [walletAddress, setWalletAddress] = useState(null);
-
-    const { sdk, connected, provider, account } = useSDK();
+    const dispatch = useDispatch();
+    const walletAddress = useSelector((state) => state.user.walletAddress);
+    const { sdk, connected, provider } = useSDK();
     
-    useEffect(() => {
-        if (connected) {
-            setWalletAddress(account);
-        } else {
-            connectAccount();         
-        }
-    }, [connected, provider]);
-
-    const connectAccount = async () => {
+    const connectAccount = useCallback(async () => {
         console.log("Connecting account...");
         try {
             const accounts = await sdk?.connect();
             if (accounts && accounts.length > 0) {
                 const currentAccount = accounts[0];
                 console.log("Connected account:", currentAccount);
-                setWalletAddress(currentAccount);
+                dispatch(setWalletAddress(currentAccount));
+                return currentAccount;
             } else {
                 console.log("No accounts found. Please ensure MetaMask is unlocked and connected.");
+                return null;
             }
         } catch (err) {
             console.warn("Failed to connect:", err);
-            // Optionally handle this case in your UI, e.g., by showing an error message
+            return null;
         }
-    };
+    }, [sdk, dispatch]);
 
-    return { walletAddress, connectAccount, connected, provider, sdk };
+    return { walletAddress, connectAccount, connected, provider };
 }
 
 export default useWallet;
-
-

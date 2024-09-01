@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from './components';
 import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks';
@@ -10,14 +10,30 @@ import createAppTheme from './theme/createAppTheme';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import { setWalletAddress } from './store/slices/userSlice';
 
 function App() {
+  const dispatch = useDispatch();
   const { darkMode, toggleDarkMode } = useDarkMode();
-  const { walletAddress, connectAccount } = useWallet();
+  const { connectAccount } = useWallet();
   const userInfo = useSelector(state => state.user.userInfo);
+  const walletAddress = useSelector(state => state.user.walletAddress);
 
   // Use the refactored hook
-  useFetchUser(walletAddress, connectAccount);
+  useFetchUser();
+
+  useEffect(() => {
+    const initializeWallet = async () => {
+      if (!walletAddress) {
+        const address = await connectAccount();
+        if (address) {
+          dispatch(setWalletAddress(address));
+        }
+      }
+    };
+
+    initializeWallet();
+  }, [walletAddress, connectAccount, dispatch]);
 
   const theme = createAppTheme(darkMode);
   const isAdmin = userInfo && userInfo.user_role === 'admin';

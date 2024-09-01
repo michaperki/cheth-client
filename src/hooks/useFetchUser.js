@@ -1,16 +1,17 @@
 import { useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import getUser from '../services/userService';
 import { createErrorHandler } from '../utils/errorHandler';
 import { setUserInfo, clearUserInfo } from '../store/slices/userSlice';
 
-export const useFetchUser = (walletAddress, connectAccount) => {
+export const useFetchUser = () => {
   const dispatch = useDispatch();
   const handleError = createErrorHandler();
+  const walletAddress = useSelector(state => state.user.walletAddress);
 
   const fetchData = useCallback(async () => {
     if (!walletAddress) {
-      connectAccount();
+      dispatch(clearUserInfo());
       return;
     }
 
@@ -21,7 +22,7 @@ export const useFetchUser = (walletAddress, connectAccount) => {
       handleError(error, 'Error fetching user data');
       dispatch(clearUserInfo());
     }
-  }, [walletAddress, dispatch, connectAccount, handleError]);
+  }, [walletAddress, dispatch, handleError]);
 
   useEffect(() => {
     fetchData();
