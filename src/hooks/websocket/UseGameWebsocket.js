@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import useWebSocket from './useWebsocket';
 
 const useGameWebsocket = (gameId, userInfo) => {
@@ -13,6 +14,8 @@ const useGameWebsocket = (gameId, userInfo) => {
     const [rematchRequestedBy, setRematchRequestedBy] = useState(null);
     const [rematchWagerSize, setRematchWagerSize] = useState(null);
     const [rematchTimeControl, setRematchTimeControl] = useState(null);
+
+    const navigate = useNavigate();
 
     const handleWebSocketMessage = useCallback((message) => {
         const data = JSON.parse(message);
@@ -34,10 +37,19 @@ const useGameWebsocket = (gameId, userInfo) => {
                 setRematchTimeControl(data.timeControl);
                 toast.info(`Rematch requested by ${data.from === userInfo?.user_id ? 'you' : 'opponent'}`);
                 break;
+            case "CONTRACT_READY":
+                console.log("Game contract ready:", data);
+                navigate(`/game-pending/${data.gameId}`);
+                resetRematchState();
+                break;
+            case "REMATCH_ACCEPTED":
+                console.log("Rematch accepted:", data);
+                toast.success("Rematch accepted! Preparing new game...");
+                break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, [userInfo]);
+    }, [userInfo, navigate]);
 
     const { socket, connectedPlayers } = useWebSocket(
         handleWebSocketMessage,
@@ -115,6 +127,13 @@ const useGameWebsocket = (gameId, userInfo) => {
         }
     };
 
+    const resetRematchState = useCallback(() => {
+        setRematchRequested(false);
+        setRematchRequestedBy(null);
+        setRematchWagerSize(null);
+        setRematchTimeControl(null);
+    }, []);
+
     useEffect(() => {
         if (gameId) {
             handleFetchGameInfo();
@@ -136,12 +155,7 @@ const useGameWebsocket = (gameId, userInfo) => {
         rematchRequestedBy,
         rematchWagerSize,
         rematchTimeControl,
-        resetRematchState: () => {
-            setRematchRequested(false);
-            setRematchRequestedBy(null);
-            setRematchWagerSize(null);
-            setRematchTimeControl(null);
-        }
+        resetRematchState
     };
 };
 
