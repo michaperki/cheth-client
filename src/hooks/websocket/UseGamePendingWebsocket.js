@@ -83,18 +83,25 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 console.log("Switch case: GAME_PRIMED");
                 navigate(`/game/${gameId}`);
                 break;
-            case "PLAYER_CONNECTED":
-              console.log("Switch case: PLAYER_CONNECTED");
-              setConnectedPlayers(prev => [...new Set([...prev, messageData.userId])]);
-              break;
+ u           case "PLAYER_CONNECTED":
+                console.log("Switch case: PLAYER_CONNECTED");
+                console.log("Current connectedPlayers:", connectedPlayers);
+                setConnectedPlayers(prev => [...new Set([...prev, messageData.userId])]);
+                break;
             case "PLAYER_DISCONNECTED":
-              console.log("Switch case: PLAYER_DISCONNECTED");
-              setConnectedPlayers(prev => prev.filter(id => id !== messageData.userId));
-              break;
-            case "CONNECTED_PLAYERS":
-              console.log("Switch case: CONNECTED_PLAYERS");
-              setConnectedPlayers(messageData.players);
-              break;
+                console.log("Switch case: PLAYER_DISCONNECTED");
+                console.log("Current connectedPlayers:", connectedPlayers);
+                setConnectedPlayers(prev => {
+                    console.log("Updating connectedPlayers, previous state:", prev);
+                    const newState = prev.filter(id => id !== messageData.userId);
+                    console.log("New connectedPlayers state:", newState);
+                    return newState;
+                });
+                break;
+            case "PLAYER_STATUS_UPDATE":
+                console.log("Switch case: PLAYER_STATUS_UPDATE");
+                setConnectedPlayers(messageData.players);
+                break;
             default:
                 console.log("Switch case: default");
                 break;
