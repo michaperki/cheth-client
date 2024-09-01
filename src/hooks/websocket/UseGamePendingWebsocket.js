@@ -83,7 +83,7 @@ const UseGamePendingWebsocket = (gameId, userInfo) => {
                 console.log("Switch case: GAME_PRIMED");
                 navigate(`/game/${gameId}`);
                 break;
- u           case "PLAYER_CONNECTED":
+            case "PLAYER_CONNECTED":
                 console.log("Switch case: PLAYER_CONNECTED");
                 console.log("Current connectedPlayers:", connectedPlayers);
                 setConnectedPlayers(prev => [...new Set([...prev, messageData.userId])]);
