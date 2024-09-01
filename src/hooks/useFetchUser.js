@@ -8,10 +8,11 @@ export const useFetchUser = () => {
   const dispatch = useDispatch();
   const handleError = createErrorHandler();
   const walletAddress = useSelector(state => state.user.walletAddress);
+  const userInfo = useSelector(state => state.user.userInfo);
 
   const fetchData = useCallback(async () => {
     if (!walletAddress) {
-      dispatch(clearUserInfo());
+      if (userInfo) dispatch(clearUserInfo());
       return;
     }
 
@@ -22,11 +23,13 @@ export const useFetchUser = () => {
       handleError(error, 'Error fetching user data');
       dispatch(clearUserInfo());
     }
-  }, [walletAddress, dispatch, handleError]);
+  }, [walletAddress, dispatch, handleError, userInfo]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (walletAddress && !userInfo) {
+      fetchData();
+    }
+  }, [walletAddress, userInfo, fetchData]);
 
   return fetchData; // Return the fetchData function in case you need to manually trigger a refresh
 };
