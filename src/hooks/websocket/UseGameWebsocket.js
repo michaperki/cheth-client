@@ -46,6 +46,16 @@ const useGameWebsocket = (gameId, userInfo) => {
                 console.log("Rematch accepted:", data);
                 toast.success("Rematch accepted! Preparing new game...");
                 break;
+            case "REMATCH_REJECTED":
+                console.log("Rematch rejected:", data);
+                toast.error("Rematch rejected!");
+                resetRematchState();
+                break;
+            case "REMATCH_CANCELLED":
+                console.log("Rematch cancelled:", data);
+                toast.success("Rematch cancelled!");
+                resetRematchState();
+                break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
