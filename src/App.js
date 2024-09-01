@@ -1,33 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from './components';
-import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks'; // Import the useWebSocket and useWallet hooks import { EthereumPriceProvider } from './contexts/EthereumPriceContext'; // Import the EthereumPriceProvider
+import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks';
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import createAppTheme from './theme/createAppTheme'; // Moved theme creation logic
+import createAppTheme from './theme/createAppTheme';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-
 function App() {
-  const { darkMode, toggleDarkMode } = useDarkMode(); // Use the useDarkMode hook
-  const { walletAddress, connectAccount } = useWallet(); // Use the useWallet hook
-  const [userInfo, setUserInfo] = useState(null);
+  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { walletAddress, connectAccount } = useWallet();
+  const userInfo = useSelector(state => state.user.userInfo);
 
-  useFetchUser(walletAddress, connectAccount, setUserInfo);
+  // Use the refactored hook
+  useFetchUser(walletAddress, connectAccount);
 
-  // Create a theme object
   const theme = createAppTheme(darkMode);
-
   const isAdmin = userInfo && userInfo.user_role === 'admin';
 
   const handleWebSocketMessage = useCallback((message) => {
     console.log('Received message in App:', message);
   }, []);
 
-  // Use the useWebSocket hook to establish WebSocket connection
   const { onlineUsersCount } = useWebSocket(handleWebSocketMessage, userInfo?.userId, ['ONLINE_USERS_COUNT']);
 
   return (
