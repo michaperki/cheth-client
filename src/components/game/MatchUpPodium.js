@@ -1,12 +1,17 @@
+// src/components/game/MatchUpPodium.js
+
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Box, Typography, Chip, Avatar } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import './MatchUpPodium.css';
 
-const MatchupPodium = ({ playerOne, playerTwo, gameInfo, timeControl, connectedPlayers = [] }) => {
+const MatchupPodium = () => {
     const theme = useTheme();
+    const { playerOne, playerTwo, currentGame: gameInfo, connectedPlayers } = useSelector(state => state.game);
+    const timeControl = gameInfo?.time_control;
 
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
 

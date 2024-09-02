@@ -1,3 +1,5 @@
+// src/store/slices/gameSlice.js
+
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -12,6 +14,9 @@ const initialState = {
     timeControl: '180',
     wagerSize: '5',
   },
+  playerOne: null,
+  playerTwo: null,
+  connectedPlayers: [],
 };
 
 export const gameSlice = createSlice({
@@ -33,6 +38,15 @@ export const gameSlice = createSlice({
     setGameSettings: (state, action) => {
       state.gameSettings = { ...state.gameSettings, ...action.payload };
     },
+    setPlayerOne: (state, action) => {
+      state.playerOne = action.payload;
+    },
+    setPlayerTwo: (state, action) => {
+      state.playerTwo = action.payload;
+    },
+    setConnectedPlayers: (state, action) => {
+      state.connectedPlayers = action.payload;
+    },
   },
 });
 
@@ -42,6 +56,9 @@ export const {
   setGameStatus,
   setPlayerStatus,
   setGameSettings,
+  setPlayerOne,
+  setPlayerTwo,
+  setConnectedPlayers,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

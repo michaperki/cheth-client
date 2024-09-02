@@ -1,5 +1,8 @@
+// src/pages/GamePending/GamePendingPage.js
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Chess from '../../abis/Chess.json';
 import { useTheme } from '@mui/material/styles';
 import { Typography } from '@mui/material';
@@ -9,11 +12,13 @@ import Web3 from 'web3';
 import GamePendingContent from '../../components/GamePending';
 import './GamePendingPage.css';
 import { toast } from 'react-toastify';
+import { setPlayerOne, setPlayerTwo, setConnectedPlayers, setCurrentGame } from '../../store/slices/gameSlice';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
     const [contractInstance, setContractInstance] = useState(null);
     const [joinedPlayers, setJoinedPlayers] = useState([]);
+    const dispatch = useDispatch();
     const theme = useTheme();
     const { walletAddress, connectAccount, connected, provider } = useWallet();
     const ethToUsdRate = useEthereumPrice();
@@ -47,8 +52,16 @@ const GamePendingPage = ({ userInfo }) => {
                 updatedJoinedPlayers.push(gameInfo.player2_id);
             }
             setJoinedPlayers(updatedJoinedPlayers);
+            dispatch(setCurrentGame(gameInfo));
         }
-    }, [gameInfo]);
+        if (player_one) {
+            dispatch(setPlayerOne(player_one));
+        }
+        if (player_two) {
+            dispatch(setPlayerTwo(player_two));
+        }
+        dispatch(setConnectedPlayers(connectedPlayers));
+    }, [dispatch, gameInfo, player_one, player_two, connectedPlayers]);
 
     useEffect(() => {
         if (provider && contractAddress) {
@@ -109,14 +122,11 @@ const GamePendingPage = ({ userInfo }) => {
                 <GamePendingContent
                     gameInfo={gameInfo}
                     gameState={gameState}
-                    player_one={player_one}
-                    player_two={player_two}
                     contractBalance={contractBalance}
                     ethToUsdRate={ethToUsdRate}
                     hasPlayerJoined={hasPlayerJoined}
                     joinGame={joinGame}
                     cancelGame={cancelGame}
-                    connectedPlayers={connectedPlayers}
                 />
             ) : (
                 <Typography sx={{ mb: 2 }}>Game has been cancelled.</Typography>

@@ -1,3 +1,5 @@
+// src/components/game/NumberDisplay.js
+
 import React, { useState, useEffect } from 'react';
 import { Typography, Box, useTheme } from '@mui/material';
 import './NumberDisplay.css';

@@ -1,5 +1,8 @@
+// src/pages/GamePage.js
+
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { useGameActions } from '../hooks';
 import { useGameWebsocket } from '../hooks/websocket';
 import { GameInterface, GameActionsBar } from '../components/game';
@@ -7,9 +10,11 @@ import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import { Typography, Button, Box } from '@mui/material';
+import { setPlayerOne, setPlayerTwo, setConnectedPlayers, setCurrentGame } from '../store/slices/gameSlice';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
+    const dispatch = useDispatch();
     const theme = useTheme();
     const ethToUsdRate = useEthereumPrice();
 
@@ -44,6 +49,19 @@ const GamePage = ({ userInfo }) => {
             handleFetchGameInfo();
         }
     }, [gameId, handleFetchGameInfo]);
+
+    useEffect(() => {
+        if (gameInfo) {
+            dispatch(setCurrentGame(gameInfo));
+        }
+        if (playerOne) {
+            dispatch(setPlayerOne(playerOne));
+        }
+        if (playerTwo) {
+            dispatch(setPlayerTwo(playerTwo));
+        }
+        dispatch(setConnectedPlayers(connectedPlayers));
+    }, [dispatch, gameInfo, playerOne, playerTwo, connectedPlayers]);
 
     console.log("game info", gameInfo);
 
@@ -98,15 +116,11 @@ const GamePage = ({ userInfo }) => {
             ) : (
                 <>
                     <GameInterface
-                        gameInfo={gameInfo}
-                        playerOne={playerOne}
-                        playerTwo={playerTwo}
                         gameOver={gameOver}
                         winner={winner}
                         winnerPaid={winnerPaid}
                         onJoinGame={handleJoinGame}
                         ethToUsdRate={ethToUsdRate}
-                        connectedPlayers={connectedPlayers}
                     />
                     <GameActionsBar
                         gameOver={gameOver}
