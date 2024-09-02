@@ -1,10 +1,12 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, CircularProgress, Typography, Button } from '@mui/material';
+import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
 import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
+import { setGameSettings } from '../../store/slices/gameSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
@@ -16,10 +18,10 @@ const DashboardContent = () => {
     const ethToUsdRate = useEthereumPrice();
 
     const {
-        opponentFound,
-        cancelSearch,
         searchingForOpponent,
-        setSearchingForOpponent
+        opponentFound,
+        setSearchingForOpponent,
+        cancelSearch
     } = useDashboardWebsocket({ ethToUsdRate, userInfo });
 
     const timeControlOptions = [
@@ -35,10 +37,41 @@ const DashboardContent = () => {
     ];
 
     const playGame = useCallback(async () => {
-        dispatch(setIsSearching(true));
-        setSearchingForOpponent(true);
-        // The actual WebSocket communication is handled in the useDashboardWebsocket hook
-    }, [dispatch, setSearchingForOpponent]);
+        try {
+            if (!userInfo) {
+                console.error('User information not available.');
+                return;
+            }
+            console.log('Playing game for user:', userInfo.user_id);
+            setSearchingForOpponent(true);
+            dispatch(setIsSearching(true));
+
+            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userInfo.user_id,
+                    timeControl,
+                    wagerSize
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to play the game.');
+            }
+
+            // Handle success response
+            dispatch(setGameSettings({ timeControl, wagerSize }));
+            console.log('Redux game state updated');
+        } catch (error) {
+            console.error('Error:', error);
+            toast.error('Failed to start the game. Please try again.');
+            setSearchingForOpponent(false);
+            dispatch(setIsSearching(false));
+        }
+    }, [dispatch, setSearchingForOpponent, userInfo, timeControl, wagerSize]);
 
     const handleCancelSearch = useCallback(() => {
         cancelSearch();
@@ -71,6 +104,7 @@ const DashboardContent = () => {
             )}
             {searchingForOpponent && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <CircularProgress />
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
                         <Button onClick={handleCancelSearch} variant="contained" color="error">Cancel</Button>
