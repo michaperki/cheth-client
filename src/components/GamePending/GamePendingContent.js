@@ -1,36 +1,31 @@
+// src/components/GamePending/GamePendingContent.js
+
 import React from "react";
+import { useSelector } from "react-redux";
 import { Button, Typography, Box } from "@mui/material";
 import { NumberDisplay, MatchUpPodium } from "../game";
 import Web3 from "web3";
-import "./GamePendingContent.css"; // Import your CSS file
+import "./GamePendingContent.css";
 
 const GamePendingContent = ({
-  gameInfo,
-  player_one,
-  player_two,
-  contractBalance,
   ethToUsdRate,
   hasPlayerJoined,
   joinGame,
   cancelGame,
-  connectedPlayers,
 }) => {
+  const { currentGame: gameInfo, playerOne, playerTwo, connectedPlayers } = useSelector(state => state.game);
+  const contractBalance = gameInfo?.reward_pool || "0";
+
   return (
     <Box className="game-pending-content">
       <Typography variant="h3" className="game-pending-title">
         Game Pending
       </Typography>
-      <Typography className="game-id">Game ID: {gameInfo.game_id}</Typography>
+      <Typography className="game-id">Game ID: {gameInfo?.game_id}</Typography>
 
-      {player_one && player_two && gameInfo.time_control && (
+      {playerOne && playerTwo && gameInfo?.time_control && (
         <Box sx={{ marginBottom: 3 }}>
-          <MatchUpPodium
-            playerOne={player_one}
-            playerTwo={player_two}
-            gameInfo={gameInfo}
-            timeControl={gameInfo.time_control}
-            connectedPlayers={connectedPlayers}
-          />
+          <MatchUpPodium />
         </Box>
       )}
 
