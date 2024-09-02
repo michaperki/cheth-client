@@ -1,25 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
+import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
 import { setGameSettings } from '../../store/slices/gameSlice';
-import { setTimeControl, setWagerSize } from '../../store/slices/dashboardSlice';
 
-const DashboardContent = ({ 
-    userInfo, 
-    ethToUsdRate, 
-    searchingForOpponent, 
-    opponentFound, 
-    onSearchStart, 
-    onSearchCancel 
-}) => {
+const DashboardContent = ({ userInfo, ethToUsdRate }) => {
     const dispatch = useDispatch();
     const gameSettings = useSelector((state) => state.game.gameSettings);
-    const { timeControl, wagerSize } = useSelector((state) => state.dashboard);
+    const [timeControl, setTimeControl] = useState(gameSettings.timeControl);
+    const [wagerSize, setWagerSize] = useState(gameSettings.wagerSize);
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -33,13 +27,12 @@ const DashboardContent = ({
         { label: '$20', value: '20' },
     ];
 
-    const handleSetTimeControl = (value) => {
-        dispatch(setTimeControl(value));
-    };
-
-    const handleSetWagerSize = (value) => {
-        dispatch(setWagerSize(value));
-    };
+    const {
+        searchingForOpponent,
+        opponentFound,
+        setSearchingForOpponent,
+        cancelSearch
+    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
 
     const playGame = async () => {
         try {
@@ -49,7 +42,7 @@ const DashboardContent = ({
             }
 
             console.log('Playing game for user:', userInfo.user_id);
-            onSearchStart();
+            setSearchingForOpponent(true);
 
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
                 method: 'POST',
@@ -76,7 +69,7 @@ const DashboardContent = ({
         } catch (error) {
             console.error('Error:', error);
             toast.error('Failed to start the game. Please try again.');
-            onSearchCancel();
+            setSearchingForOpponent(false);
         }
     };
 
@@ -85,35 +78,15 @@ const DashboardContent = ({
     return (
         <Box className="dashboard-content">
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
-            <SwitchOptions 
-                label="Time Control" 
-                options={timeControlOptions} 
-                defaultValue="180" 
-                setSelectedValue={handleSetTimeControl} 
-            />
-            <SwitchOptions 
-                label="Wager Size" 
-                options={wagerSizeOptions} 
-                defaultValue="5" 
-                setSelectedValue={handleSetWagerSize} 
-            />
-            {!searchingForOpponent && (
-                <PlayGameButton 
-                    playGame={playGame} 
-                    amount={wagerSize} 
-                    ethereumAmount={wagerAmountInEth} 
-                />
-            )}
+            <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="180" setSelectedValue={setTimeControl} />
+            <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
+            {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} />}
             {searchingForOpponent && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <CircularProgress />
-                    <Typography>
-                        {opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}
-                    </Typography>
+                    <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
-                        <Button onClick={onSearchCancel} variant="contained" color="error">
-                            Cancel
-                        </Button>
+                        <Button onClick={cancelSearch} variant="contained" color="error">Cancel</Button>
                     )}
                 </Box>
             )}
