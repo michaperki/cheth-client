@@ -7,6 +7,7 @@ import RatingsDisplay from './RatingsDisplay';
 import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
+import "./DashboardContent.css";
 
 const DashboardContent = () => {
     const dispatch = useDispatch();
