@@ -1,13 +1,17 @@
+// src/hooks/websocket/useWebsocket.js
+
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import Web3 from 'web3';
 import { toast } from 'react-toastify';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
+import { setOnlineUsersCount } from '../../store/slices/onlineUsersSlice';
 
 const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 
 const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) => {
   const [socket, setSocket] = useState(null);
-  const [onlineUsersCount, setOnlineUsersCount] = useState(0);
+  const dispatch = useDispatch();
   const ethToUsdRate = useEthereumPrice();
 
   const handleWebSocketMessageRef = useRef(handleWebSocketMessage);
@@ -27,7 +31,7 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
 
     const data = JSON.parse(event.data);
     if (data.type === 'ONLINE_USERS_COUNT') {
-      setOnlineUsersCount(data.count);
+      dispatch(setOnlineUsersCount(data.count));
     }
 
     // Handle FUNDS_TRANSFERRED message
@@ -48,7 +52,7 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
     if (!messageTypeFilterRef.current.includes(data.type)) {
       handleWebSocketMessageRef.current(event.data);
     }
-  }, [ethToUsdRate]);
+  }, [ethToUsdRate, dispatch]);
 
   useEffect(() => {
     const ws = new WebSocket(WEBSOCKET_URL);
@@ -76,7 +80,6 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
 
   return {
     socket,
-    onlineUsersCount,
   };
 };
 

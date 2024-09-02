@@ -1,3 +1,5 @@
+// src/components/Sidebar/Sidebar.js
+
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import UserIcon from '@mui/icons-material/PeopleAlt';
@@ -46,7 +48,9 @@ const StatisticBubble = ({ value, label, icon }) => {
 const Sidebar = ({ usersOnline, gamesCreated, transactedAmount }) => {
   const formattedTransactedAmount = transactedAmount.toLocaleString('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 
   return (
