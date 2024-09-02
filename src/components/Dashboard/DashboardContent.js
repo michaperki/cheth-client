@@ -4,7 +4,7 @@ import { Box, Typography, Button } from '@mui/material';
 import { PlayGameButton, SwitchOptions, RatingsDisplay } from '../components/Dashboard';
 import { setTimeControl, setWagerSize, setIsSearching } from '../store/slices/gameSettingsSlice';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
-import { useDashboardWebsocket } from '../hooks';
+import { useDashboardWebsocket } from '../../hooks';
 
 const DashboardContent = () => {
     const dispatch = useDispatch();
