@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
-import { useDashboardWebsocket } from '../../hooks';
+import { setSearchingForOpponent, setOpponentFound } from '../../store/slices/gameSlice';
 import "./DashboardContent.css";
 
-const DashboardContent = ({ userInfo, ethToUsdRate }) => {
+const DashboardContent = ({ ethToUsdRate }) => {
+    const dispatch = useDispatch();
     const [timeControl, setTimeControl] = useState('60');
     const [wagerSize, setWagerSize] = useState('5');
+    const userInfo = useSelector(state => state.user.userInfo);
+    const { searchingForOpponent, opponentFound } = useSelector(state => state.game);
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -23,13 +27,6 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
         { label: '$20', value: '20' },
     ];
 
-    const {
-        searchingForOpponent,
-        opponentFound,
-        setSearchingForOpponent,
-        cancelSearch
-    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
-
     const playGame = async () => {
         try {
             if (!userInfo) {
@@ -38,7 +35,7 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
             }
 
             console.log('Playing game for user:', userInfo.user_id);
-            setSearchingForOpponent(true);
+            dispatch(setSearchingForOpponent(true));
 
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
                 method: 'POST',
@@ -60,7 +57,18 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
         } catch (error) {
             console.error('Error:', error);
             toast.error('Failed to start the game. Please try again.');
-            setSearchingForOpponent(false);
+            dispatch(setSearchingForOpponent(false));
+        }
+    };
+
+    const cancelSearch = async () => {
+        try {
+            // Add logic to cancel the search
+            dispatch(setSearchingForOpponent(false));
+            dispatch(setOpponentFound(false));
+        } catch (error) {
+            console.error('Error cancelling search:', error);
+            toast.error('Failed to cancel the search. Please try again.');
         }
     };
 
