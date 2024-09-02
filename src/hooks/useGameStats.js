@@ -1,59 +1,65 @@
-import { useState, useCallback } from 'react';
+// src/store/slices/gameStatsSlice.js
 
-const useGameStats = (ethToUsdRate) => {
-    const [gameCount, setGameCount] = useState(0);
-    const [totalWageredInUsd, setTotalWageredInUsd] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import Web3 from 'web3';
 
-    const fetchGameStats = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            await fetchGameCount();
-            await fetchTotalWagered();
-        } catch (error) {
-            console.error('Error fetching game stats:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [ethToUsdRate]);
+export const fetchGameStats = createAsyncThunk(
+  'gameStats/fetchStats',
+  async (_, { getState }) => {
+    const [gamesResponse, wageredResponse] = await Promise.all([
+      fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGameCount`),
+      fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getTotalWagered`)
+    ]);
+    
+    if (!gamesResponse.ok || !wageredResponse.ok) {
+      throw new Error('Failed to fetch game statistics');
+    }
+    
+    const gamesData = await gamesResponse.json();
+    const wageredData = await wageredResponse.json();
+    
+    // Convert wei to ETH
+    const totalWageredInEth = Web3.utils.fromWei(wageredData.totalWagered.toString(), 'ether');
+    
+    // Convert ETH to USD
+    const state = getState();
+    const ethToUsdRate = state.ethereumPrice.price;
+    const totalWageredInUsd = parseFloat(totalWageredInEth) * ethToUsdRate;
 
-    const fetchGameCount = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getGameCount`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch game count');
-            }
-
-            const data = await response.json();
-            setGameCount(data.count);
-        } catch (error) {
-            console.error('Error fetching game count:', error);
-            throw error;
-        }
+    return {
+      totalGames: gamesData.count,
+      totalWageredInEth: parseFloat(totalWageredInEth),
+      totalWageredInUsd: totalWageredInUsd
     };
+  }
+);
 
-    const fetchTotalWagered = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/getTotalWagered`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch total wagered amount');
-            }
+const gameStatsSlice = createSlice({
+  name: 'gameStats',
+  initialState: {
+    totalGames: 0,
+    totalWageredInEth: 0,
+    totalWageredInUsd: 0,
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchGameStats.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchGameStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.totalGames = action.payload.totalGames;
+        state.totalWageredInEth = action.payload.totalWageredInEth;
+        state.totalWageredInUsd = action.payload.totalWageredInUsd;
+      })
+      .addCase(fetchGameStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
+  },
+});
 
-            const data = await response.json();
-            
-            const convertedWagered = convertWageredToUsd(data.totalWagered, ethToUsdRate);
-            setTotalWageredInUsd(convertedWagered);
-        } catch (error) {
-            console.error('Error:', error);
-            throw error;
-        }
-    };
-
-    const convertWageredToUsd = (wagered, rate) => {
-        return rate ? (wagered / 10 ** 18) * rate : 0;
-    };
-
-    return { gameCount, totalWageredInUsd, isLoading, fetchGameStats };
-};
-
-export default useGameStats;
+export default gameStatsSlice.reducer;
