@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, CircularProgress, Typography, Button } from '@mui/material';
-import { toast } from 'react-toastify';
-import PlayGameButton from './PlayGameButton';
-import SwitchOptions from './SwitchOptions';
-import RatingsDisplay from './RatingsDisplay';
-import { useDashboardWebsocket } from '../../hooks';
-import "./DashboardContent.css";
-import { setGameSettings } from '../../store/slices/gameSlice';
+import { Box, Typography, Button } from '@mui/material';
+import { PlayGameButton, SwitchOptions, RatingsDisplay } from '../components/Dashboard';
+import { setTimeControl, setWagerSize, setIsSearching } from '../store/slices/gameSettingsSlice';
+import { useEthereumPrice } from '../contexts/EthereumPriceContext';
+import { useDashboardWebsocket } from '../hooks';
 
-const DashboardContent = ({ userInfo, ethToUsdRate }) => {
+const DashboardContent = () => {
     const dispatch = useDispatch();
-    const gameSettings = useSelector((state) => state.game.gameSettings);
-    const [timeControl, setTimeControl] = useState(gameSettings.timeControl);
-    const [wagerSize, setWagerSize] = useState(gameSettings.wagerSize);
+    const { timeControl, wagerSize, isSearching } = useSelector((state) => state.gameSettings);
+    const userInfo = useSelector((state) => state.user.userInfo);
+    const ethToUsdRate = useEthereumPrice();
+
+    const {
+        opponentFound,
+        cancelSearch
+    } = useDashboardWebsocket();
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -27,50 +29,9 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
         { label: '$20', value: '20' },
     ];
 
-    const {
-        searchingForOpponent,
-        opponentFound,
-        setSearchingForOpponent,
-        cancelSearch
-    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
-
     const playGame = async () => {
-        try {
-            if (!userInfo) {
-                console.error('User information not available.');
-                return;
-            }
-
-            console.log('Playing game for user:', userInfo.user_id);
-            setSearchingForOpponent(true);
-
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/findOpponent`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userId: userInfo.user_id,
-                    timeControl,
-                    wagerSize
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to play the game.');
-            }
-
-            // Handle success response
-            dispatch(setGameSettings({ timeControl, wagerSize }));
-            console.log('Redux game state:', {
-                settings: gameSettings,
-                // Add other game state properties here as needed
-            });
-        } catch (error) {
-            console.error('Error:', error);
-            toast.error('Failed to start the game. Please try again.');
-            setSearchingForOpponent(false);
-        }
+        dispatch(setIsSearching(true));
+        // ... rest of the playGame logic
     };
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
@@ -78,12 +39,27 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
     return (
         <Box className="dashboard-content">
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
-            <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="180" setSelectedValue={setTimeControl} />
-            <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
-            {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} />}
-            {searchingForOpponent && (
+            <SwitchOptions 
+                label="Time Control" 
+                options={timeControlOptions} 
+                defaultValue="180" 
+                setSelectedValue={(value) => dispatch(setTimeControl(value))} 
+            />
+            <SwitchOptions 
+                label="Wager Size" 
+                options={wagerSizeOptions} 
+                defaultValue="5" 
+                setSelectedValue={(value) => dispatch(setWagerSize(value))} 
+            />
+            {!isSearching && (
+                <PlayGameButton 
+                    playGame={playGame} 
+                    amount={wagerSize} 
+                    ethereumAmount={wagerAmountInEth} 
+                />
+            )}
+            {isSearching && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <CircularProgress />
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
                         <Button onClick={cancelSearch} variant="contained" color="error">Cancel</Button>

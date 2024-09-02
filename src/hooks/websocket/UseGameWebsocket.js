@@ -1,38 +1,31 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from './useWebsocket';
 import { 
-  setCurrentGame, 
+  setGameInfo, 
   setPlayerOne, 
   setPlayerTwo, 
-  setConnectedPlayers 
-} from '../../store/slices/gameSlice';
+  setGameOver,
+  setWinner,
+  setWinnerPaid,
+  setRematchRequested
+} from '../store/slices/gameStateSlice';
 
-const useGameWebsocket = (gameId, userInfo) => {
-    const dispatch = useDispatch();
-    const [gameInfo, setGameInfo] = useState(null);
-    const [playerOne, setPlayerOne] = useState(null);
-    const [playerTwo, setPlayerTwo] = useState(null);
-    const [gameOver, setGameOver] = useState(false);
-    const [winner, setWinner] = useState('');
-    const [winnerPaid, setWinnerPaid] = useState(false);
-    const [rematchRequested, setRematchRequested] = useState(false);
-    const [rematchRequestedBy, setRematchRequestedBy] = useState(null);
-    const [rematchWagerSize, setRematchWagerSize] = useState(null);
-    const [rematchTimeControl, setRematchTimeControl] = useState(null);
-
+const useGameWebsocket = (gameId, userInfo, dispatch) => {
+    const [connectedPlayers, setConnectedPlayers] = useState([]);
     const navigate = useNavigate();
+    const gameInfo = useSelector(state => state.gameState.gameInfo);
 
     const handleWebSocketMessage = useCallback((message) => {
         const data = JSON.parse(message);
         console.log('Received WebSocket message:', data);
         switch (data.type) {
             case "GAME_OVER":
-                setGameOver(true);
-                setWinner(data.winner);
-                dispatch(setCurrentGame({ ...gameInfo, state: "5", winner: data.winner }));
+                dispatch(setGameOver(true));
+                dispatch(setWinner(data.winner));
+                dispatch(setGameInfo({ ...gameInfo, state: "5", winner: data.winner }));
                 break;
             case "PLAYER_CONNECTED":
             case "PLAYER_DISCONNECTED":
@@ -40,16 +33,13 @@ const useGameWebsocket = (gameId, userInfo) => {
                 handleFetchGameInfo();
                 break;
             case "REMATCH_REQUESTED":
-                setRematchRequested(true);
-                setRematchRequestedBy(data.from);
-                setRematchWagerSize(data.wagerSize);
-                setRematchTimeControl(data.timeControl);
+                dispatch(setRematchRequested({ requested: true, requestedBy: data.from }));
                 toast.info(`Rematch requested by ${data.from === userInfo?.user_id ? 'you' : 'opponent'}`);
                 break;
             case "CONTRACT_READY":
                 console.log("Game contract ready:", data);
                 navigate(`/game-pending/${data.gameId}`);
-                resetRematchState();
+                dispatch(setRematchRequested({ requested: false, requestedBy: null }));
                 break;
             case "REMATCH_ACCEPTED":
                 console.log("Rematch accepted:", data);
@@ -58,19 +48,19 @@ const useGameWebsocket = (gameId, userInfo) => {
             case "REMATCH_REJECTED":
                 console.log("Rematch rejected:", data);
                 toast.error("Rematch rejected!");
-                resetRematchState();
+                dispatch(setRematchRequested({ requested: false, requestedBy: null }));
                 break;
             case "REMATCH_CANCELLED":
                 console.log("Rematch cancelled:", data);
                 toast.success("Rematch cancelled!");
-                resetRematchState();
+                dispatch(setRematchRequested({ requested: false, requestedBy: null }));
                 break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, [userInfo, navigate, gameInfo, dispatch]);
+    }, [dispatch, navigate, userInfo, gameInfo]);
 
-    const { socket, connectedPlayers } = useWebSocket(
+    const { socket } = useWebSocket(
         handleWebSocketMessage,
         userInfo?.user_id,
         ['ONLINE_USERS_COUNT']
@@ -83,8 +73,7 @@ const useGameWebsocket = (gameId, userInfo) => {
                 throw new Error('Failed to fetch game information');
             }
             const data = await response.json();
-            setGameInfo(data);
-            dispatch(setCurrentGame(data));
+            dispatch(setGameInfo(data));
 
             if (data.player1_id) {
                 handleFetchPlayerInfo(data.player1_id, setPlayerOne);
@@ -95,11 +84,11 @@ const useGameWebsocket = (gameId, userInfo) => {
             }
 
             if (data.state === "5") {
-                setGameOver(true);
+                dispatch(setGameOver(true));
                 const winnerUsername = data.winner ? await getWinnerUsername(data.winner) : 'Draw';
-                setWinner(winnerUsername);
-                setWinnerPaid(true);
-                dispatch(setCurrentGame({ ...data, winnerUsername }));
+                dispatch(setWinner(winnerUsername));
+                dispatch(setWinnerPaid(true));
+                dispatch(setGameInfo({ ...data, winnerUsername }));
             }
 
         } catch (error) {
@@ -121,19 +110,14 @@ const useGameWebsocket = (gameId, userInfo) => {
                 throw new Error('Failed to fetch player information');
             }
             const data = await response.json();
-            setPlayerInfo(data);
-            if (playerId === gameInfo?.player1_id) {
-                dispatch(setPlayerOne(data));
-            } else if (playerId === gameInfo?.player2_id) {
-                dispatch(setPlayerTwo(data));
-            }
+            dispatch(setPlayerInfo(data));
         } catch (error) {
             console.error('Error fetching player information:', error);
             toast.error('Error fetching player information');
         }
-    }, [dispatch, gameInfo]);
+    }, [dispatch]);
 
-    const getWinnerUsername = async (winnerId) => {
+    const getWinnerUsername = useCallback(async (winnerId) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${winnerId}`, {
                 method: 'POST',
@@ -152,13 +136,6 @@ const useGameWebsocket = (gameId, userInfo) => {
             toast.error('Error fetching winner information');
             return 'Unknown';
         }
-    };
-
-    const resetRematchState = useCallback(() => {
-        setRematchRequested(false);
-        setRematchRequestedBy(null);
-        setRematchWagerSize(null);
-        setRematchTimeControl(null);
     }, []);
 
     useEffect(() => {
@@ -169,24 +146,9 @@ const useGameWebsocket = (gameId, userInfo) => {
         }
     }, [gameId, handleFetchGameInfo]);
 
-    useEffect(() => {
-        dispatch(setConnectedPlayers(connectedPlayers));
-    }, [connectedPlayers, dispatch]);
-
     return {
-        gameInfo,
-        playerOne,
-        playerTwo,
-        gameOver,
-        winner,
-        winnerPaid,
         handleFetchGameInfo,
         connectedPlayers,
-        rematchRequested,
-        rematchRequestedBy,
-        rematchWagerSize,
-        rematchTimeControl,
-        resetRematchState
     };
 };
 

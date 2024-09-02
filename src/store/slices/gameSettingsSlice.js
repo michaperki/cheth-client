@@ -5,6 +5,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   timeControl: '180',
   wagerSize: '5',
+  isSearching: false,
+  currentGameId: null,
 };
 
 const gameSettingsSlice = createSlice({
@@ -17,9 +19,15 @@ const gameSettingsSlice = createSlice({
     setWagerSize: (state, action) => {
       state.wagerSize = action.payload;
     },
+    setIsSearching: (state, action) => {
+      state.isSearching = action.payload;
+    },
+    setCurrentGameId: (state, action) => {
+      state.currentGameId = action.payload;
+    },
   },
 });
 
-export const { setTimeControl, setWagerSize } = gameSettingsSlice.actions;
+export const { setTimeControl, setWagerSize, setIsSearching, setCurrentGameId } = gameSettingsSlice.actions;
 
 export default gameSettingsSlice.reducer;

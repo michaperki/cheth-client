@@ -8,6 +8,7 @@ import ethereumPriceReducer from './slices/ethereumPriceSlice';
 import gameSettingsReducer from './slices/gameSettingsSlice';
 import onlineUsersReducer from './slices/onlineUsersSlice';
 import gameStatsReducer from './slices/gameStatsSlice';
+import gameStateReducer from './slices/gameStateSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,5 +19,6 @@ export const store = configureStore({
     gameSettings: gameSettingsReducer,
     onlineUsers: onlineUsersReducer,
     gameStats: gameStatsReducer,
+    gameState: gameStateReducer,
   },
 });

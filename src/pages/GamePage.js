@@ -1,23 +1,19 @@
-// src/pages/GamePage.js
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useGameActions } from '../hooks';
 import { useGameWebsocket } from '../hooks/websocket';
 import { GameInterface, GameActionsBar } from '../components/game';
 import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
-import { useTheme } from '@mui/material/styles';
-import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import { Typography, Button, Box } from '@mui/material';
-import { setPlayerOne, setPlayerTwo, setConnectedPlayers, setCurrentGame } from '../store/slices/gameSlice';
+import { useEthereumPrice } from '../contexts/EthereumPriceContext';
+import { resetGameState } from '../store/slices/gameStateSlice';
 
-const GamePage = ({ userInfo }) => {
+const GamePage = () => {
     const { gameId } = useParams();
     const dispatch = useDispatch();
-    const theme = useTheme();
     const ethToUsdRate = useEthereumPrice();
-
+    const userInfo = useSelector((state) => state.user.userInfo);
     const {
         gameInfo,
         playerOne,
@@ -25,14 +21,14 @@ const GamePage = ({ userInfo }) => {
         gameOver,
         winner,
         winnerPaid,
+        rematchRequested,
+        rematchRequestedBy
+    } = useSelector((state) => state.gameState);
+
+    const {
         handleFetchGameInfo,
         connectedPlayers,
-        rematchRequested,
-        rematchRequestedBy,
-        rematchWagerSize,
-        rematchTimeControl,
-        resetRematchState
-    } = useGameWebsocket(gameId, userInfo);
+    } = useGameWebsocket(gameId, userInfo, dispatch);
 
     const {
         handleJoinGame,
@@ -48,24 +44,10 @@ const GamePage = ({ userInfo }) => {
         if (gameId) {
             handleFetchGameInfo();
         }
-    }, [gameId, handleFetchGameInfo]);
-
-    useEffect(() => {
-        if (gameInfo) {
-            dispatch(setCurrentGame(gameInfo));
-        }
-        if (playerOne) {
-            dispatch(setPlayerOne(playerOne));
-        }
-        if (playerTwo) {
-            dispatch(setPlayerTwo(playerTwo));
-        }
-        if (connectedPlayers) {
-            dispatch(setConnectedPlayers(connectedPlayers));
-        }
-    }, [dispatch, gameInfo, playerOne, playerTwo, connectedPlayers]);
-
-    console.log("game info", gameInfo);
+        return () => {
+            dispatch(resetGameState());
+        };
+    }, [gameId, handleFetchGameInfo, dispatch]);
 
     const isGameComplete = gameInfo && gameInfo.state === "5";
 
@@ -76,11 +58,10 @@ const GamePage = ({ userInfo }) => {
             return (
                 <Box mt={2}>
                     <Typography variant="body1">Your opponent has requested a rematch!</Typography>
-                    <Typography variant="body2">Wager: ${rematchWagerSize}, Time Control: {rematchTimeControl} seconds</Typography>
-                    <Button onClick={() => { handleAcceptRematch(); resetRematchState(); }} variant="contained" color="primary" sx={{ mr: 1, mt: 1 }}>
+                    <Button onClick={handleAcceptRematch} variant="contained" color="primary" sx={{ mr: 1, mt: 1 }}>
                         Accept Rematch
                     </Button>
-                    <Button onClick={() => { handleDeclineRematch(); resetRematchState(); }} variant="contained" color="secondary" sx={{ mt: 1 }}>
+                    <Button onClick={handleDeclineRematch} variant="contained" color="secondary" sx={{ mt: 1 }}>
                         Decline Rematch
                     </Button>
                 </Box>
@@ -89,7 +70,7 @@ const GamePage = ({ userInfo }) => {
             return (
                 <Box mt={2}>
                     <Typography variant="body1">Waiting for opponent to accept rematch...</Typography>
-                    <Button onClick={() => { handleCancelRematch(); resetRematchState(); }} variant="contained" color="secondary" sx={{ mt: 1 }}>
+                    <Button onClick={handleCancelRematch} variant="contained" color="secondary" sx={{ mt: 1 }}>
                         Cancel Rematch Request
                     </Button>
                 </Box>
@@ -103,7 +84,7 @@ const GamePage = ({ userInfo }) => {
     }
 
     return (
-        <div className={`game-page-container bg-${theme.palette.mode}`}>
+        <div className="game-page-container">
             {isGameComplete ? (
                 <>
                     <GameCompleteScreen
@@ -135,7 +116,6 @@ const GamePage = ({ userInfo }) => {
                         rematchRequested={rematchRequested}
                         rematchRequestedBy={rematchRequestedBy}
                         userInfo={userInfo}
-                        resetRematchState={resetRematchState}
                     />
                     {renderRematchUI()}
                 </>
