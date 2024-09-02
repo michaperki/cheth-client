@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
@@ -6,10 +7,13 @@ import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
 import { useDashboardWebsocket } from '../../hooks';
 import "./DashboardContent.css";
+import { setGameSettings } from '../../store/slices/gameSlice';
 
 const DashboardContent = ({ userInfo, ethToUsdRate }) => {
-    const [timeControl, setTimeControl] = useState('60');
-    const [wagerSize, setWagerSize] = useState('5');
+    const dispatch = useDispatch();
+    const gameSettings = useSelector((state) => state.game.gameSettings);
+    const [timeControl, setTimeControl] = useState(gameSettings.timeControl);
+    const [wagerSize, setWagerSize] = useState(gameSettings.wagerSize);
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -57,6 +61,11 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
             }
 
             // Handle success response
+            dispatch(setGameSettings({ timeControl, wagerSize }));
+            console.log('Redux game state:', {
+                settings: gameSettings,
+                // Add other game state properties here as needed
+            });
         } catch (error) {
             console.error('Error:', error);
             toast.error('Failed to start the game. Please try again.');
@@ -69,7 +78,7 @@ const DashboardContent = ({ userInfo, ethToUsdRate }) => {
     return (
         <Box className="dashboard-content">
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
-            <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="60" setSelectedValue={setTimeControl} />
+            <SwitchOptions label="Time Control" options={timeControlOptions} defaultValue="180" setSelectedValue={setTimeControl} />
             <SwitchOptions label="Wager Size" options={wagerSizeOptions} defaultValue="5" setSelectedValue={setWagerSize} />
             {!searchingForOpponent && <PlayGameButton playGame={playGame} amount={wagerSize} ethereumAmount={wagerAmountInEth} />}
             {searchingForOpponent && (
