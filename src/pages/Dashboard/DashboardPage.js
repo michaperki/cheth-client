@@ -8,6 +8,7 @@ import { useToast } from '../../hooks';
 import DashboardContent from '../../components/Dashboard/DashboardContent';
 import { fetchGameStats } from '../../store/thunks/gameStatsThunks';
 import { fetchEthereumPrice } from '../../store/slices/ethereumPriceSlice';
+import { setSearchingForOpponent, setOpponentFound } from '../../store/slices/dashboardSlice';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
@@ -16,6 +17,7 @@ const DashboardPage = () => {
     const { totalGames, totalWageredInUsd, loading } = useSelector((state) => state.gameStats);
     const onlineUsersCount = useSelector((state) => state.onlineUsers.count);
     const userInfo = useSelector((state) => state.user.userInfo);
+    const { searchingForOpponent, opponentFound } = useSelector((state) => state.dashboard);
 
     const { showToast } = useToast();
 
@@ -29,6 +31,21 @@ const DashboardPage = () => {
         }
     }, [dispatch, ethToUsdRate]);
 
+    const handleSearchStart = () => {
+        dispatch(setSearchingForOpponent(true));
+        // Additional logic for starting the search...
+    };
+
+    const handleSearchCancel = () => {
+        dispatch(setSearchingForOpponent(false));
+        // Additional logic for cancelling the search...
+    };
+
+    const handleOpponentFound = () => {
+        dispatch(setOpponentFound(true));
+        // Additional logic for when an opponent is found...
+    };
+
     return (
         <Container className="dashboard-container">
             <Grid container spacing={3}>
@@ -37,6 +54,11 @@ const DashboardPage = () => {
                         userInfo={userInfo} 
                         ethToUsdRate={ethToUsdRate} 
                         showToast={showToast}
+                        searchingForOpponent={searchingForOpponent}
+                        opponentFound={opponentFound}
+                        onSearchStart={handleSearchStart}
+                        onSearchCancel={handleSearchCancel}
+                        onOpponentFound={handleOpponentFound}
                     />
                 </Grid>
                 
