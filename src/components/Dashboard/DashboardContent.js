@@ -17,7 +17,7 @@ const DashboardContent = () => {
     const {
         opponentFound,
         cancelSearch
-    } = useDashboardWebsocket();
+    } = useDashboardWebsocket(ethToUsdRate, userInfo);
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
