@@ -8,18 +8,19 @@ import { useToast } from '../../hooks';
 import DashboardContent from '../../components/Dashboard/DashboardContent';
 import { fetchGameStats } from '../../store/thunks/gameStatsThunks';
 import { fetchEthereumPrice } from '../../store/slices/ethereumPriceSlice';
-import { setSearchingForOpponent, setOpponentFound } from '../../store/slices/dashboardSlice';
+import { setSearchingForOpponent } from '../../store/slices/dashboardSlice';
+import useDashboardWebsocket from '../../hooks/useDashboardWebsocket';
 import './DashboardPage.css';
 
 const DashboardPage = () => {
     const dispatch = useDispatch();
     const ethToUsdRate = useSelector((state) => state.ethereumPrice.price);
     const { totalGames, totalWageredInUsd, loading } = useSelector((state) => state.gameStats);
-    const onlineUsersCount = useSelector((state) => state.onlineUsers.count);
-    const userInfo = useSelector((state) => state.user.userInfo);
     const { searchingForOpponent, opponentFound } = useSelector((state) => state.dashboard);
+    const userInfo = useSelector((state) => state.user.userInfo);
 
     const { showToast } = useToast();
+    const { onlineUsersCount, cancelSearch } = useDashboardWebsocket();
 
     useEffect(() => {
         dispatch(fetchEthereumPrice());
@@ -33,17 +34,6 @@ const DashboardPage = () => {
 
     const handleSearchStart = () => {
         dispatch(setSearchingForOpponent(true));
-        // Additional logic for starting the search...
-    };
-
-    const handleSearchCancel = () => {
-        dispatch(setSearchingForOpponent(false));
-        // Additional logic for cancelling the search...
-    };
-
-    const handleOpponentFound = () => {
-        dispatch(setOpponentFound(true));
-        // Additional logic for when an opponent is found...
     };
 
     return (
@@ -57,8 +47,7 @@ const DashboardPage = () => {
                         searchingForOpponent={searchingForOpponent}
                         opponentFound={opponentFound}
                         onSearchStart={handleSearchStart}
-                        onSearchCancel={handleSearchCancel}
-                        onOpponentFound={handleOpponentFound}
+                        onSearchCancel={cancelSearch}
                     />
                 </Grid>
                 
