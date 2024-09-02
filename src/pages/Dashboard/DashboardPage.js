@@ -1,25 +1,28 @@
+// src/pages/Dashboard/DashboardPage.js
+
 import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Container, Grid } from '@mui/material';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { Sidebar } from '../../components';
-import { useGameStats, useToast } from '../../hooks';
+import { useToast } from '../../hooks';
 import DashboardContent from '../../components/Dashboard/DashboardContent';
+import { fetchGameStats } from '../../store/slices/gameStatsSlice';
+import { fetchEthereumPrice } from '../../store/slices/ethereumPriceSlice';
 import './DashboardPage.css';
 
-const DashboardPage = ({ userInfo, onlineUsersCount }) => {
-    const ethToUsdRate = useEthereumPrice();
-    const {
-        gameCount,
-        totalWageredInUsd,
-        fetchGameStats,
-        isLoading
-    } = useGameStats(ethToUsdRate);
+const DashboardPage = () => {
+    const dispatch = useDispatch();
+    const ethToUsdRate = useSelector((state) => state.ethereumPrice.price);
+    const { totalGames, totalWagered, loading } = useSelector((state) => state.gameStats);
+    const onlineUsersCount = useSelector((state) => state.onlineUsers.count);
+    const userInfo = useSelector((state) => state.user.userInfo);
 
     const { showToast } = useToast();
 
     useEffect(() => {
-        fetchGameStats();
-    }, [fetchGameStats]);
+        dispatch(fetchGameStats());
+        dispatch(fetchEthereumPrice());
+    }, [dispatch]);
 
     return (
         <Container className="dashboard-container">
@@ -33,10 +36,10 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
                 </Grid>
                 
                 <SidebarContainer 
-                    isLoading={isLoading} 
+                    isLoading={loading} 
                     onlineUsersCount={onlineUsersCount} 
-                    gameCount={gameCount} 
-                    totalWageredInUsd={totalWageredInUsd} 
+                    gameCount={totalGames} 
+                    totalWageredInUsd={totalWagered} 
                 />
             </Grid>
         </Container>
