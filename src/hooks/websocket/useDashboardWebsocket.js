@@ -1,17 +1,14 @@
-import { useRef, useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useRef, useState, useEffect } from "react";
 import useWebSocket from "./useWebsocket";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import { toast } from "react-toastify";
-import { setSearchingForOpponent, setOpponentFound, setCurrentGame } from '../../store/slices/gameSlice';
 
-const useDashboardWebsocket = ({ ethToUsdRate }) => {
-  const dispatch = useDispatch();
+const useDashboardWebsocket = ({ ethToUsdRate, userInfo }) => {
+  const [searchingForOpponent, setSearchingForOpponent] = useState(false);
+  const [opponentFound, setOpponentFound] = useState(false);
   const navigate = useNavigate();
   const timeoutIdRef = useRef(null);
-  const userInfo = useSelector(state => state.user.userInfo);
-  const { searchingForOpponent, opponentFound } = useSelector(state => state.game);
 
   const handleDashboardPageWebSocketMessage = (message) => {
     console.log("Received message in DashboardPage:", message);
@@ -20,15 +17,14 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
 
     if (messageData.type === "START_GAME") {
       console.log("Game started:", messageData);
-      dispatch(setOpponentFound(true));
+      setOpponentFound(true);
       clearSearchTimeout();
     }
 
     if (messageData.type === "CONTRACT_READY") {
       console.log("Game contract ready:", messageData);
       clearSearchTimeout();
-      dispatch(setSearchingForOpponent(false));
-      dispatch(setCurrentGame(messageData.gameId));
+      setSearchingForOpponent(false);
       navigate(`/game-pending/${messageData.gameId}`);
     }
 
@@ -58,7 +54,7 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
       timeoutIdRef.current = setTimeout(() => {
         console.log("Search timed out");
         toast.error("Search timed out.");
-        dispatch(setSearchingForOpponent(false));
+        setSearchingForOpponent(false);
         if (socket.readyState === WebSocket.OPEN) {
           console.log("Sending CANCEL_SEARCH due to timeout");
           socket.send(
@@ -74,7 +70,7 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
     }
 
     return () => clearSearchTimeout();
-  }, [searchingForOpponent, socket, userInfo, dispatch]);
+  }, [searchingForOpponent, socket, userInfo]);
 
   const cancelSearch = () => {
     console.log("Cancel search initiated");
@@ -89,11 +85,14 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
       console.log("Socket is not open or undefined. Cannot send CANCEL_SEARCH");
     }
 
-    dispatch(setSearchingForOpponent(false));
+    setSearchingForOpponent(false);
+    // Removed the toast notification for cancelling search
   };
 
   return {
-    onlineUsersCount,
+    searchingForOpponent,
+    opponentFound,
+    setSearchingForOpponent,
     cancelSearch,
   };
 };

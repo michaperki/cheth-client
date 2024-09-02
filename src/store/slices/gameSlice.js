@@ -1,12 +1,8 @@
-// src/store/slices/gameSlice.js
-
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   currentGame: null,
   gameHistory: [],
-  searchingForOpponent: false,
-  opponentFound: false,
 };
 
 export const gameSlice = createSlice({
@@ -19,24 +15,12 @@ export const gameSlice = createSlice({
     addToGameHistory: (state, action) => {
       state.gameHistory.push(action.payload);
     },
-    setSearchingForOpponent: (state, action) => {
-      state.searchingForOpponent = action.payload;
-    },
-    setOpponentFound: (state, action) => {
-      state.opponentFound = action.payload;
-    },
     clearCurrentGame: (state) => {
       state.currentGame = null;
     },
   },
 });
 
-export const {
-  setCurrentGame,
-  addToGameHistory,
-  setSearchingForOpponent,
-  setOpponentFound,
-  clearCurrentGame,
-} = gameSlice.actions;
+export const { setCurrentGame, addToGameHistory, clearCurrentGame } = gameSlice.actions;
 
 export default gameSlice.reducer;
