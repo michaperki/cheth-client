@@ -80,4 +80,55 @@ export const acceptRematch = createAsyncThunk(
   'game/acceptRematch',
   async ({ gameId, userId }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${process.env.REACT_
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/acceptRematch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId, userId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to accept rematch');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const declineRematch = createAsyncThunk(
+  'game/declineRematch',
+  async ({ gameId, userId }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/declineRematch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId, userId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to decline rematch');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const cancelRematch = createAsyncThunk(
+  'game/cancelRematch',
+  async ({ gameId, userId }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/cancelRematch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId, userId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to cancel rematch');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
