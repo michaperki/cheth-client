@@ -1,26 +1,99 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const initialState = {
-  currentGame: null,
-  gameHistory: [],
-};
+export const fetchGameInfo = createAsyncThunk(
+  'game/fetchGameInfo',
+  async (gameId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch game information');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
-export const gameSlice = createSlice({
+const gameSlice = createSlice({
   name: 'game',
-  initialState,
+  initialState: {
+    gameInfo: null,
+    loading: false,
+    error: null,
+    playerOne: null,
+    playerTwo: null,
+    gameOver: false,
+    winner: null,
+    winnerPaid: false,
+    connectedPlayers: [],
+    rematchRequested: false,
+    rematchRequestedBy: null,
+    rematchWagerSize: null,
+    rematchTimeControl: null,
+  },
   reducers: {
-    setCurrentGame: (state, action) => {
-      state.currentGame = action.payload;
+    updateGameState: (state, action) => {
+      state.gameInfo = { ...state.gameInfo, ...action.payload };
     },
-    addToGameHistory: (state, action) => {
-      state.gameHistory.push(action.payload);
+    setGameOver: (state, action) => {
+      state.gameOver = action.payload;
     },
-    clearCurrentGame: (state) => {
-      state.currentGame = null;
+    setWinner: (state, action) => {
+      state.winner = action.payload;
     },
+    setWinnerPaid: (state, action) => {
+      state.winnerPaid = action.payload;
+    },
+    setRematchRequested: (state, action) => {
+      state.rematchRequested = action.payload;
+    },
+    setRematchRequestedBy: (state, action) => {
+      state.rematchRequestedBy = action.payload;
+    },
+    setRematchWagerSize: (state, action) => {
+      state.rematchWagerSize = action.payload;
+    },
+    setRematchTimeControl: (state, action) => {
+      state.rematchTimeControl = action.payload;
+    },
+    resetRematchState: (state) => {
+      state.rematchRequested = false;
+      state.rematchRequestedBy = null;
+      state.rematchWagerSize = null;
+      state.rematchTimeControl = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchGameInfo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchGameInfo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.gameInfo = action.payload;
+        state.playerOne = action.payload.player1;
+        state.playerTwo = action.payload.player2;
+        state.connectedPlayers = action.payload.connectedPlayers;
+      })
+      .addCase(fetchGameInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { setCurrentGame, addToGameHistory, clearCurrentGame } = gameSlice.actions;
+export const {
+  updateGameState,
+  setGameOver,
+  setWinner,
+  setWinnerPaid,
+  setRematchRequested,
+  setRematchRequestedBy,
+  setRematchWagerSize,
+  setRematchTimeControl,
+  resetRematchState,
+} = gameSlice.actions;
 
 export default gameSlice.reducer;

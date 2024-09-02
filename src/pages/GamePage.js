@@ -1,131 +1,221 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useGameActions } from '../hooks';
-import { useGameWebsocket } from '../hooks/websocket';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { GameInterface, GameActionsBar } from '../components/game';
 import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import { Typography, Button, Box } from '@mui/material';
+import {
+  fetchGameInfo,
+  updateGameState,
+  setGameOver,
+  setWinner,
+  setWinnerPaid,
+  setRematchRequested,
+  setRematchRequestedBy,
+  setRematchWagerSize,
+  setRematchTimeControl,
+  resetRematchState
+} from '../store/slices/gameSlice';
+import {
+  joinGame,
+  reportGameOver,
+  reportIssue,
+  requestRematch,
+  acceptRematch,
+  declineRematch,
+  cancelRematch
+} from '../store/slices/gameActions';
 
-const GamePage = ({ userInfo }) => {
-    const { gameId } = useParams();
-    const theme = useTheme();
-    const ethToUsdRate = useEthereumPrice();
+const GamePage = () => {
+  const { gameId } = useParams();
+  const theme = useTheme();
+  const ethToUsdRate = useEthereumPrice();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const {
-        gameInfo,
-        playerOne,
-        playerTwo,
-        gameOver,
-        winner,
-        winnerPaid,
-        handleFetchGameInfo,
-        connectedPlayers,
-        rematchRequested,
-        rematchRequestedBy,
-        rematchWagerSize,
-        rematchTimeControl,
-        resetRematchState
-    } = useGameWebsocket(gameId, userInfo);
+  const userInfo = useSelector(state => state.user.userInfo);
+  const {
+    gameInfo,
+    loading,
+    error,
+    playerOne,
+    playerTwo,
+    gameOver,
+    winner,
+    winnerPaid,
+    connectedPlayers,
+    rematchRequested,
+    rematchRequestedBy,
+    rematchWagerSize,
+    rematchTimeControl
+  } = useSelector(state => state.game);
 
-    const {
-        handleJoinGame,
-        handleReportGameOver,
-        handleReportIssue,
-        handleRematch,
-        handleAcceptRematch,
-        handleDeclineRematch,
-        handleCancelRematch
-    } = useGameActions(gameId, userInfo, handleFetchGameInfo, gameInfo?.lichess_id);
+  useEffect(() => {
+    if (gameId) {
+      dispatch(fetchGameInfo(gameId));
+    }
+  }, [gameId, dispatch]);
 
-    useEffect(() => {
-        if (gameId) {
-            handleFetchGameInfo();
-        }
-    }, [gameId, handleFetchGameInfo]);
+  useEffect(() => {
+    const websocket = new WebSocket(`${process.env.REACT_APP_WS_URL}?userId=${userInfo?.user_id}`);
 
-    console.log("game info", gameInfo);
-
-    const isGameComplete = gameInfo && gameInfo.state === "5";
-
-    const renderRematchUI = () => {
-        if (!userInfo) return null;
-
-        if (rematchRequested && rematchRequestedBy !== userInfo.user_id) {
-            return (
-                <Box mt={2}>
-                    <Typography variant="body1">Your opponent has requested a rematch!</Typography>
-                    <Typography variant="body2">Wager: ${rematchWagerSize}, Time Control: {rematchTimeControl} seconds</Typography>
-                    <Button onClick={() => { handleAcceptRematch(); resetRematchState(); }} variant="contained" color="primary" sx={{ mr: 1, mt: 1 }}>
-                        Accept Rematch
-                    </Button>
-                    <Button onClick={() => { handleDeclineRematch(); resetRematchState(); }} variant="contained" color="secondary" sx={{ mt: 1 }}>
-                        Decline Rematch
-                    </Button>
-                </Box>
-            );
-        } else if (rematchRequested && rematchRequestedBy === userInfo.user_id) {
-            return (
-                <Box mt={2}>
-                    <Typography variant="body1">Waiting for opponent to accept rematch...</Typography>
-                    <Button onClick={() => { handleCancelRematch(); resetRematchState(); }} variant="contained" color="secondary" sx={{ mt: 1 }}>
-                        Cancel Rematch Request
-                    </Button>
-                </Box>
-            );
-        }
-        return null;
+    websocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      switch (data.type) {
+        case 'GAME_UPDATE':
+          dispatch(updateGameState(data.gameState));
+          break;
+        case 'GAME_OVER':
+          dispatch(setGameOver(true));
+          dispatch(setWinner(data.winner));
+          break;
+        case 'WINNER_PAID':
+          dispatch(setWinnerPaid(true));
+          break;
+        case 'REMATCH_REQUESTED':
+          dispatch(setRematchRequested(true));
+          dispatch(setRematchRequestedBy(data.from));
+          dispatch(setRematchWagerSize(data.wagerSize));
+          dispatch(setRematchTimeControl(data.timeControl));
+          break;
+        case 'PLAYER_CONNECTED':
+        case 'PLAYER_DISCONNECTED':
+          dispatch(fetchGameInfo(gameId));
+          break;
+        default:
+          console.log('Unhandled websocket message:', data);
+      }
     };
 
-    if (!userInfo) {
-        return <Typography>Loading user information...</Typography>;
-    }
+    return () => {
+      websocket.close();
+    };
+  }, [dispatch, gameId, userInfo]);
 
-    return (
-        <div className={`game-page-container bg-${theme.palette.mode}`}>
-            {isGameComplete ? (
-                <>
-                    <GameCompleteScreen
-                        playerOne={playerOne}
-                        playerTwo={playerTwo}
-                        winner={winner}
-                        userInfo={userInfo}
-                        onRematch={handleRematch}
-                    />
-                    {renderRematchUI()}
-                </>
-            ) : (
-                <>
-                    <GameInterface
-                        gameInfo={gameInfo}
-                        playerOne={playerOne}
-                        playerTwo={playerTwo}
-                        gameOver={gameOver}
-                        winner={winner}
-                        winnerPaid={winnerPaid}
-                        onJoinGame={handleJoinGame}
-                        ethToUsdRate={ethToUsdRate}
-                        connectedPlayers={connectedPlayers}
-                    />
-                    <GameActionsBar
-                        gameOver={gameOver}
-                        onReportGameOver={handleReportGameOver}
-                        onReportIssue={handleReportIssue}
-                        onRematch={handleRematch}
-                        onAcceptRematch={handleAcceptRematch}
-                        onDeclineRematch={handleDeclineRematch}
-                        onCancelRematch={handleCancelRematch}
-                        rematchRequested={rematchRequested}
-                        rematchRequestedBy={rematchRequestedBy}
-                        userInfo={userInfo}
-                        resetRematchState={resetRematchState}
-                    />
-                    {renderRematchUI()}
-                </>
-            )}
-        </div>
-    );
+  const handleJoinGame = () => {
+    dispatch(joinGame(gameId, userInfo.user_id));
+  };
+
+  const handleReportGameOver = () => {
+    dispatch(reportGameOver(gameId));
+  };
+
+  const handleReportIssue = () => {
+    dispatch(reportIssue(gameId));
+  };
+
+  const handleRematch = () => {
+    dispatch(requestRematch(gameId, userInfo.user_id));
+  };
+
+  const handleAcceptRematch = () => {
+    dispatch(acceptRematch(gameId, userInfo.user_id));
+    dispatch(resetRematchState());
+  };
+
+  const handleDeclineRematch = () => {
+    dispatch(declineRematch(gameId, userInfo.user_id));
+    dispatch(resetRematchState());
+  };
+
+  const handleCancelRematch = () => {
+    dispatch(cancelRematch(gameId, userInfo.user_id));
+    dispatch(resetRematchState());
+  };
+
+  const renderRematchUI = () => {
+    if (!userInfo) return null;
+
+    if (rematchRequested && rematchRequestedBy !== userInfo.user_id) {
+      return (
+        <Box mt={2}>
+          <Typography variant="body1">Your opponent has requested a rematch!</Typography>
+          <Typography variant="body2">Wager: ${rematchWagerSize}, Time Control: {rematchTimeControl} seconds</Typography>
+          <Button onClick={handleAcceptRematch} variant="contained" color="primary" sx={{ mr: 1, mt: 1 }}>
+            Accept Rematch
+          </Button>
+          <Button onClick={handleDeclineRematch} variant="contained" color="secondary" sx={{ mt: 1 }}>
+            Decline Rematch
+          </Button>
+        </Box>
+      );
+    } else if (rematchRequested && rematchRequestedBy === userInfo.user_id) {
+      return (
+        <Box mt={2}>
+          <Typography variant="body1">Waiting for opponent to accept rematch...</Typography>
+          <Button onClick={handleCancelRematch} variant="contained" color="secondary" sx={{ mt: 1 }}>
+            Cancel Rematch Request
+          </Button>
+        </Box>
+      );
+    }
+    return null;
+  };
+
+  if (!userInfo) {
+    return <Typography>Loading user information...</Typography>;
+  }
+
+  if (loading) {
+    return <Typography>Loading game information...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Error: {error}</Typography>;
+  }
+
+  if (!gameInfo) {
+    return <Typography>No game information available.</Typography>;
+  }
+
+  const isGameComplete = gameInfo.state === "5";
+
+  return (
+    <div className={`game-page-container bg-${theme.palette.mode}`}>
+      {isGameComplete ? (
+        <>
+          <GameCompleteScreen
+            playerOne={playerOne}
+            playerTwo={playerTwo}
+            winner={winner}
+            userInfo={userInfo}
+            onRematch={handleRematch}
+          />
+          {renderRematchUI()}
+        </>
+      ) : (
+        <>
+          <GameInterface
+            gameInfo={gameInfo}
+            playerOne={playerOne}
+            playerTwo={playerTwo}
+            gameOver={gameOver}
+            winner={winner}
+            winnerPaid={winnerPaid}
+            onJoinGame={handleJoinGame}
+            ethToUsdRate={ethToUsdRate}
+            connectedPlayers={connectedPlayers}
+          />
+          <GameActionsBar
+            gameOver={gameOver}
+            onReportGameOver={handleReportGameOver}
+            onReportIssue={handleReportIssue}
+            onRematch={handleRematch}
+            onAcceptRematch={handleAcceptRematch}
+            onDeclineRematch={handleDeclineRematch}
+            onCancelRematch={handleCancelRematch}
+            rematchRequested={rematchRequested}
+            rematchRequestedBy={rematchRequestedBy}
+            userInfo={userInfo}
+            resetRematchState={() => dispatch(resetRematchState())}
+          />
+          {renderRematchUI()}
+        </>
+      )}
+    </div>
+  );
 };
 
 export default GamePage;
