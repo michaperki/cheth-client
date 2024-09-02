@@ -8,7 +8,7 @@ import {
   setPlayerOne, 
   setPlayerTwo, 
   setConnectedPlayers 
-} from '../store/slices/gameSlice';
+} from '../../store/slices/gameSlice';
 
 const useGameWebsocket = (gameId, userInfo) => {
     const dispatch = useDispatch();
