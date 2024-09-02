@@ -7,9 +7,13 @@ import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js
 import { useTheme } from '@mui/material/styles';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
 import { Typography, Button, Box } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGameById } from '../store/thunks/gameThunks';
 
 const GamePage = ({ userInfo }) => {
     const { gameId } = useParams();
+    const dispatch = useDispatch();
+    const { currentGame, loading, error } = useSelector(state => state.game);
     const theme = useTheme();
     const ethToUsdRate = useEthereumPrice();
 
@@ -38,6 +42,14 @@ const GamePage = ({ userInfo }) => {
         handleDeclineRematch,
         handleCancelRematch
     } = useGameActions(gameId, userInfo, handleFetchGameInfo, gameInfo?.lichess_id);
+
+    useEffect(() => {
+        dispatch(fetchGameById(gameId));
+    }, [dispatch, gameId]);
+
+    useEffect(() => {
+        console.log("redux current game state:", { currentGame, loading, error });        
+    }, [currentGame, loading, error]);
 
     useEffect(() => {
         if (gameId) {

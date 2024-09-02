@@ -5,8 +5,12 @@ import { Sidebar } from '../../components';
 import { useGameStats, useToast } from '../../hooks';
 import DashboardContent from '../../components/Dashboard/DashboardContent';
 import './DashboardPage.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllGames } from '../../store/thunks/gameThunks';
 
 const DashboardPage = ({ userInfo, onlineUsersCount }) => {
+    const dispatch = useDispatch();
+    const { allGames, loading, error } = useSelector(state => state.game);
     const ethToUsdRate = useEthereumPrice();
     const {
         gameCount,
@@ -20,6 +24,14 @@ const DashboardPage = ({ userInfo, onlineUsersCount }) => {
     useEffect(() => {
         fetchGameStats();
     }, [fetchGameStats]);
+
+    useEffect(() => {
+        dispatch(fetchAllGames());
+    }, [dispatch]);
+
+    useEffect(() => {
+        console.log("redux games state:", { allGames, loading, error });
+    }, [allGames, loading, error]);
 
     return (
         <Container className="dashboard-container">
