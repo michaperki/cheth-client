@@ -1,22 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, Button } from '@mui/material';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
-import { setTimeControl, setWagerSize, setIsSearching, setOpponentFound } from '../../store/slices/gameSettingsSlice';
+import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
-import './DashboardContent.css';
 
-const DashboardContent = ({ userInfo, showToast }) => {
+const DashboardContent = () => {
     const dispatch = useDispatch();
-    const { timeControl, wagerSize, isSearching, opponentFound } = useSelector((state) => state.gameSettings);
+    const { timeControl, wagerSize, isSearching } = useSelector((state) => state.gameSettings);
+    const userInfo = useSelector((state) => state.user.userInfo);
     const ethToUsdRate = useEthereumPrice();
 
     const {
+        opponentFound,
         cancelSearch
-    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
+    } = useDashboardWebsocket();
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -37,30 +38,21 @@ const DashboardContent = ({ userInfo, showToast }) => {
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
-    useEffect(() => {
-        if (opponentFound) {
-            showToast('Opponent found! Setting up the game...', 'success');
-        }
-    }, [opponentFound, showToast]);
-
     return (
         <Box className="dashboard-content">
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
-            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', my: 2 }}>
-                <SwitchOptions 
-                    label="Time Control" 
-                    options={timeControlOptions} 
-                    defaultValue="180" 
-                    setSelectedValue={(value) => dispatch(setTimeControl(value))} 
-                />
-                <Box sx={{ my: 2 }} /> {/* Spacer */}
-                <SwitchOptions 
-                    label="Wager Size" 
-                    options={wagerSizeOptions} 
-                    defaultValue="5" 
-                    setSelectedValue={(value) => dispatch(setWagerSize(value))} 
-                />
-            </Box>
+            <SwitchOptions 
+                label="Time Control" 
+                options={timeControlOptions} 
+                defaultValue="180" 
+                setSelectedValue={(value) => dispatch(setTimeControl(value))} 
+            />
+            <SwitchOptions 
+                label="Wager Size" 
+                options={wagerSizeOptions} 
+                defaultValue="5" 
+                setSelectedValue={(value) => dispatch(setWagerSize(value))} 
+            />
             {!isSearching && (
                 <PlayGameButton 
                     playGame={playGame} 
@@ -69,21 +61,10 @@ const DashboardContent = ({ userInfo, showToast }) => {
                 />
             )}
             {isSearching && (
-                <Box className="searching-container">
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
-                        <Button 
-                            onClick={() => {
-                                cancelSearch();
-                                dispatch(setIsSearching(false));
-                                dispatch(setOpponentFound(false));
-                            }} 
-                            variant="contained" 
-                            color="error"
-                            sx={{ mt: 2 }}
-                        >
-                            Cancel
-                        </Button>
+                        <Button onClick={cancelSearch} variant="contained" color="error">Cancel</Button>
                     )}
                 </Box>
             )}
