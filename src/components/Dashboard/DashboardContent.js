@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Grid } from '@mui/material';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
@@ -42,20 +42,26 @@ const DashboardContent = ({ userInfo, showToast }) => {
     }, [opponentFound, showToast]);
 
     return (
-        <Box className="dashboard-content">
+        <Box className="dashboard-content" sx={{ width: '100%', maxWidth: 600, margin: '0 auto' }}>
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
-            <SwitchOptions 
-                label="Time Control" 
-                options={timeControlOptions} 
-                defaultValue="180" 
-                setSelectedValue={(value) => dispatch(setTimeControl(value))} 
-            />
-            <SwitchOptions 
-                label="Wager Size" 
-                options={wagerSizeOptions} 
-                defaultValue="5" 
-                setSelectedValue={(value) => dispatch(setWagerSize(value))} 
-            />
+            <Grid container direction="column" spacing={2} sx={{ mb: 2 }}>
+                <Grid item>
+                    <SwitchOptions 
+                        label="Time Control" 
+                        options={timeControlOptions} 
+                        defaultValue="180" 
+                        setSelectedValue={(value) => dispatch(setTimeControl(value))} 
+                    />
+                </Grid>
+                <Grid item>
+                    <SwitchOptions 
+                        label="Wager Size" 
+                        options={wagerSizeOptions} 
+                        defaultValue="5" 
+                        setSelectedValue={(value) => dispatch(setWagerSize(value))} 
+                    />
+                </Grid>
+            </Grid>
             {!isSearching && (
                 <PlayGameButton 
                     playGame={playGame} 
@@ -67,11 +73,16 @@ const DashboardContent = ({ userInfo, showToast }) => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
-                        <Button onClick={() => {
-                            cancelSearch();
-                            dispatch(setIsSearching(false));
-                            dispatch(setOpponentFound(false));
-                        }} variant="contained" color="error">
+                        <Button 
+                            onClick={() => {
+                                cancelSearch();
+                                dispatch(setIsSearching(false));
+                                dispatch(setOpponentFound(false));
+                            }} 
+                            variant="contained" 
+                            color="error"
+                            sx={{ mt: 2 }}
+                        >
                             Cancel
                         </Button>
                     )}

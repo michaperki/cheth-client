@@ -7,7 +7,7 @@ import { GameInterface, GameActionsBar } from '../components/game';
 import GameCompleteScreen from '../components/GameComplete/GameCompleteScreen.js';
 import { Typography, Button, Box } from '@mui/material';
 import { useEthereumPrice } from '../contexts/EthereumPriceContext';
-import { resetGameState } from '../store/slices/gameStateSlice';
+import { resetGameState, setRematchRequested } from '../store/slices/gameStateSlice';
 
 const GamePage = () => {
     const { gameId } = useParams();
@@ -27,7 +27,6 @@ const GamePage = () => {
 
     const {
         handleFetchGameInfo,
-        connectedPlayers,
     } = useGameWebsocket(gameId, userInfo, dispatch);
 
     const {
@@ -79,6 +78,10 @@ const GamePage = () => {
         return null;
     };
 
+    const resetRematchState = () => {
+        dispatch(setRematchRequested({ requested: false, requestedBy: null }));
+    };
+
     if (!userInfo) {
         return <Typography>Loading user information...</Typography>;
     }
@@ -116,6 +119,7 @@ const GamePage = () => {
                         rematchRequested={rematchRequested}
                         rematchRequestedBy={rematchRequestedBy}
                         userInfo={userInfo}
+                        resetRematchState={resetRematchState}
                     />
                     {renderRematchUI()}
                 </>
