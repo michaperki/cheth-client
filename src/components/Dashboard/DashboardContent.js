@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, Button } from '@mui/material';
 import PlayGameButton from './PlayGameButton';
@@ -17,8 +17,10 @@ const DashboardContent = () => {
 
     const {
         opponentFound,
-        cancelSearch
-    } = useDashboardWebsocket(ethToUsdRate, userInfo);
+        cancelSearch,
+        searchingForOpponent,
+        setSearchingForOpponent
+    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -32,10 +34,16 @@ const DashboardContent = () => {
         { label: '$20', value: '20' },
     ];
 
-    const playGame = async () => {
+    const playGame = useCallback(async () => {
         dispatch(setIsSearching(true));
-        // ... rest of the playGame logic
-    };
+        setSearchingForOpponent(true);
+        // The actual WebSocket communication is handled in the useDashboardWebsocket hook
+    }, [dispatch, setSearchingForOpponent]);
+
+    const handleCancelSearch = useCallback(() => {
+        cancelSearch();
+        dispatch(setIsSearching(false));
+    }, [cancelSearch, dispatch]);
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
 
@@ -54,18 +62,18 @@ const DashboardContent = () => {
                 defaultValue="5" 
                 setSelectedValue={(value) => dispatch(setWagerSize(value))} 
             />
-            {!isSearching && (
+            {!searchingForOpponent && (
                 <PlayGameButton 
                     playGame={playGame} 
                     amount={wagerSize} 
                     ethereumAmount={wagerAmountInEth} 
                 />
             )}
-            {isSearching && (
+            {searchingForOpponent && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
-                        <Button onClick={cancelSearch} variant="contained" color="error">Cancel</Button>
+                        <Button onClick={handleCancelSearch} variant="contained" color="error">Cancel</Button>
                     )}
                 </Box>
             )}
