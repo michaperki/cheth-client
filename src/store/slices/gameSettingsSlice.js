@@ -1,11 +1,10 @@
-// src/store/slices/gameSettingsSlice.js
-
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   timeControl: '180',
   wagerSize: '5',
   isSearching: false,
+  opponentFound: false,
   currentGameId: null,
 };
 
@@ -22,12 +21,21 @@ const gameSettingsSlice = createSlice({
     setIsSearching: (state, action) => {
       state.isSearching = action.payload;
     },
+    setOpponentFound: (state, action) => {
+      state.opponentFound = action.payload;
+    },
     setCurrentGameId: (state, action) => {
       state.currentGameId = action.payload;
     },
   },
 });
 
-export const { setTimeControl, setWagerSize, setIsSearching, setCurrentGameId } = gameSettingsSlice.actions;
+export const { 
+  setTimeControl, 
+  setWagerSize, 
+  setIsSearching, 
+  setOpponentFound, 
+  setCurrentGameId 
+} = gameSettingsSlice.actions;
 
 export default gameSettingsSlice.reducer;

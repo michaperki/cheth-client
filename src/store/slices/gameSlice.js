@@ -17,6 +17,7 @@ const initialState = {
   playerOne: null,
   playerTwo: null,
   connectedPlayers: [],
+  hasPlayerJoined: false,
 };
 
 export const gameSlice = createSlice({
@@ -47,6 +48,9 @@ export const gameSlice = createSlice({
     setConnectedPlayers: (state, action) => {
       state.connectedPlayers = action.payload;
     },
+    setHasPlayerJoined: (state, action) => {
+      state.hasPlayerJoined = action.payload;
+    },
   },
 });
 
@@ -59,6 +63,7 @@ export const {
   setPlayerOne,
   setPlayerTwo,
   setConnectedPlayers,
+  setHasPlayerJoined,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

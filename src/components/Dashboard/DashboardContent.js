@@ -1,23 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Typography, Button } from '@mui/material';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
-import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
+import { setTimeControl, setWagerSize, setIsSearching, setOpponentFound } from '../../store/slices/gameSettingsSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
 
-const DashboardContent = () => {
+const DashboardContent = ({ userInfo, showToast }) => {
     const dispatch = useDispatch();
-    const { timeControl, wagerSize, isSearching } = useSelector((state) => state.gameSettings);
-    const userInfo = useSelector((state) => state.user.userInfo);
+    const { timeControl, wagerSize, isSearching, opponentFound } = useSelector((state) => state.gameSettings);
     const ethToUsdRate = useEthereumPrice();
 
     const {
-        opponentFound,
         cancelSearch
-    } = useDashboardWebsocket();
+    } = useDashboardWebsocket({ ethToUsdRate, userInfo });
 
     const timeControlOptions = [
         { label: '1 minute', value: '60' },
@@ -33,10 +31,15 @@ const DashboardContent = () => {
 
     const playGame = async () => {
         dispatch(setIsSearching(true));
-        // ... rest of the playGame logic
     };
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
+
+    useEffect(() => {
+        if (opponentFound) {
+            showToast('Opponent found! Setting up the game...', 'success');
+        }
+    }, [opponentFound, showToast]);
 
     return (
         <Box className="dashboard-content">
@@ -64,7 +67,13 @@ const DashboardContent = () => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography>{opponentFound ? "Opponent found! Setting Up Contract" : "Searching for opponent..."}</Typography>
                     {!opponentFound && (
-                        <Button onClick={cancelSearch} variant="contained" color="error">Cancel</Button>
+                        <Button onClick={() => {
+                            cancelSearch();
+                            dispatch(setIsSearching(false));
+                            dispatch(setOpponentFound(false));
+                        }} variant="contained" color="error">
+                            Cancel
+                        </Button>
                     )}
                 </Box>
             )}
