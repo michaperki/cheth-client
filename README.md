@@ -1,4 +1,5 @@
 # Cheth Client
+This is a gambling chess app.
 
 ## Commands
 
