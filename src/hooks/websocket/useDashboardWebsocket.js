@@ -4,7 +4,7 @@ import useWebSocket from "./useWebsocket";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import { toast } from "react-toastify";
-import { setSearchingForOpponent, setOpponentFound } from '../../store/slices/gameSlice';
+import { setSearchingForOpponent, setOpponentFound, setCurrentGame } from '../../store/slices/gameSlice';
 
 const useDashboardWebsocket = ({ ethToUsdRate }) => {
   const dispatch = useDispatch();
@@ -28,6 +28,7 @@ const useDashboardWebsocket = ({ ethToUsdRate }) => {
       console.log("Game contract ready:", messageData);
       clearSearchTimeout();
       dispatch(setSearchingForOpponent(false));
+      dispatch(setCurrentGame(messageData.gameId));
       navigate(`/game-pending/${messageData.gameId}`);
     }
 
