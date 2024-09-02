@@ -4,7 +4,7 @@ import { Box, Typography, Button } from '@mui/material';
 import { PlayGameButton } from './PlayGameButton';
 import { SwitchOptions } from './SwitchOptions';
 import { RatingsDisplay } from './RatingsDisplay';
-import { setTimeControl, setWagerSize, setIsSearching } from '../store/slices/gameSettingsSlice';
+import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
 
