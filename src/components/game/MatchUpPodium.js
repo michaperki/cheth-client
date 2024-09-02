@@ -10,7 +10,7 @@ import './MatchUpPodium.css';
 
 const MatchupPodium = () => {
     const theme = useTheme();
-    const { playerOne, playerTwo, currentGame: gameInfo, connectedPlayers } = useSelector(state => state.game);
+    const { playerOne, playerTwo, currentGame: gameInfo, connectedPlayers = [] } = useSelector(state => state.game);
     const timeControl = gameInfo?.time_control;
 
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';

@@ -1,9 +1,17 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from './useWebsocket';
+import { 
+  setCurrentGame, 
+  setPlayerOne, 
+  setPlayerTwo, 
+  setConnectedPlayers 
+} from '../store/slices/gameSlice';
 
 const useGameWebsocket = (gameId, userInfo) => {
+    const dispatch = useDispatch();
     const [gameInfo, setGameInfo] = useState(null);
     const [playerOne, setPlayerOne] = useState(null);
     const [playerTwo, setPlayerTwo] = useState(null);
@@ -24,6 +32,7 @@ const useGameWebsocket = (gameId, userInfo) => {
             case "GAME_OVER":
                 setGameOver(true);
                 setWinner(data.winner);
+                dispatch(setCurrentGame({ ...gameInfo, state: "5", winner: data.winner }));
                 break;
             case "PLAYER_CONNECTED":
             case "PLAYER_DISCONNECTED":
@@ -59,7 +68,7 @@ const useGameWebsocket = (gameId, userInfo) => {
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, [userInfo, navigate]);
+    }, [userInfo, navigate, gameInfo, dispatch]);
 
     const { socket, connectedPlayers } = useWebSocket(
         handleWebSocketMessage,
@@ -75,6 +84,7 @@ const useGameWebsocket = (gameId, userInfo) => {
             }
             const data = await response.json();
             setGameInfo(data);
+            dispatch(setCurrentGame(data));
 
             if (data.player1_id) {
                 handleFetchPlayerInfo(data.player1_id, setPlayerOne);
@@ -86,15 +96,17 @@ const useGameWebsocket = (gameId, userInfo) => {
 
             if (data.state === "5") {
                 setGameOver(true);
-                setWinner(data.winner ? await getWinnerUsername(data.winner) : 'Draw');
+                const winnerUsername = data.winner ? await getWinnerUsername(data.winner) : 'Draw';
+                setWinner(winnerUsername);
                 setWinnerPaid(true);
+                dispatch(setCurrentGame({ ...data, winnerUsername }));
             }
 
         } catch (error) {
             console.error('Error fetching game information:', error);
             toast.error('Error fetching game information');
         }
-    }, [gameId]);
+    }, [gameId, dispatch]);
 
     const handleFetchPlayerInfo = useCallback(async (playerId, setPlayerInfo) => {
         try {
@@ -110,11 +122,16 @@ const useGameWebsocket = (gameId, userInfo) => {
             }
             const data = await response.json();
             setPlayerInfo(data);
+            if (playerId === gameInfo?.player1_id) {
+                dispatch(setPlayerOne(data));
+            } else if (playerId === gameInfo?.player2_id) {
+                dispatch(setPlayerTwo(data));
+            }
         } catch (error) {
             console.error('Error fetching player information:', error);
             toast.error('Error fetching player information');
         }
-    }, []);
+    }, [dispatch, gameInfo]);
 
     const getWinnerUsername = async (winnerId) => {
         try {
@@ -151,6 +168,10 @@ const useGameWebsocket = (gameId, userInfo) => {
             return () => clearInterval(intervalId);
         }
     }, [gameId, handleFetchGameInfo]);
+
+    useEffect(() => {
+        dispatch(setConnectedPlayers(connectedPlayers));
+    }, [connectedPlayers, dispatch]);
 
     return {
         gameInfo,

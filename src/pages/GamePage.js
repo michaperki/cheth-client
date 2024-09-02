@@ -60,7 +60,9 @@ const GamePage = ({ userInfo }) => {
         if (playerTwo) {
             dispatch(setPlayerTwo(playerTwo));
         }
-        dispatch(setConnectedPlayers(connectedPlayers));
+        if (connectedPlayers) {
+            dispatch(setConnectedPlayers(connectedPlayers));
+        }
     }, [dispatch, gameInfo, playerOne, playerTwo, connectedPlayers]);
 
     console.log("game info", gameInfo);
