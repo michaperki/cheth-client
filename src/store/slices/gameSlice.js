@@ -63,6 +63,17 @@ const gameSlice = createSlice({
       state.rematchWagerSize = null;
       state.rematchTimeControl = null;
     },
+    updatePlayerInfo: (state, action) => {
+      if (action.payload.playerOne) {
+        state.playerOne = action.payload.playerOne;
+      }
+      if (action.payload.playerTwo) {
+        state.playerTwo = action.payload.playerTwo;
+      }
+    },
+    updateConnectedPlayers: (state, action) => {
+      state.connectedPlayers = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -75,7 +86,7 @@ const gameSlice = createSlice({
         state.gameInfo = action.payload;
         state.playerOne = action.payload.player1;
         state.playerTwo = action.payload.player2;
-        state.connectedPlayers = action.payload.connectedPlayers;
+        state.connectedPlayers = action.payload.connectedPlayers || [];
       })
       .addCase(fetchGameInfo.rejected, (state, action) => {
         state.loading = false;
@@ -94,6 +105,8 @@ export const {
   setRematchWagerSize,
   setRematchTimeControl,
   resetRematchState,
+  updatePlayerInfo,
+  updateConnectedPlayers,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

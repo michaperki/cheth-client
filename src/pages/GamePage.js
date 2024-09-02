@@ -16,7 +16,9 @@ import {
   setRematchRequestedBy,
   setRematchWagerSize,
   setRematchTimeControl,
-  resetRematchState
+  resetRematchState,
+  updatePlayerInfo,
+  updateConnectedPlayers
 } from '../store/slices/gameSlice';
 import {
   joinGame,
@@ -63,6 +65,7 @@ const GamePage = () => {
 
     websocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('WebSocket message received:', data);
       switch (data.type) {
         case 'GAME_UPDATE':
           dispatch(updateGameState(data.gameState));
@@ -82,7 +85,11 @@ const GamePage = () => {
           break;
         case 'PLAYER_CONNECTED':
         case 'PLAYER_DISCONNECTED':
+        case 'PLAYER_STATUS_UPDATE':
           dispatch(fetchGameInfo(gameId));
+          break;
+        case 'PLAYER_INFO_UPDATE':
+          dispatch(updatePlayerInfo(data.playerInfo));
           break;
         default:
           console.log('Unhandled websocket message:', data);
@@ -95,7 +102,7 @@ const GamePage = () => {
   }, [dispatch, gameId, userInfo]);
 
   const handleJoinGame = () => {
-    dispatch(joinGame(gameId, userInfo.user_id));
+    dispatch(joinGame({ gameId, userId: userInfo.user_id }));
   };
 
   const handleReportGameOver = () => {
@@ -107,21 +114,21 @@ const GamePage = () => {
   };
 
   const handleRematch = () => {
-    dispatch(requestRematch(gameId, userInfo.user_id));
+    dispatch(requestRematch({ gameId, userId: userInfo.user_id }));
   };
 
   const handleAcceptRematch = () => {
-    dispatch(acceptRematch(gameId, userInfo.user_id));
+    dispatch(acceptRematch({ gameId, userId: userInfo.user_id }));
     dispatch(resetRematchState());
   };
 
   const handleDeclineRematch = () => {
-    dispatch(declineRematch(gameId, userInfo.user_id));
+    dispatch(declineRematch({ gameId, userId: userInfo.user_id }));
     dispatch(resetRematchState());
   };
 
   const handleCancelRematch = () => {
-    dispatch(cancelRematch(gameId, userInfo.user_id));
+    dispatch(cancelRematch({ gameId, userId: userInfo.user_id }));
     dispatch(resetRematchState());
   };
 
