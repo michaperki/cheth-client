@@ -19,7 +19,6 @@ const GameTable = ({
   resolveGame,
 }) => {
   const theme = useTheme();
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar visibility
   const [selectedGame, setSelectedGame] = useState(null);
 
   const mockDataGames = gameData.map((game, index) => ({
@@ -69,7 +68,6 @@ const GameTable = ({
 
   const handleCopyAddress = (address) => {
     navigator.clipboard.writeText(address);
-    setSnackbarOpen(true);
   };
 
   const abbreviateAddress = (address) => {
@@ -155,10 +153,6 @@ const GameTable = ({
     setSelectedGame(null);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
-
   const columns = [
     { field: "game_id", headerName: "ID", flex: 0.25 },
     {
@@ -240,12 +234,6 @@ const GameTable = ({
           onResolveGame={handleResolveGame}
         />
       </Box>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={2000} // 2 seconds
-        onClose={handleCloseSnackbar}
-        message="Address copied"
-      />
     </Box>
   );
 };
