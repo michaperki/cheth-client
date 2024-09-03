@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from '../../constants/gameConstants';
 
 const initialState = {
-  timeControl: '180',
-  wagerSize: '5',
+  timeControl: TIME_CONTROL_OPTIONS[1].value, // Default to 3 minutes
+  wagerSize: WAGER_SIZE_OPTIONS[0].value, // Default to $5
   isSearching: false,
   opponentFound: false,
   currentGameId: null,

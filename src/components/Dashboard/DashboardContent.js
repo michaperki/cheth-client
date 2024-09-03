@@ -1,14 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
-import { setTimeControl, setWagerSize, setIsSearching } from '../../store/slices/gameSettingsSlice';
+import { setTimeControl, setWagerSize, setIsSearching, setOpponentFound, setCurrentGameId } from '../../store/slices/gameSettingsSlice';
 import { setGameSettings } from '../../store/slices/gameSlice';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { useDashboardWebsocket } from '../../hooks';
+import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from '../../constants/gameConstants';
 import "./DashboardContent.css";
 
 const DashboardContent = () => {
@@ -23,18 +24,6 @@ const DashboardContent = () => {
         setSearchingForOpponent,
         cancelSearch
     } = useDashboardWebsocket({ ethToUsdRate, userInfo });
-
-    const timeControlOptions = [
-        { label: '1 minute', value: '60' },
-        { label: '3 minutes', value: '180' },
-        { label: '5 minutes', value: '300' },
-    ];
-
-    const wagerSizeOptions = [
-        { label: '$5', value: '5' },
-        { label: '$10', value: '10' },
-        { label: '$20', value: '20' },
-    ];
 
     const playGame = useCallback(async () => {
         try {
@@ -62,8 +51,9 @@ const DashboardContent = () => {
                 throw new Error('Failed to play the game.');
             }
 
-            // Handle success response
+            const gameData = await response.json();
             dispatch(setGameSettings({ timeControl, wagerSize }));
+            dispatch(setCurrentGameId(gameData.game_id));
             console.log('Redux game state updated');
         } catch (error) {
             console.error('Error:', error);
@@ -76,6 +66,7 @@ const DashboardContent = () => {
     const handleCancelSearch = useCallback(() => {
         cancelSearch();
         dispatch(setIsSearching(false));
+        dispatch(setOpponentFound(false));
     }, [cancelSearch, dispatch]);
 
     const wagerAmountInEth = (wagerSize / ethToUsdRate).toFixed(6);
@@ -85,13 +76,13 @@ const DashboardContent = () => {
             <RatingsDisplay userInfo={userInfo} selectedTimeControl={timeControl} />
             <SwitchOptions 
                 label="Time Control" 
-                options={timeControlOptions} 
+                options={TIME_CONTROL_OPTIONS} 
                 defaultValue="180" 
                 setSelectedValue={(value) => dispatch(setTimeControl(value))} 
             />
             <SwitchOptions 
                 label="Wager Size" 
-                options={wagerSizeOptions} 
+                options={WAGER_SIZE_OPTIONS} 
                 defaultValue="5" 
                 setSelectedValue={(value) => dispatch(setWagerSize(value))} 
             />
