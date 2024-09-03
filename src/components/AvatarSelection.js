@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { CircularProgress, Box, Button, Grid, Paper } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import { setAvatarAsync } from '../store/thunks/avatarThunks';
 
-const AvatarSelection = ({ userInfo }) => {
+const AvatarSelection = () => {
+    const dispatch = useDispatch();
+    const userInfo = useSelector(state => state.user.userInfo);
+    const avatarUpdateStatus = useSelector(state => state.user.avatarUpdateStatus);
     const [avatars, setAvatars] = useState([]);
-    const [selectedAvatar, setSelectedAvatar] = useState(userInfo.avatar);
+    const [selectedAvatar, setSelectedAvatar] = useState(userInfo?.avatar);
     const [isSaveEnabled, setSaveEnabled] = useState(false);
 
     useEffect(() => {
@@ -25,25 +30,14 @@ const AvatarSelection = ({ userInfo }) => {
     }, []);
 
     const handleAvatarClick = (avatar) => {
-        console.log('Selected avatar:', avatar);
         setSelectedAvatar(avatar);
         setSaveEnabled(avatar !== userInfo.avatar);
     };
 
     const handleSave = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/setAvatar`, {
-            method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: userInfo.user_id, avatar: selectedAvatar })
-            });
-            if (!response.ok) {
-                throw new Error('Failed to update avatar');
-            }
+        if (userInfo && selectedAvatar) {
+            await dispatch(setAvatarAsync({ userId: userInfo.user_id, avatar: selectedAvatar }));
             setSaveEnabled(false);
-            // Handle successful save (e.g., show notification or update user context)
-        } catch (error) {
-            console.error('Error saving avatar:', error);
         }
     };
 
@@ -88,9 +82,10 @@ const AvatarSelection = ({ userInfo }) => {
                     color="primary"
                     startIcon={<SaveIcon />}
                     onClick={handleSave}
+                    disabled={avatarUpdateStatus === 'loading'}
                     sx={{ marginTop: 3 }}
                 >
-                    Save Avatar
+                    {avatarUpdateStatus === 'loading' ? 'Saving...' : 'Save Avatar'}
                 </Button>
             )}
         </Box>

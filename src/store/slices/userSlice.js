@@ -1,5 +1,3 @@
-// src/store/slices/userSlice.js
-
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -7,31 +5,45 @@ const initialState = {
   walletAddress: null,
   isAdmin: false,
   avatarUrl: null,
+  avatarUpdateStatus: 'idle',
+  avatarUpdateError: null
 };
 
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     setUserInfo: (state, action) => {
       state.userInfo = action.payload;
       state.isAdmin = action.payload?.user_role === 'admin';
+      state.avatarUrl = action.payload?.avatar;
     },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;
     },
-    setAvatarUrl: (state, action) => {
-      state.avatarUrl = action.payload;
-    },
     clearUserInfo: (state) => {
-      state.userInfo = null;
-      state.walletAddress = null;
-      state.isAdmin = false;
-      state.avatarUrl = null;
+      return { ...initialState };
     },
-  },
+    setAvatarUpdateStatus: (state, action) => {
+      state.avatarUpdateStatus = action.payload;
+    },
+    setAvatarUpdateError: (state, action) => {
+      state.avatarUpdateError = action.payload;
+    },
+    updateAvatar: (state, action) => {
+      state.userInfo.avatar = action.payload;
+      state.avatarUrl = action.payload;
+    }
+  }
 });
 
-export const { setUserInfo, setWalletAddress, setAvatarUrl, clearUserInfo } = userSlice.actions;
+export const { 
+  setUserInfo, 
+  setWalletAddress, 
+  clearUserInfo, 
+  setAvatarUpdateStatus, 
+  setAvatarUpdateError,
+  updateAvatar
+} = userSlice.actions;
 
 export default userSlice.reducer;
