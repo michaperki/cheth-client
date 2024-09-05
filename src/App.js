@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Header, NavigationRoutes } from './components';
+import { Header, NavigationRoutes } from 'components';
 import { useWebSocket, useWallet, useDarkMode, useFetchUser } from './hooks';
 import { EthereumPriceProvider } from './contexts/EthereumPriceContext';
 import { ThemeProvider } from '@mui/material/styles';
