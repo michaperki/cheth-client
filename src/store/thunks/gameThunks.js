@@ -1,5 +1,5 @@
 // src/store/thunks/gameThunks.js
-import { setAllGames, setCurrentGame, setLoading, setError } from 'slices/gameSlice';
+import { setAllGames, setCurrentGame, setLoading, setError } from 'store/slices/gameSlice';
 
 export const fetchAllGames = () => async (dispatch) => {
   dispatch(setLoading(true));
