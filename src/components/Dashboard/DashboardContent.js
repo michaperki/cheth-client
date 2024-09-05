@@ -1,5 +1,5 @@
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, CircularProgress, Typography, Button } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -17,7 +17,9 @@ const DashboardContent = () => {
   const dispatch = useDispatch();
   const { timeControl, wagerSize, isSearching } = useSelector((state) => state.gameSettings);
   const userInfo = useSelector((state) => state.user.userInfo);
+  
   const ethToUsdRate = useEthereumPrice();
+  const [ethPriceLoading, setEthPriceLoading] = useState(true); // Loading state for ETH price
 
   const {
     searchingForOpponent,
@@ -76,10 +78,19 @@ const DashboardContent = () => {
   }, [wagerSize, ethToUsdRate]);
 
   useEffect(() => {
-    if (!ethToUsdRate) {
-      toast.error('Failed to fetch Ethereum price.');
+    // Simulate a loading state for the ETH price (e.g., assuming it takes time to load)
+    if (ethToUsdRate > 0) {
+      setEthPriceLoading(false);
+    } else if (ethToUsdRate === 0) {
+      setTimeout(() => setEthPriceLoading(false), 5000); // Wait for 5 seconds before marking it as failed
     }
   }, [ethToUsdRate]);
+
+  useEffect(() => {
+    if (!ethPriceLoading && ethToUsdRate === 0) {
+      toast.error('Failed to fetch Ethereum price.');
+    }
+  }, [ethPriceLoading, ethToUsdRate]);
 
   return (
     <Box className="dashboard-content">
@@ -96,7 +107,7 @@ const DashboardContent = () => {
         defaultValue="5" 
         setSelectedValue={(value) => dispatch(setWagerSize(value))} 
       />
-      {!searchingForOpponent && (
+      {!searchingForOpponent && !ethPriceLoading && (
         <PlayGameButton 
           playGame={playGame} 
           amount={wagerSize} 
