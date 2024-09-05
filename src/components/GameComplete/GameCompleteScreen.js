@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 const GameCompleteScreen = ({ onRematch }) => {
   const theme = useTheme();
   const userInfo = useSelector(state => state.user.userInfo);
-  const { playerOne, playerTwo } = useSelector(state => state.game);
+  const { currentGame: gameInfo } = useSelector(state => state.game);
   const { winner } = useSelector(state => state.gameState);
 
   const isUserWinner = userInfo && winner && userInfo.username === winner;
@@ -27,19 +27,27 @@ const GameCompleteScreen = ({ onRematch }) => {
         Game Complete
       </Typography>
       
-      <MatchupPodium winner={winnerUsername} />
-      
-      <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
-        {winner === 'Draw' ? "It's a draw!" : `Winner: ${winnerUsername}`}
+      <Typography variant="h4" className="game-id" sx={{ mb: 3 }}>
+        Game ID: {gameInfo?.game_id}
       </Typography>
-      
-      <Typography variant="body1" sx={{ mb: 3 }}>
-        {isUserWinner ? 'Congratulations! You won!' : (winner === 'Draw' ? 'Good game!' : 'Better luck next time!')}
-      </Typography>
-      
-      <Button onClick={onRematch} variant="contained" color="primary">
-        Rematch
-      </Button>
+
+      {gameInfo && (
+        <>
+          <MatchupPodium winner={winner} />
+          
+          <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
+            {winner === 'Draw' ? "It's a draw!" : `Winner: ${winnerUsername}`}
+          </Typography>
+          
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            {isUserWinner ? 'Congratulations! You won!' : (winner === 'Draw' ? 'Good game!' : 'Better luck next time!')}
+          </Typography>
+          
+          <Button onClick={onRematch} variant="contained" color="primary">
+            Rematch
+          </Button>
+        </>
+      )}
     </Box>
   );
 };
