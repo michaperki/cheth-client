@@ -1,7 +1,7 @@
 // src/store/slices/gameStatsSlice.js
 
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchGameStats } from '../thunks/gameStatsThunks';
+import { fetchGameStats } from 'store/thunks/gameStatsThunks';
 
 const initialState = {
   totalGames: 0,

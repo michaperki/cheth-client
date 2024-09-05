@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from '../../constants/gameConstants';
+import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from 'constants/gameConstants';
 
 const initialState = {
   timeControl: TIME_CONTROL_OPTIONS[1].value, // Default to 3 minutes
