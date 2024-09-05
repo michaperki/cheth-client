@@ -1,12 +1,17 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Typography, Button, Box } from '@mui/material';
 import MatchupPodium from '../game/MatchUpPodium';
 import { useTheme } from '@mui/material/styles';
 
-const GameCompleteScreen = ({ playerOne, playerTwo, winner, userInfo, onRematch }) => {
+const GameCompleteScreen = ({ onRematch }) => {
   const theme = useTheme();
+  const userInfo = useSelector(state => state.user.userInfo);
+  const { playerOne, playerTwo } = useSelector(state => state.game);
+  const { winner } = useSelector(state => state.gameState);
+
   const isUserWinner = userInfo && winner && userInfo.username === winner;
-  const winnerUsername = winner === 'Draw' ? 'Draw' : (winner === playerOne?.username ? playerOne?.username : playerTwo?.username);
+  const winnerUsername = winner === 'Draw' ? 'Draw' : winner;
 
   return (
     <Box sx={{

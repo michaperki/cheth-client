@@ -1,12 +1,11 @@
-
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGameActions } from '../../hooks';
 import { useGameWebsocket } from '../../hooks/websocket';
 import { GameInterface, GameActionsBar } from '../../components/game';
-import GameCompleteScreen from '../../components/GameComplete/GameCompleteScreen.js';
-import { Typography, Button, Box } from '@mui/material';
+import GameCompleteScreen from '../../components/GameComplete/GameCompleteScreen';
+import { Typography, Box } from '@mui/material';
 import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
 import { resetGameState, setRematchRequested } from '../../store/slices/gameStateSlice';
 
@@ -17,8 +16,6 @@ const GamePage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
     const {
         gameInfo,
-        playerOne,
-        playerTwo,
         gameOver,
         winner,
         winnerPaid,
@@ -91,13 +88,7 @@ const GamePage = () => {
         <div className="game-page-container">
             {isGameComplete ? (
                 <>
-                    <GameCompleteScreen
-                        playerOne={playerOne}
-                        playerTwo={playerTwo}
-                        winner={winner}
-                        userInfo={userInfo}
-                        onRematch={handleRematch}
-                    />
+                    <GameCompleteScreen onRematch={handleRematch} />
                     {renderRematchUI()}
                 </>
             ) : (
