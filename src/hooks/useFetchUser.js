@@ -1,8 +1,8 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useUserService } from '../services/userService';
-import { createErrorHandler } from '../utils/errorHandler';
-import { setUserInfo, clearUserInfo } from '../store/slices/userSlice';
+import { useUserService } from 'services/userService';
+import { createErrorHandler } from 'utils/errorHandler';
+import { setUserInfo, clearUserInfo } from 'store/slices/userSlice';
 
 export const useFetchUser = () => {
   const dispatch = useDispatch();

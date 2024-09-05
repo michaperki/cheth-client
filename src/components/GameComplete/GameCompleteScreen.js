@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Typography, Button, Box } from '@mui/material';
-import MatchupPodium from '../game/MatchUpPodium';
+import MatchupPodium from 'components/game/MatchUpPodium';
 import { useTheme } from '@mui/material/styles';
 
 const GameCompleteScreen = ({ onRematch }) => {

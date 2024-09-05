@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { CircularProgress, Box, Button, Grid, Paper } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
-import { setAvatarAsync } from '../store/thunks/avatarThunks';
+import { setAvatarAsync } from 'store/thunks/avatarThunks';
 
 const AvatarSelection = () => {
     const dispatch = useDispatch();

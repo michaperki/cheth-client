@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSDK } from "@metamask/sdk-react";
-import { setWalletAddress } from '../store/slices/userSlice';
+import { setWalletAddress } from 'store/slices/userSlice';
 
 const useWallet = () => {
     const dispatch = useDispatch();

@@ -11,7 +11,7 @@ import {
   setWinner,
   setWinnerPaid,
   setRematchRequested
-} from '../../store/slices/gameStateSlice';
+} from 'store/slices/gameStateSlice';
 
 const useGameWebsocket = (gameId, userInfo, dispatch) => {
     const [connectedPlayers, setConnectedPlayers] = useState([]);

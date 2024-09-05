@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Web3 from 'web3';
 import { toast } from 'react-toastify';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import { setOnlineUsersCount } from '../../store/slices/onlineUsersSlice';
+import { useEthereumPrice } from 'contexts/EthereumPriceContext';
+import { setOnlineUsersCount } from 'store/slices/onlineUsersSlice';
 
 const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 

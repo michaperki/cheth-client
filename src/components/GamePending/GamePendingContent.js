@@ -3,7 +3,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Button, Typography, Box } from "@mui/material";
-import { NumberDisplay, MatchUpPodium } from "../game";
+import { NumberDisplay, MatchUpPodium } from "components/game";
 import Web3 from "web3";
 import "./GamePendingContent.css";
 

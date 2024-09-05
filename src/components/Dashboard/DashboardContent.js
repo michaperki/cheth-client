@@ -6,11 +6,11 @@ import { toast } from 'react-toastify';
 import PlayGameButton from './PlayGameButton';
 import SwitchOptions from './SwitchOptions';
 import RatingsDisplay from './RatingsDisplay';
-import { setTimeControl, setWagerSize, setIsSearching, setOpponentFound, setCurrentGameId } from '../../store/slices/gameSettingsSlice';
-import { setGameSettings } from '../../store/slices/gameSlice';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import { useDashboardWebsocket } from '../../hooks';
-import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from '../../constants/gameConstants';
+import { setTimeControl, setWagerSize, setIsSearching, setOpponentFound, setCurrentGameId } from 'store/slices/gameSettingsSlice';
+import { setGameSettings } from 'store/slices/gameSlice';
+import { useEthereumPrice } from 'contexts/EthereumPriceContext';
+import { useDashboardWebsocket } from 'hooks';
+import { TIME_CONTROL_OPTIONS, WAGER_SIZE_OPTIONS } from 'constants/gameConstants';
 import "./DashboardContent.css";
 
 const DashboardContent = () => {
