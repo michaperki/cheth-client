@@ -9,12 +9,14 @@ import "./GamePendingContent.css";
 
 const GamePendingContent = ({
   ethToUsdRate,
-  hasPlayerJoined,
   joinGame,
   cancelGame,
 }) => {
-  const { currentGame: gameInfo, playerOne, playerTwo, connectedPlayers } = useSelector(state => state.game);
-  const contractBalance = gameInfo?.reward_pool || "0";
+  const gameInfo = useSelector(state => state.game.currentGame);
+  const playerOne = useSelector(state => state.game.playerOne);
+  const playerTwo = useSelector(state => state.game.playerTwo);
+  const hasPlayerJoined = useSelector(state => state.game.hasPlayerJoined);
+  const contractBalance = useSelector(state => state.game.contractBalance);
 
   return (
     <Box className="game-pending-content">

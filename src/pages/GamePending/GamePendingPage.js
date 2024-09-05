@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Chess from '../../abis/Chess.json';
 import { useTheme } from '@mui/material/styles';
 import { Typography } from '@mui/material';
@@ -12,56 +12,26 @@ import Web3 from 'web3';
 import GamePendingContent from '../../components/GamePending';
 import './GamePendingPage.css';
 import { toast } from 'react-toastify';
-import { setPlayerOne, setPlayerTwo, setConnectedPlayers, setCurrentGame } from '../../store/slices/gameSlice';
+import { setHasPlayerJoined, setCurrentGame } from '../../store/slices/gameSlice';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();
     const [contractInstance, setContractInstance] = useState(null);
-    const [joinedPlayers, setJoinedPlayers] = useState([]);
     const dispatch = useDispatch();
     const theme = useTheme();
     const { walletAddress, connectAccount, connected, provider } = useWallet();
     const ethToUsdRate = useEthereumPrice();
 
-    const {
-        hasPlayerJoined,
-        gameInfo,
-        setGameInfo,
-        contractAddress,
-        contractBalance,
-        getGameInfo,
-        player_one,
-        player_two,
-        gameState,
-        connectedPlayers,
-    } = useGamePendingWebsocket(gameId, userInfo);
+    const gameInfo = useSelector(state => state.game.currentGame);
+    const hasPlayerJoined = useSelector(state => state.game.hasPlayerJoined);
+    const contractAddress = useSelector(state => state.game.contractAddress);
+    const contractBalance = useSelector(state => state.game.contractBalance);
+    const playerOne = useSelector(state => state.game.playerOne);
+    const playerTwo = useSelector(state => state.game.playerTwo);
+    const gameState = useSelector(state => state.game.currentGame?.state);
+    const connectedPlayers = useSelector(state => state.game.connectedPlayers);
 
-    console.log("connectedPlayers", connectedPlayers);
-
-    useEffect(() => {
-        getGameInfo();
-    }, [getGameInfo]);
-
-    useEffect(() => {
-        if (gameInfo) {
-            const updatedJoinedPlayers = [];
-            if (gameInfo.player1_ready) {
-                updatedJoinedPlayers.push(gameInfo.player1_id);
-            }
-            if (gameInfo.player2_ready) {
-                updatedJoinedPlayers.push(gameInfo.player2_id);
-            }
-            setJoinedPlayers(updatedJoinedPlayers);
-            dispatch(setCurrentGame(gameInfo));
-        }
-        if (player_one) {
-            dispatch(setPlayerOne(player_one));
-        }
-        if (player_two) {
-            dispatch(setPlayerTwo(player_two));
-        }
-        dispatch(setConnectedPlayers(connectedPlayers));
-    }, [dispatch, gameInfo, player_one, player_two, connectedPlayers]);
+    const { getGameInfo } = useGamePendingWebsocket(gameId, userInfo);
 
     useEffect(() => {
         if (provider && contractAddress) {
@@ -92,7 +62,8 @@ const GamePendingPage = ({ userInfo }) => {
                 value: entryFeeInWei,
                 gas: 3000000,
             });
-            setGameInfo(prev => ({ ...prev, transactionHash: tx.transactionHash }));
+            dispatch(setCurrentGame({ ...gameInfo, transactionHash: tx.transactionHash }));
+            dispatch(setHasPlayerJoined(true));
             toast.success('Successfully joined the game!');
         } catch (error) {
             console.error('Error:', error);

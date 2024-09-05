@@ -18,6 +18,8 @@ const initialState = {
   playerTwo: null,
   connectedPlayers: [],
   hasPlayerJoined: false,
+  contractAddress: null,
+  contractBalance: '0',
 };
 
 export const gameSlice = createSlice({
@@ -51,6 +53,12 @@ export const gameSlice = createSlice({
     setHasPlayerJoined: (state, action) => {
       state.hasPlayerJoined = action.payload;
     },
+    setContractAddress: (state, action) => {
+      state.contractAddress = action.payload;
+    },
+    setContractBalance: (state, action) => {
+      state.contractBalance = action.payload;
+    },
   },
 });
 
@@ -64,6 +72,8 @@ export const {
   setPlayerTwo,
   setConnectedPlayers,
   setHasPlayerJoined,
+  setContractAddress,
+  setContractBalance,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;
