@@ -1,25 +1,41 @@
 import React from 'react';
-import { Typography, Button } from '@mui/material';
+import { Typography, Button, Box } from '@mui/material';
+import MatchupPodium from '../game/MatchUpPodium';
+import { useTheme } from '@mui/material/styles';
 
 const GameCompleteScreen = ({ playerOne, playerTwo, winner, userInfo, onRematch }) => {
+  const theme = useTheme();
   const isUserWinner = userInfo && winner && userInfo.username === winner;
-  const winnerUsername = winner === playerOne?.username ? playerOne?.username : playerTwo?.username;
+  const winnerUsername = winner === 'Draw' ? 'Draw' : (winner === playerOne?.username ? playerOne?.username : playerTwo?.username);
 
   return (
-    <div>
-      <Typography variant="h4">
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: theme.spacing(3),
+      backgroundColor: theme.palette.background.paper,
+      borderRadius: theme.shape.borderRadius,
+      boxShadow: theme.shadows[3],
+    }}>
+      <Typography variant="h4" sx={{ mb: 3 }}>
         Game Complete
       </Typography>
-      <Typography variant="h5">
-        {winner ? `Winner: ${winnerUsername}` : 'It\'s a draw!'}
+      
+      <MatchupPodium winner={winnerUsername} />
+      
+      <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
+        {winner === 'Draw' ? "It's a draw!" : `Winner: ${winnerUsername}`}
       </Typography>
-      <Typography variant="body1">
-        {isUserWinner ? 'Congratulations! You won!' : 'Better luck next time!'}
+      
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        {isUserWinner ? 'Congratulations! You won!' : (winner === 'Draw' ? 'Good game!' : 'Better luck next time!')}
       </Typography>
+      
       <Button onClick={onRematch} variant="contained" color="primary">
         Rematch
       </Button>
-    </div>
+    </Box>
   );
 };
 
