@@ -4,8 +4,8 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
 import OnboardingPage from '../pages/OnboardingPage';
 import DashboardPage from '../pages/Dashboard/DashboardPage';
-import GamePendingPage from '../pages/GamePending';
-import GamePage from '../pages/GamePage';
+import GamePendingPage from '../pages/GamePending/GamePendingPage';
+import GamePage from '../pages/Game/GamePage';
 import AccountPage from '../pages/AccountPage';
 import AdminPage from '../pages/Admin/AdminPage';
 
