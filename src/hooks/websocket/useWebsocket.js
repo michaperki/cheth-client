@@ -1,5 +1,4 @@
 // src/hooks/websocket/useWebsocket.js
-
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Web3 from 'web3';
@@ -23,8 +22,6 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
     userIdRef.current = userId;
     messageTypeFilterRef.current = messageTypeFilter;
   }, [handleWebSocketMessage, userId, messageTypeFilter]);
-
-  const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userId}`;
 
   const handleMessage = useCallback((event) => {
     console.log('Received message in useWebsocket hook:', event.data);
@@ -55,28 +52,45 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
   }, [ethToUsdRate, dispatch]);
 
   useEffect(() => {
-    const ws = new WebSocket(WEBSOCKET_URL);
-    setSocket(ws);
+    let ws = null;
 
-    ws.onopen = () => {
-      console.log('Connected to WebSocket');
+    const connectWebSocket = () => {
       if (userIdRef.current) {
-        console.log('Sending CONNECT message to WebSocket server');
-        console.log('userId:', userIdRef.current);
-        ws.send(JSON.stringify({ type: 'CONNECT', userId: userIdRef.current }));
+        const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userIdRef.current}`;
+        ws = new WebSocket(WEBSOCKET_URL);
+
+        ws.onopen = () => {
+          console.log('Connected to WebSocket');
+          console.log('Sending CONNECT message to WebSocket server');
+          console.log('userId:', userIdRef.current);
+          ws.send(JSON.stringify({ type: 'CONNECT', userId: userIdRef.current }));
+          setSocket(ws);
+        };
+
+        ws.onmessage = handleMessage;
+
+        ws.onclose = (event) => {
+          console.log('Disconnected from WebSocket', event.reason);
+          setSocket(null);
+          // Attempt to reconnect after a delay
+          setTimeout(connectWebSocket, 5000);
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          ws.close();
+        };
       }
     };
 
-    ws.onmessage = handleMessage;
-
-    ws.onclose = () => {
-      console.log('Disconnected from WebSocket');
-    };
+    connectWebSocket();
 
     return () => {
-      ws.close();
+      if (ws) {
+        ws.close();
+      }
     };
-  }, [WEBSOCKET_URL, handleMessage]);
+  }, [handleMessage]);
 
   return {
     socket,
