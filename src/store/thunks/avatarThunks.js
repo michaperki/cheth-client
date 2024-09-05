@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setAvatarUpdateStatus, setAvatarUpdateError, updateAvatar } from 'slices/userSlice';
+import { setAvatarUpdateStatus, setAvatarUpdateError, updateAvatar } from 'store/slices/userSlice';
 
 export const setAvatarAsync = createAsyncThunk(
   'user/setAvatar',
