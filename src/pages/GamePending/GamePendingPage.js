@@ -3,16 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Chess from '../../abis/Chess.json';
+import Chess from 'abis/Chess.json';
 import { useTheme } from '@mui/material/styles';
 import { Typography } from '@mui/material';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import { useWallet, useGamePendingWebsocket } from '../../hooks';
+import { useEthereumPrice } from 'contexts/EthereumPriceContext';
+import { useWallet, useGamePendingWebsocket } from 'hooks';
 import Web3 from 'web3';
-import GamePendingContent from '../../components/GamePending';
+import GamePendingContent from 'components/GamePending';
 import './GamePendingPage.css';
 import { toast } from 'react-toastify';
-import { setHasPlayerJoined, setCurrentGame } from '../../store/slices/gameSlice';
+import { setHasPlayerJoined, setCurrentGame } from 'store/slices/gameSlice';
 
 const GamePendingPage = ({ userInfo }) => {
     const { gameId } = useParams();

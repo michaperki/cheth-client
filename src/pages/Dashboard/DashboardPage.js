@@ -3,11 +3,11 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Grid } from '@mui/material';
-import { Sidebar } from '../../components';
-import { useToast } from '../../hooks';
-import DashboardContent from '../../components/Dashboard/DashboardContent';
-import { fetchGameStats } from '../../store/thunks/gameStatsThunks';
-import { fetchEthereumPrice } from '../../store/slices/ethereumPriceSlice';
+import { Sidebar } from 'components';
+import { useToast } from 'hooks';
+import DashboardContent from 'components/Dashboard/DashboardContent';
+import { fetchGameStats } from 'store/thunks/gameStatsThunks';
+import { fetchEthereumPrice } from 'store/slices/ethereumPriceSlice';
 import './DashboardPage.css';
 
 const DashboardPage = () => {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material';
-import { useWallet, useSubmitUserInfo } from '../hooks';
+import { useWallet, useSubmitUserInfo } from 'hooks';
 
 const Onboarding = () => {
     const { lichessUsername } = useParams();

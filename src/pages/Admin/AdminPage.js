@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useEthereumPrice } from "../../contexts/EthereumPriceContext";
-import { useWebSocket } from "../../hooks";
+import { useEthereumPrice } from "contexts/EthereumPriceContext";
+import { useWebSocket } from "hooks";
 import StateBox from "./StateBox";
 import GameTable from "./GameTable";
 import CommissionBarChart from "./CommissionBarChart";

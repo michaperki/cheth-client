@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useGameActions } from '../../hooks';
-import { useGameWebsocket } from '../../hooks/websocket';
-import { GameInterface, GameActionsBar } from '../../components/game';
-import GameCompleteScreen from '../../components/GameComplete/GameCompleteScreen';
+import { useGameActions } from 'hooks';
+import { useGameWebsocket } from 'hooks/websocket';
+import { GameInterface, GameActionsBar } from 'components/game';
+import GameCompleteScreen from 'components/GameComplete/GameCompleteScreen';
 import { Typography, Button, Box } from '@mui/material';
-import { useEthereumPrice } from '../../contexts/EthereumPriceContext';
-import { resetGameState, setRematchRequested } from '../../store/slices/gameStateSlice';
+import { useEthereumPrice } from 'contexts/EthereumPriceContext';
+import { resetGameState, setRematchRequested } from 'store/slices/gameStateSlice';
 
 const GamePage = () => {
     const { gameId } = useParams();

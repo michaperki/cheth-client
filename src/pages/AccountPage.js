@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography } from '@mui/material'; // Import MUI components
-import AvatarSelection from '../components/AvatarSelection'; // Import AvatarSelection component
+import AvatarSelection from 'components/AvatarSelection'; // Import AvatarSelection component
 
 const AccountPage = ({ userInfo }) => {
     const [userGames, setUserGames] = useState([]); // Initialize game count state with an empty array

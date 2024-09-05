@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box } from '@mui/material';
-import { useCheckEligibility } from '../hooks'; // Custom hook for eligibility check
+import { useCheckEligibility } from 'hooks'; // Custom hook for eligibility check
 
 function LandingPage({ userInfo }) {
   const [username, setUsername] = useState('');
