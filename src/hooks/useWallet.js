@@ -10,7 +10,7 @@ const useWallet = () => {
     const [isConnecting, setIsConnecting] = useState(false);
     
     const connectAccount = useCallback(async () => {
-        if (isConnecting || walletAddress) return; // Prevent repeated connection attempts
+        if (isConnecting || walletAddress) return;
         
         setIsConnecting(true);
         console.log("Connecting account...");
@@ -30,13 +30,21 @@ const useWallet = () => {
         }
     }, [sdk, dispatch, walletAddress, isConnecting]);
 
+    const getChainId = useCallback(async () => {
+        try {
+            return await sdk?.getChainId();
+        } catch (err) {
+            console.warn("Failed to get chain ID:", err);
+        }
+    }, [sdk]);
+
     useEffect(() => {
         if (connected && !walletAddress) {
             connectAccount();
         }
     }, [connected, walletAddress, connectAccount]);
 
-    return { walletAddress, connectAccount, connected, provider };
+    return { walletAddress, connectAccount, connected, provider, getChainId };
 }
 
 export default useWallet;
