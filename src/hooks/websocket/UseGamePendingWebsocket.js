@@ -11,6 +11,7 @@ import {
   setContractAddress,
   setContractBalance,
 } from 'store/slices/gameSlice';
+import { setGameInfo, updateGameState } from '../../store/slices/gameStateSlice';
 
 const useGamePendingWebsocket = (gameId, userInfo) => {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ const useGamePendingWebsocket = (gameId, userInfo) => {
         break;
       case "GAME_PRIMED":
         console.log("Switch case: GAME_PRIMED");
+        dispatch(updateGameState("4"));
         navigate(`/game/${gameId}`);
         break;
       case "PLAYER_CONNECTED":

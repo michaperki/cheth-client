@@ -39,6 +39,11 @@ const gameStateSlice = createSlice({
       state.rematchRequested = action.payload.requested;
       state.rematchRequestedBy = action.payload.requestedBy;
     },
+    updateGameState: (state, action) => {
+      if (state.gameInfo) {
+        state.gameInfo.state = action.payload;
+      }
+    },
     resetGameState: (state) => {
       Object.assign(state, initialState);
     },
@@ -54,6 +59,7 @@ export const {
   setWinnerPaid,
   setRematchRequested,
   resetGameState,
+  updateGameState,
 } = gameStateSlice.actions;
 
 export default gameStateSlice.reducer;
