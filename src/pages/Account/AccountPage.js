@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Container, Typography } from '@mui/material'; // Import MUI components
 import AvatarSelection from 'components/AvatarSelection'; // Import AvatarSelection component

@@ -6,7 +6,7 @@ import OnboardingPage from 'pages/OnboardingPage';
 import DashboardPage from 'pages/Dashboard/DashboardPage';
 import GamePendingPage from 'pages/GamePending/GamePendingPage';
 import GamePage from 'pages/Game/GamePage';
-import AccountPage from 'pages/AccountPage';
+import AccountPage from 'pages/Account/AccountPage';
 import AdminPage from 'pages/Admin/AdminPage';
 
 const NavigationRoutes = ({ userInfo, onlineUsersCount, isAdmin }) => {
