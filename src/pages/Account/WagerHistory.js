@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { format } from 'date-fns';
+import { useEthereumPrice } from 'contexts/EthereumPriceContext';
+import Web3 from 'web3';
 
 const WagerHistory = () => {
   const [games, setGames] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const userInfo = useSelector((state) => state.user.userInfo);
+  const ethToUsdRate = useEthereumPrice();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -26,12 +29,15 @@ const WagerHistory = () => {
 
         // Calculate total earnings
         const earnings = data.reduce((total, game) => {
+          const wagerInEth = Web3.utils.fromWei(game.wager, 'ether');
+          const rewardPoolInEth = Web3.utils.fromWei(game.reward_pool, 'ether');
+          
           if (game.winner === userInfo.user_id) {
-            return total + parseFloat(game.reward_pool);
+            return total + (parseFloat(rewardPoolInEth) * ethToUsdRate);
           } else if (game.winner === null) {
             return total; // Draw, no change
           } else {
-            return total - parseFloat(game.wager);
+            return total - (parseFloat(wagerInEth) * ethToUsdRate);
           }
         }, 0);
         setTotalEarnings(earnings);
@@ -40,10 +46,15 @@ const WagerHistory = () => {
       }
     };
 
-    if (userInfo) {
+    if (userInfo && ethToUsdRate > 0) {
       fetchGames();
     }
-  }, [userInfo]);
+  }, [userInfo, ethToUsdRate]);
+
+  const weiToUsd = (weiAmount) => {
+    const ethAmount = Web3.utils.fromWei(weiAmount, 'ether');
+    return (parseFloat(ethAmount) * ethToUsdRate).toFixed(2);
+  };
 
   return (
     <div>
@@ -55,26 +66,28 @@ const WagerHistory = () => {
             <TableRow>
               <TableCell>Date</TableCell>
               <TableCell>Opponent</TableCell>
-              <TableCell>Wager</TableCell>
+              <TableCell>Wager (USD)</TableCell>
               <TableCell>Result</TableCell>
-              <TableCell>Earnings</TableCell>
+              <TableCell>Earnings (USD)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {games.map((game) => (
               <TableRow key={game.game_id}>
                 <TableCell>{format(new Date(game.created_at), 'MM/dd/yyyy HH:mm')}</TableCell>
-                <TableCell>{game.player1_id === userInfo.user_id ? game.player2_id : game.player1_id}</TableCell>
-                <TableCell>${parseFloat(game.wager).toFixed(2)}</TableCell>
+                <TableCell>
+                  {game.player1_id === userInfo.user_id ? game.player2_username : game.player1_username}
+                </TableCell>
+                <TableCell>${weiToUsd(game.wager)}</TableCell>
                 <TableCell>
                   {game.winner === userInfo.user_id ? 'Win' : game.winner === null ? 'Draw' : 'Loss'}
                 </TableCell>
                 <TableCell>
                   {game.winner === userInfo.user_id
-                    ? `+$${parseFloat(game.reward_pool).toFixed(2)}`
+                    ? `+$${weiToUsd(game.reward_pool)}`
                     : game.winner === null
                     ? '$0.00'
-                    : `-$${parseFloat(game.wager).toFixed(2)}`}
+                    : `-$${weiToUsd(game.wager)}`}
                 </TableCell>
               </TableRow>
             ))}
