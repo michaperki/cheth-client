@@ -47,7 +47,9 @@ const WagerHistory = () => {
     };
 
     if (userInfo && ethToUsdRate > 0) {
-      fetchGames();
+            fetchGames();
+            console.log("fetching games");
+            console.log(games);
     }
   }, [userInfo, ethToUsdRate]);
 
