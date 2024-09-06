@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Header, NavigationRoutes } from 'components';
@@ -11,6 +11,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
+const MemoizedHeader = React.memo(Header);
+const MemoizedNavigationRoutes = React.memo(NavigationRoutes);
+
 function AuthProvider({ children }) {
   useFetchUser();
   return children;
@@ -19,9 +22,8 @@ function App() {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const { walletAddress, connectAccount } = useWallet();
   const userInfo = useSelector(state => state.user.userInfo);
-
-  const theme = createAppTheme(darkMode);
-  const isAdmin = userInfo && userInfo.user_role === 'admin';
+  const theme = useMemo(() => createAppTheme(darkMode), [darkMode]);
+  const isAdmin = useMemo(() => userInfo && userInfo.user_role === 'admin', [userInfo]);
 
   const handleWebSocketMessage = useCallback((message) => {
     console.log('Received message in App:', message);
@@ -35,7 +37,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <EthereumPriceProvider>
             <CssBaseline />
-            <Header 
+            <MemoizedHeader 
               userInfo={userInfo} 
               toggleDarkMode={toggleDarkMode} 
               darkMode={darkMode} 
@@ -44,7 +46,7 @@ function App() {
               connectAccount={connectAccount}
             />
             <div className="app-container">
-              <NavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
+              <MemoizedNavigationRoutes userInfo={userInfo} onlineUsersCount={onlineUsersCount} isAdmin={isAdmin} />
             </div>
             <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
           </EthereumPriceProvider>
