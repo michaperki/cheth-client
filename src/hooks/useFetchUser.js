@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useUserService } from 'services/userService';
 import { setUserInfo } from 'store/slices/userSlice';
 
-export const useFetchUser = () => {
+const useFetchUser = () => {
   const dispatch = useDispatch();
   const walletAddress = useSelector(state => state.user.walletAddress);
   const userInfo = useSelector(state => state.user.userInfo);
@@ -32,3 +32,6 @@ export const useFetchUser = () => {
     };
   }, [walletAddress, userInfo, getUser, dispatch]);
 };
+
+export default useFetchUser;
+
