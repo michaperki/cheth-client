@@ -23,18 +23,32 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
   }, [handleWebSocketMessage, userId, messageTypeFilter]);
 
   const handleMessage = useCallback((event) => {
+    console.log('Received message in useWebsocket hook:', event.data);
+
     const data = JSON.parse(event.data);
-    
     if (data.type === 'ONLINE_USERS_COUNT') {
       dispatch(setOnlineUsersCount(data.count));
-    } else if (data.type === "FUNDS_TRANSFERRED" && data.userID === userIdRef.current) {
-      const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
-      const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-      toast.success(`You received $${transferredInUsd}.`);
-    } else if (!messageTypeFilterRef.current.includes(data.type)) {
+    }
+
+    // Handle FUNDS_TRANSFERRED message
+    if (data.type === "FUNDS_TRANSFERRED") {
+      console.log('Received FUNDS_TRANSFERRED message:', data);
+      console.log('userId: ', userIdRef.current);
+      if (data.userID === userIdRef.current) {
+        const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
+        const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+        console.log('Received funds:', transferredInEth, 'ETH');
+        console.log('Received funds:', transferredInUsd, 'USD');
+        // Show toast notification
+        toast.success(`You received $${transferredInUsd}.`);
+      }
+    }
+
+    // Check if the message type should be filtered out
+    if (!messageTypeFilterRef.current.includes(data.type)) {
       handleWebSocketMessageRef.current(event.data);
     }
-  }, [dispatch, ethToUsdRate]);
+  }, [ethToUsdRate, dispatch]);
 
   useEffect(() => {
     let ws = null;
@@ -45,18 +59,24 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
         ws = new WebSocket(WEBSOCKET_URL);
 
         ws.onopen = () => {
+          console.log('Connected to WebSocket');
+          console.log('Sending CONNECT message to WebSocket server');
+          console.log('userId:', userIdRef.current);
           ws.send(JSON.stringify({ type: 'CONNECT', userId: userIdRef.current }));
           setSocket(ws);
         };
 
         ws.onmessage = handleMessage;
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
+          console.log('Disconnected from WebSocket', event.reason);
           setSocket(null);
+          // Attempt to reconnect after a delay
           setTimeout(connectWebSocket, 5000);
         };
 
-        ws.onerror = () => {
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
           ws.close();
         };
       }
@@ -71,7 +91,9 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
     };
   }, [handleMessage]);
 
-  return { socket };
+  return {
+    socket,
+  };
 };
 
 export default useWebSocket;
