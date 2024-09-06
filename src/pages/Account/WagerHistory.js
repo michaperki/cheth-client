@@ -78,7 +78,7 @@ const WagerHistory = () => {
                 <TableCell>
                   {game.player1_id === userInfo.user_id ? game.player2_username : game.player1_username}
                 </TableCell>
-                <TableCell>${weiToUsd(game.wager)}</TableCell>
+                <TableCell>${parseFloat(game.wager).toFixed(2)}</TableCell>
                 <TableCell>
                   {game.winner === userInfo.user_id ? 'Win' : game.winner === null ? 'Draw' : 'Loss'}
                 </TableCell>
