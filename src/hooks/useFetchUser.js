@@ -1,35 +1,34 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useUserService } from 'services/userService';
-import { createErrorHandler } from 'utils/errorHandler';
-import { setUserInfo, clearUserInfo } from 'store/slices/userSlice';
+import { setUserInfo } from 'store/slices/userSlice';
 
 export const useFetchUser = () => {
   const dispatch = useDispatch();
-  const handleError = createErrorHandler();
   const walletAddress = useSelector(state => state.user.walletAddress);
   const userInfo = useSelector(state => state.user.userInfo);
   const { getUser } = useUserService();
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
-      if (!walletAddress) {
-        if (userInfo) dispatch(clearUserInfo());
-        return;
-      }
+      if (!walletAddress || userInfo) return;
+
       try {
         const userData = await getUser(walletAddress);
-        dispatch(setUserInfo(userData));
+        if (isMounted) {
+          dispatch(setUserInfo(userData));
+        }
       } catch (error) {
-        handleError(error, 'Error fetching user data');
-        dispatch(clearUserInfo());
+        console.error('Error fetching user data:', error);
       }
     };
 
-    if (walletAddress && !userInfo) {
-      fetchData();
-    }
-  }, [walletAddress, userInfo, dispatch, handleError, getUser]);
-};
+    fetchData();
 
-export default useFetchUser;
+    return () => {
+      isMounted = false;
+    };
+  }, [walletAddress, userInfo, getUser, dispatch]);
+};
