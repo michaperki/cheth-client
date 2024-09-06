@@ -22,35 +22,18 @@ const useGamePendingWebsocket = (gameId, userInfo) => {
 
   const getGameInfo = useCallback(async () => {
     try {
-      console.log('Fetching game info inside UseGamePendingWebsocket...');
       const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/game/${gameId}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch game information');
-      }
+      if (!response.ok) throw new Error('Failed to fetch game information');
+      
       const gameData = await response.json();
-      console.log('Game data:', gameData);
       dispatch(setCurrentGame(gameData));
 
-      const fetchPlayerData = async (playerId) => {
-        const playerResponse = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${playerId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: playerId })
-        });
-        if (!playerResponse.ok) {
-          throw new Error(`Failed to fetch player ${playerId} information`);
-        }
-        return playerResponse.json();
-      };
-
-      const [player1Data, player2Data] = await Promise.all([
-        fetchPlayerData(gameData.player1_id),
-        fetchPlayerData(gameData.player2_id)
-      ]);
-
-      dispatch(setPlayerOne(player1Data));
-      dispatch(setPlayerTwo(player2Data));
+      if (gameData.player1_id && !currentGame?.playerOne) {
+        fetchPlayerData(gameData.player1_id, setPlayerOne);
+      }
+      if (gameData.player2_id && !currentGame?.playerTwo) {
+        fetchPlayerData(gameData.player2_id, setPlayerTwo);
+      }
 
       if (gameData && [2, 3].includes(parseInt(gameData.state))) {
         dispatch(setContractAddress(gameData.contract_address));
@@ -58,41 +41,46 @@ const useGamePendingWebsocket = (gameId, userInfo) => {
       }
 
       if (gameData && parseInt(gameData.state) === 4) {
-        console.log('Game is primed. Navigating to game page...');
         navigate(`/game/${gameId}`);
       }
     } catch (error) {
       console.error('Error fetching game status:', error);
     }
-  }, [gameId, dispatch, navigate]);
+  }, [gameId, dispatch, navigate, currentGame]);
+
+  const fetchPlayerData = useCallback(async (playerId, setPlayerInfo) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${playerId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: playerId })
+      });
+      if (!response.ok) throw new Error(`Failed to fetch player ${playerId} information`);
+      const data = await response.json();
+      dispatch(setPlayerInfo(data));
+    } catch (error) {
+      console.error('Error fetching player information:', error);
+    }
+  }, [dispatch]);
 
   const handleGamePendingPageWebSocketMessage = useCallback((message) => {
-    console.log('Received message in GamePendingWebsocket:', message);
     const messageData = JSON.parse(message);
-    console.log('messageData', messageData);
 
     switch (messageData.type) {
       case "GAME_JOINED":
-        console.log("Switch case: GAME_JOINED");
-        const newPlayerWallet = messageData.player;
-        const hasJoined = newPlayerWallet === userInfo.wallet_address;
-        dispatch(setHasPlayerJoined(hasJoined));
+        dispatch(setHasPlayerJoined(messageData.player === userInfo.wallet_address));
         break;
       case "GAME_PRIMED":
-        console.log("Switch case: GAME_PRIMED");
         navigate(`/game/${gameId}`);
         break;
       case "PLAYER_CONNECTED":
       case "PLAYER_DISCONNECTED":
-        console.log(`Switch case: ${messageData.type}`);
         dispatch(setConnectedPlayers([...new Set([...connectedPlayers, messageData.userId])]));
         break;
       case "PLAYER_STATUS_UPDATE":
-        console.log("Switch case: PLAYER_STATUS_UPDATE");
         dispatch(setConnectedPlayers(messageData.players));
         break;
       default:
-        console.log("Switch case: default");
         break;
     }
 
