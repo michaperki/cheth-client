@@ -30,15 +30,15 @@ const WagerHistory = () => {
 
         // Calculate total earnings
         const earnings = data.reduce((total, game) => {
-          const wagerInEth = Web3.utils.fromWei(game.wager, 'ether');
-          const rewardPoolInEth = Web3.utils.fromWei(game.reward_pool, 'ether');
+          const wagerInUsd = weiToUsd(game.wager);
+          const rewardPoolInUsd = weiToUsd(game.reward_pool);
           
           if (game.winner === userInfo.user_id) {
-            return total + (parseFloat(rewardPoolInEth) * ethToUsdRate);
+            return total + rewardPoolInUsd;
           } else if (game.winner === null) {
             return total; // Draw, no change
           } else {
-            return total - (parseFloat(wagerInEth) * ethToUsdRate);
+            return total - wagerInUsd;
           }
         }, 0);
         setTotalEarnings(earnings);
@@ -54,7 +54,11 @@ const WagerHistory = () => {
 
   const weiToUsd = (weiAmount) => {
     const ethAmount = Web3.utils.fromWei(weiAmount, 'ether');
-    return (parseFloat(ethAmount) * ethToUsdRate).toFixed(2);
+    return parseFloat((parseFloat(ethAmount) * ethToUsdRate).toFixed(2));
+  };
+
+  const getOpponentUsername = (game) => {
+    return game.player1_id === userInfo.user_id ? game.player2_username : game.player1_username;
   };
 
   return (
@@ -76,19 +80,17 @@ const WagerHistory = () => {
             {games.map((game) => (
               <TableRow key={game.game_id}>
                 <TableCell>{format(new Date(game.created_at), 'MM/dd/yyyy HH:mm')}</TableCell>
-                <TableCell>
-                  {game.player1_id === userInfo.user_id ? game.player2_username : game.player1_username}
-                </TableCell>
+                <TableCell>{getOpponentUsername(game)}</TableCell>
                 <TableCell>${parseFloat(game.wager).toFixed(2)}</TableCell>
                 <TableCell>
                   {game.winner === userInfo.user_id ? 'Win' : game.winner === null ? 'Draw' : 'Loss'}
                 </TableCell>
                 <TableCell>
                   {game.winner === userInfo.user_id
-                    ? `+$${weiToUsd(game.reward_pool)}`
+                    ? `+$${weiToUsd(game.reward_pool).toFixed(2)}`
                     : game.winner === null
                     ? '$0.00'
-                    : `-$${weiToUsd(game.wager)}`}
+                    : `-$${weiToUsd(game.wager).toFixed(2)}`}
                 </TableCell>
               </TableRow>
             ))}
