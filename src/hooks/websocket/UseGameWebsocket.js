@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from './useWebsocket';
@@ -13,19 +13,26 @@ import {
   setRematchRequested
 } from 'store/slices/gameStateSlice';
 
-const useGameWebsocket = (gameId, userInfo, dispatch) => {
-    const [connectedPlayers, setConnectedPlayers] = useState([]);
+const useGameWebsocket = (gameId, userInfo) => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const gameInfo = useSelector(state => state.gameState.gameInfo);
+    const [connectedPlayers, setConnectedPlayers] = useState([]);
+    const gameStateRef = useRef(gameInfo);
+
+    useEffect(() => {
+        gameStateRef.current = gameInfo;
+    }, [gameInfo]);
 
     const handleWebSocketMessage = useCallback((message) => {
         const data = JSON.parse(message);
         console.log('Received WebSocket message:', data);
+
         switch (data.type) {
             case "GAME_OVER":
                 dispatch(setGameOver(true));
                 dispatch(setWinner(data.winner));
-                dispatch(setGameInfo({ ...gameInfo, state: "5", winner: data.winner }));
+                dispatch(setGameInfo({ ...gameStateRef.current, state: "5", winner: data.winner }));
                 break;
             case "PLAYER_CONNECTED":
             case "PLAYER_DISCONNECTED":
@@ -46,19 +53,15 @@ const useGameWebsocket = (gameId, userInfo, dispatch) => {
                 toast.success("Rematch accepted! Preparing new game...");
                 break;
             case "REMATCH_REJECTED":
-                console.log("Rematch rejected:", data);
-                toast.error("Rematch rejected!");
-                dispatch(setRematchRequested({ requested: false, requestedBy: null }));
-                break;
             case "REMATCH_CANCELLED":
-                console.log("Rematch cancelled:", data);
-                toast.success("Rematch cancelled!");
+                console.log(`Rematch ${data.type.toLowerCase()}:`, data);
+                toast.info(`Rematch ${data.type.toLowerCase()}`);
                 dispatch(setRematchRequested({ requested: false, requestedBy: null }));
                 break;
             default:
                 console.log('Unhandled message type:', data.type);
         }
-    }, [dispatch, navigate, userInfo, gameInfo]);
+    }, [dispatch, navigate, userInfo]);
 
     const { socket } = useWebSocket(
         handleWebSocketMessage,
@@ -75,13 +78,25 @@ const useGameWebsocket = (gameId, userInfo, dispatch) => {
             const data = await response.json();
             dispatch(setGameInfo(data));
 
-            if (data.player1_id) {
-                handleFetchPlayerInfo(data.player1_id, setPlayerOne);
-            }
+            const fetchPlayerInfo = async (playerId) => {
+                const playerResponse = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${playerId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: playerId })
+                });
+                if (!playerResponse.ok) {
+                    throw new Error(`Failed to fetch player ${playerId} information`);
+                }
+                return playerResponse.json();
+            };
 
-            if (data.player2_id) {
-                handleFetchPlayerInfo(data.player2_id, setPlayerTwo);
-            }
+            const [player1Data, player2Data] = await Promise.all([
+                fetchPlayerInfo(data.player1_id),
+                fetchPlayerInfo(data.player2_id)
+            ]);
+
+            dispatch(setPlayerOne(player1Data));
+            dispatch(setPlayerTwo(player2Data));
 
             if (data.state === "5") {
                 dispatch(setGameOver(true));
@@ -97,33 +112,11 @@ const useGameWebsocket = (gameId, userInfo, dispatch) => {
         }
     }, [gameId, dispatch]);
 
-    const handleFetchPlayerInfo = useCallback(async (playerId, setPlayerInfo) => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${playerId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ userId: playerId })
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch player information');
-            }
-            const data = await response.json();
-            dispatch(setPlayerInfo(data));
-        } catch (error) {
-            console.error('Error fetching player information:', error);
-            toast.error('Error fetching player information');
-        }
-    }, [dispatch]);
-
     const getWinnerUsername = useCallback(async (winnerId) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/${winnerId}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: winnerId })
             });
             if (!response.ok) {
