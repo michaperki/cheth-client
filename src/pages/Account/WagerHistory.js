@@ -26,6 +26,7 @@ const WagerHistory = () => {
         }
         const data = await response.json();
         setGames(data);
+        console.log('Games:', data);
 
         // Calculate total earnings
         const earnings = data.reduce((total, game) => {
@@ -47,9 +48,7 @@ const WagerHistory = () => {
     };
 
     if (userInfo && ethToUsdRate > 0) {
-            fetchGames();
-            console.log("fetching games");
-            console.log(games);
+      fetchGames();
     }
   }, [userInfo, ethToUsdRate]);
 
