@@ -9,7 +9,6 @@ const SERVER_BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 
 const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) => {
   const [socket, setSocket] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
   const dispatch = useDispatch();
   const ethToUsdRate = useEthereumPrice();
 
@@ -31,69 +30,69 @@ const useWebSocket = (handleWebSocketMessage, userId, messageTypeFilter = []) =>
       dispatch(setOnlineUsersCount(data.count));
     }
 
-    if (data.type === "FUNDS_TRANSFERRED" && data.userID === userIdRef.current) {
-      const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
-      const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
-      toast.success(`You received $${transferredInUsd}.`);
+    // Handle FUNDS_TRANSFERRED message
+    if (data.type === "FUNDS_TRANSFERRED") {
+      console.log('Received FUNDS_TRANSFERRED message:', data);
+      console.log('userId: ', userIdRef.current);
+      if (data.userID === userIdRef.current) {
+        const transferredInEth = Web3.utils.fromWei(data.amount, 'ether');
+        const transferredInUsd = (transferredInEth * ethToUsdRate).toFixed(2);
+        console.log('Received funds:', transferredInEth, 'ETH');
+        console.log('Received funds:', transferredInUsd, 'USD');
+        // Show toast notification
+        toast.success(`You received $${transferredInUsd}.`);
+      }
     }
 
+    // Check if the message type should be filtered out
     if (!messageTypeFilterRef.current.includes(data.type)) {
       handleWebSocketMessageRef.current(event.data);
     }
   }, [ethToUsdRate, dispatch]);
 
-  const connectWebSocket = useCallback(() => {
-    if (userIdRef.current) {
-      const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userIdRef.current}`;
-      const ws = new WebSocket(WEBSOCKET_URL);
-
-      ws.onopen = () => {
-        console.log('Connected to WebSocket');
-        setIsConnected(true);
-        ws.send(JSON.stringify({ type: 'CONNECT', userId: userIdRef.current }));
-        setSocket(ws);
-      };
-
-      ws.onmessage = handleMessage;
-
-      ws.onclose = () => {
-        console.log('Disconnected from WebSocket');
-        setIsConnected(false);
-        setSocket(null);
-        setTimeout(connectWebSocket, 5000);
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        ws.close();
-      };
-
-      return ws;
-    }
-  }, [handleMessage]);
-
   useEffect(() => {
-    const ws = connectWebSocket();
+    let ws = null;
+
+    const connectWebSocket = () => {
+      if (userIdRef.current) {
+        const WEBSOCKET_URL = `${SERVER_BASE_URL.replace(/^http/, 'ws')}?userId=${userIdRef.current}`;
+        ws = new WebSocket(WEBSOCKET_URL);
+
+        ws.onopen = () => {
+          console.log('Connected to WebSocket');
+          console.log('Sending CONNECT message to WebSocket server');
+          console.log('userId:', userIdRef.current);
+          ws.send(JSON.stringify({ type: 'CONNECT', userId: userIdRef.current }));
+          setSocket(ws);
+        };
+
+        ws.onmessage = handleMessage;
+
+        ws.onclose = (event) => {
+          console.log('Disconnected from WebSocket', event.reason);
+          setSocket(null);
+          // Attempt to reconnect after a delay
+          setTimeout(connectWebSocket, 5000);
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          ws.close();
+        };
+      }
+    };
+
+    connectWebSocket();
 
     return () => {
       if (ws) {
         ws.close();
       }
     };
-  }, [connectWebSocket]);
-
-  const sendMessage = useCallback((message) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify(message));
-    } else {
-      console.error('WebSocket is not connected');
-    }
-  }, [socket]);
+  }, [handleMessage]);
 
   return {
     socket,
-    isConnected,
-    sendMessage
   };
 };
 

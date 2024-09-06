@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import useWebSocket from './useWebsocket';
@@ -19,47 +19,6 @@ const useGamePendingWebsocket = (gameId, userInfo) => {
   const currentGame = useSelector(state => state.game.currentGame);
   const connectedPlayers = useSelector(state => state.game.connectedPlayers);
   const hasPlayerJoined = useSelector(state => state.game.hasPlayerJoined);
-
-  const gameStateRef = useRef({ currentGame, connectedPlayers, hasPlayerJoined });
-
-  useEffect(() => {
-    gameStateRef.current = { currentGame, connectedPlayers, hasPlayerJoined };
-  }, [currentGame, connectedPlayers, hasPlayerJoined]);
-
-  const handleGamePendingPageWebSocketMessage = useCallback((message) => {
-    console.log('Received message in GamePendingWebsocket:', message);
-    const messageData = JSON.parse(message);
-    console.log('messageData', messageData);
-
-    switch (messageData.type) {
-      case "GAME_JOINED":
-        console.log("GAME_JOINED");
-        const newPlayerWallet = messageData.player;
-        const hasJoined = newPlayerWallet === userInfo.wallet_address;
-        dispatch(setHasPlayerJoined(hasJoined));
-        break;
-      case "GAME_PRIMED":
-        console.log("GAME_PRIMED");
-        navigate(`/game/${gameId}`);
-        break;
-      case "PLAYER_CONNECTED":
-      case "PLAYER_DISCONNECTED":
-        console.log(`${messageData.type}`);
-        dispatch(setConnectedPlayers([...new Set([...gameStateRef.current.connectedPlayers, messageData.userId])]));
-        break;
-      case "PLAYER_STATUS_UPDATE":
-        console.log("PLAYER_STATUS_UPDATE");
-        dispatch(setConnectedPlayers(messageData.players));
-        break;
-      default:
-        console.log("Unhandled message type:", messageData.type);
-        break;
-    }
-
-    getGameInfo();
-  }, [dispatch, navigate, gameId, userInfo]);
-
-  const { socket } = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
 
   const getGameInfo = useCallback(async () => {
     try {
@@ -106,6 +65,41 @@ const useGamePendingWebsocket = (gameId, userInfo) => {
       console.error('Error fetching game status:', error);
     }
   }, [gameId, dispatch, navigate]);
+
+  const handleGamePendingPageWebSocketMessage = useCallback((message) => {
+    console.log('Received message in GamePendingWebsocket:', message);
+    const messageData = JSON.parse(message);
+    console.log('messageData', messageData);
+
+    switch (messageData.type) {
+      case "GAME_JOINED":
+        console.log("Switch case: GAME_JOINED");
+        const newPlayerWallet = messageData.player;
+        const hasJoined = newPlayerWallet === userInfo.wallet_address;
+        dispatch(setHasPlayerJoined(hasJoined));
+        break;
+      case "GAME_PRIMED":
+        console.log("Switch case: GAME_PRIMED");
+        navigate(`/game/${gameId}`);
+        break;
+      case "PLAYER_CONNECTED":
+      case "PLAYER_DISCONNECTED":
+        console.log(`Switch case: ${messageData.type}`);
+        dispatch(setConnectedPlayers([...new Set([...connectedPlayers, messageData.userId])]));
+        break;
+      case "PLAYER_STATUS_UPDATE":
+        console.log("Switch case: PLAYER_STATUS_UPDATE");
+        dispatch(setConnectedPlayers(messageData.players));
+        break;
+      default:
+        console.log("Switch case: default");
+        break;
+    }
+
+    getGameInfo();
+  }, [dispatch, navigate, gameId, userInfo, connectedPlayers, getGameInfo]);
+
+  const { socket } = useWebSocket(handleGamePendingPageWebSocketMessage, userInfo?.user_id, []);
 
   useEffect(() => {
     getGameInfo();
