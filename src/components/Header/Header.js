@@ -8,8 +8,7 @@ import useWallet from 'hooks/useWallet';
 import './Header.css';
 
 const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
-    const { walletAddress, connectAccount } = useWallet();
-    const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
+    const { walletAddress, connectAccount, disconnectAccount } = useWallet(); const abbreviatedWalletAddress = walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '';
     const getAvatarSrc = (avatar) => avatar && avatar !== 'none' ? `/icons/${avatar}` : '/icons/hoodie_blue.svg';
 
     return (
@@ -30,16 +29,9 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
                     <Button color="inherit" onClick={connectAccount}>Connect Wallet</Button>
                 ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {/* User Info */}
-                    </Box>
-                )}
-
-                {walletAddress && (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Typography variant="body2" sx={{ marginRight: 1 }}>
                             {abbreviatedWalletAddress}
                         </Typography>
-                        {/* make the image a link */}
                         <Link component={RouterLink} to="/account" sx={{ display: 'flex', alignItems: 'center' }} className="menu-link">
                             <img
                                 src={getAvatarSrc(userInfo?.avatar)}
@@ -47,7 +39,7 @@ const Header = ({ userInfo, toggleDarkMode, darkMode, isAdmin }) => {
                                 className="avatar"
                             />
                         </Link>
-
+                        <Button color="inherit" onClick={disconnectAccount}>Disconnect</Button>
                     </Box>
                 )}
 

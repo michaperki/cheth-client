@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSDK } from "@metamask/sdk-react";
-import { setWalletAddress } from 'store/slices/userSlice';
+import { setWalletAddress, clearUserInfo } from 'store/slices/userSlice';
 
 const useWallet = () => {
     const dispatch = useDispatch();
@@ -30,21 +30,41 @@ const useWallet = () => {
         }
     }, [sdk, dispatch, walletAddress, isConnecting]);
 
-    const getChainId = useCallback(async () => {
-        try {
-            return await sdk?.getChainId();
-        } catch (err) {
-            console.warn("Failed to get chain ID:", err);
-        }
-    }, [sdk]);
+    const disconnectAccount = useCallback(() => {
+        dispatch(clearUserInfo());
+        dispatch(setWalletAddress(null));
+        console.log("Wallet disconnected");
+    }, [dispatch]);
 
     useEffect(() => {
         if (connected && !walletAddress) {
             connectAccount();
         }
-    }, [connected, walletAddress, connectAccount]);
 
-    return { walletAddress, connectAccount, connected, provider, getChainId };
+        // Listen for account changes
+        const handleAccountsChanged = (accounts) => {
+            if (accounts.length === 0) {
+                // MetaMask is locked or the user has not connected any accounts
+                disconnectAccount();
+            } else if (accounts[0] !== walletAddress) {
+                // User has switched accounts
+                dispatch(setWalletAddress(accounts[0]));
+                dispatch(clearUserInfo());
+            }
+        };
+
+        if (window.ethereum) {
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+        }
+
+        return () => {
+            if (window.ethereum) {
+                window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+            }
+        };
+    }, [connected, walletAddress, connectAccount, disconnectAccount, dispatch]);
+
+    return { walletAddress, connectAccount, disconnectAccount, connected, provider };
 }
 
 export default useWallet;
