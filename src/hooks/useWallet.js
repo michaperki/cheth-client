@@ -1,3 +1,5 @@
+// client/src/hooks/useWallet.js
+
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSDK } from "@metamask/sdk-react";
@@ -22,34 +24,40 @@ const useWallet = () => {
                 dispatch(setWalletAddress(currentAccount));
             } else {
                 console.log("No accounts found. Please ensure MetaMask is unlocked and connected.");
+                dispatch(clearUserInfo());
             }
         } catch (err) {
             console.warn("Failed to connect:", err);
+            dispatch(clearUserInfo());
         } finally {
             setIsConnecting(false);
         }
     }, [sdk, dispatch, walletAddress, isConnecting]);
 
-    const disconnectAccount = useCallback(() => {
-        dispatch(clearUserInfo());
-        dispatch(setWalletAddress(null));
-        console.log("Wallet disconnected");
-    }, [dispatch]);
+    const checkConnection = useCallback(async () => {
+        if (window.ethereum) {
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length === 0) {
+                // No accounts connected, clear the user state
+                dispatch(clearUserInfo());
+            } else if (accounts[0] !== walletAddress) {
+                // Account has changed, update the wallet address
+                dispatch(setWalletAddress(accounts[0]));
+            }
+        }
+    }, [dispatch, walletAddress]);
 
     useEffect(() => {
-        if (connected && !walletAddress) {
-            connectAccount();
-        }
+        checkConnection();
 
-        // Listen for account changes
         const handleAccountsChanged = (accounts) => {
+            console.log("Accounts changed:", accounts);
             if (accounts.length === 0) {
                 // MetaMask is locked or the user has not connected any accounts
-                disconnectAccount();
-            } else if (accounts[0] !== walletAddress) {
-                // User has switched accounts
-                dispatch(setWalletAddress(accounts[0]));
                 dispatch(clearUserInfo());
+            } else if (accounts[0] !== walletAddress) {
+                // User has switched to a different account
+                dispatch(setWalletAddress(accounts[0]));
             }
         };
 
@@ -62,9 +70,16 @@ const useWallet = () => {
                 window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
             }
         };
-    }, [connected, walletAddress, connectAccount, disconnectAccount, dispatch]);
+    }, [dispatch, walletAddress, checkConnection]);
 
-    return { walletAddress, connectAccount, disconnectAccount, connected, provider };
+    // Periodically check the connection status
+    useEffect(() => {
+        const intervalId = setInterval(checkConnection, 5000); // Check every 5 seconds
+
+        return () => clearInterval(intervalId);
+    }, [checkConnection]);
+
+    return { walletAddress, connectAccount, connected, provider };
 }
 
 export default useWallet;
