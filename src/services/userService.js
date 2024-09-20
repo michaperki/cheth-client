@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { createPlayer } from './apiService';
 
 const userCache = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -35,5 +36,22 @@ export const useUserService = () => {
     }
   }, []);
 
-  return useMemo(() => ({ getUser }), [getUser]);
+  const createUser = useCallback(async (userData) => {
+    try {
+      const newUser = await createPlayer(userData);
+      
+      // Update cache with the new user data
+      userCache[newUser.walletAddress] = {
+        data: newUser,
+        timestamp: Date.now()
+      };
+
+      return newUser;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }, []);
+
+  return useMemo(() => ({ getUser, createUser }), [getUser, createUser]);
 };

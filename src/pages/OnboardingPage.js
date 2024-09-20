@@ -1,39 +1,58 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material';
+import { FormControlLabel, Checkbox, Button, Typography, CircularProgress, Box, useTheme } from '@mui/material';
 import { useWallet, useSubmitUserInfo } from 'hooks';
-import { login } from '../services/authService'; // Import the login function
+import { login } from '../services/authService';
+import { toast } from 'react-toastify';
 
 const Onboarding = () => {
     const { lichessUsername } = useParams();
     const navigate = useNavigate();
     const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const { walletAddress, connectAccount, signMessage } = useWallet(); // Assume signMessage is available in useWallet
+    const { walletAddress, connectAccount, signMessage } = useWallet();
     const { submit, submitted } = useSubmitUserInfo(lichessUsername, walletAddress);
+    const [isLoading, setIsLoading] = useState(false);
+    const theme = useTheme();
+
+    useEffect(() => {
+        if (!lichessUsername) {
+            toast.error('Lichess username is missing');
+            navigate('/');
+        }
+    }, [lichessUsername, navigate]);
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         if (!walletAddress) {
-            console.error('Wallet not connected');
+            toast.error('Wallet not connected');
             return;
         }
-
+        if (!acceptedTerms) {
+            toast.error('Please accept the terms and conditions');
+            return;
+        }
+        setIsLoading(true);
         try {
-            // Login to Virtual Labs
             const message = "Login to VirtualLabs";
             const signature = await signMessage(message);
             await login(walletAddress, message, signature);
-
-            // Submit user info
             await submit();
-
-            // If successful, navigate to dashboard or next step
-            navigate('/dashboard');
         } catch (error) {
             console.error('Onboarding failed:', error);
-            // Handle error (show error message to user)
+            toast.error('Onboarding failed. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
-    }, [walletAddress, signMessage, submit, navigate]);
+    }, [walletAddress, signMessage, submit, acceptedTerms]);
+
+    if (isLoading) {
+        return (
+            <OnboardingLayout>
+                <CircularProgress />
+                <Typography>Processing your information...</Typography>
+            </OnboardingLayout>
+        );
+    }
 
     return (
         <OnboardingLayout>
@@ -44,14 +63,36 @@ const Onboarding = () => {
     );
 };
 
-const OnboardingLayout = ({ children }) => (
-    <div className="min-h-screen flex justify-center items-center">
-        <div>{children}</div>
-    </div>
-);
+const OnboardingLayout = ({ children }) => {
+    const theme = useTheme();
+    return (
+        <Box
+            sx={{
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                bgcolor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+            }}
+        >
+            <Box
+                sx={{
+                    p: 4,
+                    bgcolor: theme.palette.background.paper,
+                    borderRadius: theme.shape.borderRadius,
+                    boxShadow: theme.shadows[3],
+                }}
+            >
+                {children}
+            </Box>
+        </Box>
+    );
+};
 
 const WalletConnectionSection = ({ walletAddress, connectAccount, submitted }) => (
-    <>
+    <Box sx={{ mb: 2 }}>
         {!walletAddress && (
             <Button variant="contained" onClick={connectAccount} disabled={submitted}>Connect Wallet</Button>
         )}
@@ -60,16 +101,20 @@ const WalletConnectionSection = ({ walletAddress, connectAccount, submitted }) =
                 Connected Wallet Address: <strong>{walletAddress}</strong>
             </Typography>
         )}
-    </>
+    </Box>
 );
 
 const TermsAndSubmitSection = ({ acceptedTerms, setAcceptedTerms, handleSubmit, submitted }) => (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit}>
         <FormControlLabel
             control={<Checkbox checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />}
             label="I accept the terms and conditions"
         />
-        <Button type="submit" variant="contained" disabled={!acceptedTerms || submitted}>Submit</Button>
+        <Box sx={{ mt: 2 }}>
+            <Button type="submit" variant="contained" disabled={!acceptedTerms || submitted} fullWidth>
+                {submitted ? 'Processing...' : 'Submit'}
+            </Button>
+        </Box>
     </form>
 );
 

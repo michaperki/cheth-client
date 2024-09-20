@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   userInfo: null,
+  playerInfo: null,
   walletAddress: null,
   isAdmin: false,
   avatarUrl: null,
@@ -18,6 +19,9 @@ const userSlice = createSlice({
       state.isAdmin = action.payload?.user_role === 'admin';
       state.avatarUrl = action.payload?.avatar;
     },
+    setPlayerInfo: (state, action) => {
+      state.playerInfo = action.payload;
+    },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;
     },
@@ -31,7 +35,9 @@ const userSlice = createSlice({
       state.avatarUpdateError = action.payload;
     },
     updateAvatar: (state, action) => {
-      state.userInfo.avatar = action.payload;
+      if (state.userInfo) {
+        state.userInfo.avatar = action.payload;
+      }
       state.avatarUrl = action.payload;
     }
   }
@@ -39,6 +45,7 @@ const userSlice = createSlice({
 
 export const { 
   setUserInfo, 
+  setPlayerInfo,
   setWalletAddress, 
   clearUserInfo, 
   setAvatarUpdateStatus, 

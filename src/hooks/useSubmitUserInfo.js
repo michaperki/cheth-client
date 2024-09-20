@@ -1,45 +1,59 @@
-
 import { useState } from 'react';
-import { createPlayer } from '../services/apiService';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { setPlayerInfo } from '../store/slices/userSlice'; // Adjust the import path as needed
 import { getToken } from '../services/authService';
+import { useUserService } from '../services/userService';
 
 const useSubmitUserInfo = (lichessUsername, walletAddress) => {
+    const { createUser } = useUserService();
     const [submitted, setSubmitted] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const submit = async () => {
         if (!lichessUsername || !walletAddress) {
             console.warn("Required information is missing");
+            toast.error("Required information is missing");
             return;
         }
 
         setSubmitted(true);
 
-          try {
+        try {
             const token = getToken();
             if (!token) {
-              throw new Error('User not authenticated with Virtual Labs');
+                throw new Error('User not authenticated with Virtual Labs');
             }
 
             const data = {
-              address: walletAddress,
-              rollupId: process.env.REACT_APP_VIRTUAL_LABS_ROLLUP_ID // Add this line
+                lichessHandle: lichessUsername,
+                address: walletAddress,
+                rollupId: process.env.REACT_APP_VIRTUAL_LABS_ROLLUP_ID
             };
 
-            console.log("Submitting player info:", data); // Add this log
-            const result = await createPlayer(data);
+            console.log("Submitting player info:", data);
+            const result = await createUser(data);
             console.log("Player info submitted successfully:", result);
 
-          } catch (err) {
+            // Update Redux store with player info
+            dispatch(setPlayerInfo(result));
+
+            toast.success('Player info submitted successfully');
+            navigate('/dashboard');
+
+        } catch (err) {
             console.error('Failed to submit player info:', err);
             if (err.response) {
-              console.error('Error response:', await err.response.text());
+                console.error('Error response:', await err.response.text());
             }
+            toast.error('Failed to submit player info. Please try again.');
             setSubmitted(false);
-          }
-            };
+        }
+    };
 
     return { submit, submitted };
 };
 
 export default useSubmitUserInfo;
-
