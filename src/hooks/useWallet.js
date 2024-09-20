@@ -1,9 +1,9 @@
-// client/src/hooks/useWallet.js
 
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSDK } from "@metamask/sdk-react";
 import { setWalletAddress, clearUserInfo } from 'store/slices/userSlice';
+import { ethers } from 'ethers'; // Ensure you're using ethers.js v6 or later
 
 const useWallet = () => {
     const dispatch = useDispatch();
@@ -33,6 +33,24 @@ const useWallet = () => {
             setIsConnecting(false);
         }
     }, [sdk, dispatch, walletAddress, isConnecting]);
+
+    const signMessage = useCallback(async (message) => {
+        if (!provider || !walletAddress) {
+            throw new Error("Provider or wallet address is not available. Please connect your wallet.");
+        }
+        
+        try {
+            // Use BrowserProvider from ethers.js
+            const ethersProvider = new ethers.BrowserProvider(provider);
+            // Pass the walletAddress to get the signer
+            const signer = await ethersProvider.getSigner(walletAddress);
+            const signature = await signer.signMessage(message);
+            return signature;
+        } catch (error) {
+            console.error("Error signing message:", error);
+            throw error;
+        }
+    }, [provider, walletAddress]);
 
     const checkConnection = useCallback(async () => {
         if (window.ethereum) {
@@ -79,7 +97,8 @@ const useWallet = () => {
         return () => clearInterval(intervalId);
     }, [checkConnection]);
 
-    return { walletAddress, connectAccount, connected, provider };
+    return { walletAddress, connectAccount, signMessage, connected, provider };
 }
 
 export default useWallet;
+

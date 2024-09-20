@@ -1,4 +1,7 @@
+
 import { useState } from 'react';
+import { createPlayer } from '../services/apiService';
+import { getToken } from '../services/authService';
 
 const useSubmitUserInfo = (lichessUsername, walletAddress) => {
     const [submitted, setSubmitted] = useState(false);
@@ -10,33 +13,33 @@ const useSubmitUserInfo = (lichessUsername, walletAddress) => {
         }
 
         setSubmitted(true);
-        try {
-            const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/user/addUser`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    lichessHandle: lichessUsername,
-                    walletAddress,
-                }),
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to submit user information');
+          try {
+            const token = getToken();
+            if (!token) {
+              throw new Error('User not authenticated with Virtual Labs');
             }
 
-            // Optionally handle the response data here
-            const data = await response.json();
-            console.log("User info submitted successfully:", data);
-        } catch (err) {
-            console.error('Failed to submit user info:', err);
-            // Optionally reset the submitted state here if you want to allow retrying
-            // setSubmitted(false);
-        }
-    };
+            const data = {
+              address: walletAddress,
+              rollupId: process.env.REACT_APP_VIRTUAL_LABS_ROLLUP_ID // Add this line
+            };
+
+            console.log("Submitting player info:", data); // Add this log
+            const result = await createPlayer(data);
+            console.log("Player info submitted successfully:", result);
+
+          } catch (err) {
+            console.error('Failed to submit player info:', err);
+            if (err.response) {
+              console.error('Error response:', await err.response.text());
+            }
+            setSubmitted(false);
+          }
+            };
 
     return { submit, submitted };
 };
 
 export default useSubmitUserInfo;
+

@@ -1,18 +1,39 @@
 import React, { useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FormControlLabel, Checkbox, Button, Typography } from '@mui/material';
 import { useWallet, useSubmitUserInfo } from 'hooks';
+import { login } from '../services/authService'; // Import the login function
 
 const Onboarding = () => {
     const { lichessUsername } = useParams();
+    const navigate = useNavigate();
     const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const { walletAddress, connectAccount } = useWallet();
+    const { walletAddress, connectAccount, signMessage } = useWallet(); // Assume signMessage is available in useWallet
     const { submit, submitted } = useSubmitUserInfo(lichessUsername, walletAddress);
 
-    const handleSubmit = useCallback((e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        submit();
-    }, [submit]);
+        if (!walletAddress) {
+            console.error('Wallet not connected');
+            return;
+        }
+
+        try {
+            // Login to Virtual Labs
+            const message = "Login to VirtualLabs";
+            const signature = await signMessage(message);
+            await login(walletAddress, message, signature);
+
+            // Submit user info
+            await submit();
+
+            // If successful, navigate to dashboard or next step
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Onboarding failed:', error);
+            // Handle error (show error message to user)
+        }
+    }, [walletAddress, signMessage, submit, navigate]);
 
     return (
         <OnboardingLayout>
