@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setPlayerInfo } from '../store/slices/userSlice'; // Adjust the import path as needed
+import { setPlayerInfo } from '../store/slices/userSlice';
 import { getToken } from '../services/authService';
-import { useUserService } from '../services/userService';
+import { createPlayer } from '../services/apiService';
 
 const useSubmitUserInfo = (lichessUsername, walletAddress) => {
-    const { createUser } = useUserService();
     const [submitted, setSubmitted] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -30,11 +29,11 @@ const useSubmitUserInfo = (lichessUsername, walletAddress) => {
             const data = {
                 lichessHandle: lichessUsername,
                 address: walletAddress,
-                rollupId: process.env.REACT_APP_VIRTUAL_LABS_ROLLUP_ID
+                rollupId: process.env.REACT_APP_VIRTUAL_LABS_ROLLUP_ID,
             };
 
             console.log("Submitting player info:", data);
-            const result = await createUser(data);
+            const result = await createPlayer(data);
             console.log("Player info submitted successfully:", result);
 
             // Update Redux store with player info
