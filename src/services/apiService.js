@@ -2,7 +2,6 @@
 import { getToken } from './authService';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
-const VIRTUAL_LABS_URL = process.env.REACT_APP_VIRTUAL_LABS_URL;
 
 const apiCall = async (endpoint, method = 'GET', body = null) => {
   const token = getToken();
@@ -31,7 +30,7 @@ export const createPlayer = async (data) => {
   const token = getToken();
   console.log("Creating player with data:", data);
 
-  const response = await fetch(`${BASE_URL}/player/createPlayer`, {
+  const response = await fetch(`${BASE_URL}/user/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

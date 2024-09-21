@@ -15,7 +15,7 @@ import "./DashboardContent.css";
 
 const DashboardContent = () => {
   const dispatch = useDispatch();
-  const { timeControl, wagerSize, isSearching } = useSelector((state) => state.gameSettings);
+  const { timeControl, wagerSize } = useSelector((state) => state.gameSettings);
   const userInfo = useSelector((state) => state.user.userInfo);
   
   const ethToUsdRate = useEthereumPrice();

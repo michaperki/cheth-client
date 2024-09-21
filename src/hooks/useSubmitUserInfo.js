@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { setPlayerInfo } from '../store/slices/userSlice';
+import { setUserInfo } from '../store/slices/userSlice';
 import { getToken } from '../services/authService';
 import { createPlayer } from '../services/apiService';
 
@@ -37,7 +37,7 @@ const useSubmitUserInfo = (lichessUsername, walletAddress) => {
             console.log("Player info submitted successfully:", result);
 
             // Update Redux store with player info
-            dispatch(setPlayerInfo(result));
+            dispatch(setUserInfo(result));
 
             toast.success('Player info submitted successfully');
             navigate('/dashboard');

@@ -19,9 +19,6 @@ const userSlice = createSlice({
       state.isAdmin = action.payload?.user_role === 'admin';
       state.avatarUrl = action.payload?.avatar;
     },
-    setPlayerInfo: (state, action) => {
-      state.playerInfo = action.payload;
-    },
     setWalletAddress: (state, action) => {
       state.walletAddress = action.payload;
     },
@@ -45,7 +42,6 @@ const userSlice = createSlice({
 
 export const { 
   setUserInfo, 
-  setPlayerInfo,
   setWalletAddress, 
   clearUserInfo, 
   setAvatarUpdateStatus, 
