@@ -7,7 +7,9 @@ const initialState = {
   isAdmin: false,
   avatarUrl: null,
   avatarUpdateStatus: 'idle',
-  avatarUpdateError: null
+  avatarUpdateError: null,
+  sessionBalance: 0,
+  rollupBalance: 0,
 };
 
 const userSlice = createSlice({
@@ -36,7 +38,13 @@ const userSlice = createSlice({
         state.userInfo.avatar = action.payload;
       }
       state.avatarUrl = action.payload;
-    }
+    },
+    setSessionBalance: (state, action) => {
+      state.sessionBalance = action.payload;
+    },
+    setRollupBalance: (state, action) => {
+      state.rollupBalance = action.payload;
+    },
   }
 });
 
@@ -46,7 +54,9 @@ export const {
   clearUserInfo, 
   setAvatarUpdateStatus, 
   setAvatarUpdateError,
-  updateAvatar
+  updateAvatar,
+  setSessionBalance,
+  setRollupBalance,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -3,7 +3,7 @@ import { getToken } from './authService';
 
 const BASE_URL = process.env.REACT_APP_SERVER_BASE_URL;
 
-const apiCall = async (endpoint, method = 'GET', body = null) => {
+export const apiCall = async (endpoint, method = 'GET', body = null) => {
   const token = getToken();
   const headers = {
     'Content-Type': 'application/json',
@@ -50,4 +50,5 @@ export const createPlayer = async (data) => {
 
 export const getGames = () => apiCall('/game/getGames');
 export const findOpponent = (data) => apiCall('/game/findOpponent', 'POST', data);
-
+export const getSessionBalance = () => apiCall('/session/getBalance');
+export const depositToSession = (amount) => apiCall('/session/deposit', 'POST', { amount });
