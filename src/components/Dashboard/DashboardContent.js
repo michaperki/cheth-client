@@ -17,6 +17,12 @@ const DashboardContent = () => {
   const dispatch = useDispatch();
   const { timeControl, wagerSize } = useSelector((state) => state.gameSettings);
   const userInfo = useSelector((state) => state.user.userInfo);
+
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(setIsSearching(false));
+    }
+  }, [userInfo, dispatch]);
   
   const ethToUsdRate = useEthereumPrice();
   const [ethPriceLoading, setEthPriceLoading] = useState(true); // Loading state for ETH price
