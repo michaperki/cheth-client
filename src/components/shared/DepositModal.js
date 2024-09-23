@@ -13,8 +13,8 @@ const DepositModal = ({ open, handleClose }) => {
   const handleDeposit = async () => {
     try {
       const result = await depositToSession(amount, walletAddress);
-      if (result && result.newBalance) {
-        dispatch(setSessionBalance(result.newBalance.toString()));
+      console.log('Deposit result:', result);
+      if (result) {
         toast.success('Deposit successful');
         handleClose();
       } else {
